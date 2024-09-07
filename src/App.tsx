@@ -1,29 +1,99 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useEffect, useState } from 'react'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { adminRoutes, manageRoutes, publicRoutes, staffRoutes } from './routes/routes'
+import { isMobile, isTablet } from 'react-device-detect'
+import MobileMaintenance from './components/MobileMaintenance'
+import ProtectedRoutes from './components/ProtectedRoutes'
+import { RoleType } from './slice/authLoginAPISlice'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isMobileOrTablet, setIsMobileOrTablet] = useState(isMobile || isTablet) // Sử dụng hàm isMobile và isTablet từ thư viện react-device-detect
 
+  useEffect(() => {
+    const handleResize = () => {
+      // Không cần kiểm tra kích thước màn hình nữa, sử dụng hàm isMobile và isTablet từ thư viện react-device-detect để bắt thiết bị đăng nhập
+      setIsMobileOrTablet(isMobile || isTablet)
+    }
+
+    window.addEventListener('resize', handleResize)
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+  if (isMobileOrTablet) return <MobileMaintenance />
   return (
     <>
-      <div>
-        <a href='https://vitejs.dev' target='_blank'>
-          <img src={viteLogo} className='logo' alt='Vite logo' />
-        </a>
-        <a href='https://react.dev' target='_blank'>
-          <img src={reactLogo} className='logo react' alt='React logo' />
-        </a>
-      </div>
-      <h1 className='font-semibold underline text-9xl'>Vite + React</h1>
-      <div className='card'>
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className='read-the-docs'>Click on the Vite and React logos to learn more</p>
+      <Routes>
+        {publicRoutes.map(({ layout, component, path }, index) => {
+          const Layout = layout
+          const Component = component
+          return (
+            <Route
+              key={index}
+              path={path}
+              element={
+                <Layout children={<Component />} />
+                // <ProtectedRoutes allowedRoles={[RoleType.GUEST, RoleType.GUEST]} redirectPath='/login'>
+
+                // </ProtectedRoutes>
+              }
+            />
+          )
+        })}
+
+        {adminRoutes.map(({ layout, component, path }, index) => {
+          const Layout = layout
+          const Component = component
+          return (
+            <Route
+              key={index}
+              path={path}
+              element={
+                <Layout children={<Component />} />
+                // <ProtectedRoutes allowedRoles={[RoleType.GUEST, RoleType.GUEST]} redirectPath='/login'>
+
+                // </ProtectedRoutes>
+              }
+            />
+          )
+        })}
+
+        {staffRoutes.map(({ layout, component, path }, index) => {
+          const Layout = layout
+          const Component = component
+          return (
+            <Route
+              key={index}
+              path={path}
+              element={
+                <Layout children={<Component />} />
+                // <ProtectedRoutes allowedRoles={[RoleType.GUEST, RoleType.GUEST]} redirectPath='/login'>
+
+                // </ProtectedRoutes>
+              }
+            />
+          )
+        })}
+        {manageRoutes.map(({ layout, component, path }, index) => {
+          const Layout = layout
+          const Component = component
+          return (
+            <Route
+              key={index}
+              path={path}
+              element={
+                <Layout children={<Component />} />
+                // <ProtectedRoutes allowedRoles={[RoleType.GUEST, RoleType.GUEST]} redirectPath='/login'>
+
+                // </ProtectedRoutes>
+              }
+            />
+          )
+        })}
+      </Routes>
     </>
   )
 }
