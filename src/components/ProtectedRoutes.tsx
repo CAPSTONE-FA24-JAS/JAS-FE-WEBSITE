@@ -14,13 +14,13 @@ export default function ProtectedRoutes({ children, allowedRoles, redirectPath }
   const role = useSelector((state: RootState) => state.authLoginAPI.role)
   console.log('role', role)
   if (!allowedRoles.includes(role)) {
-    if (role === RoleType.GUEST) {
+    if (role === RoleType.CUSTOMER) {
       return <Navigate to={redirectPath} />
     } else if (role === RoleType.ADMIN) {
       return <Navigate to='/admin' />
-    } else if (role === RoleType.STAFF) {
+    } else if (role === RoleType.STAFFC) {
       return <Navigate to='/*' />
-    } else if (role === RoleType.MANAGER) {
+    } else if (role === RoleType.STAFFA) {
       return <Navigate to='/*' />
     } else {
       return <Navigate to='/*' />

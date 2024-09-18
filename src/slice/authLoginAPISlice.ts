@@ -3,11 +3,10 @@ import { jwtDecode } from 'jwt-decode'
 import { Data, UserLoginResponse } from '../types/Account.type'
 
 export enum RoleType {
+  CUSTOMER = '1',
   ADMIN = '2',
-  STAFF = '3',
-  STAFFC = '4',
-  MANAGER = '5',
-  GUEST = '1'
+  STAFFC = '3',
+  STAFFA = '4'
 }
 
 // Define type for the decoded token
@@ -30,7 +29,7 @@ const initialState: AuthLoginAPIState = {
   account: null,
   isAuthenticated: false,
   userId: null,
-  role: RoleType.GUEST
+  role: RoleType.CUSTOMER
 }
 
 const authLoginAPISlice = createSlice({
@@ -42,19 +41,18 @@ const authLoginAPISlice = createSlice({
       console.log('decodedToken', decodedToken) // Kiểm tra decoded token
       console.log('UserLoginResponse', action.payload) // Kiểm tra response
 
-      // Lấy role từ token với key "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
       const roleFromToken = decodedToken[
         'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
       ] as keyof typeof RoleType
 
       state.account = action.payload
       state.isAuthenticated = true
-      state.role = RoleType[roleFromToken] || RoleType.GUEST
+      state.role = RoleType[roleFromToken] || RoleType.CUSTOMER
     },
     logoutUser: (state) => {
       state.account = null
       state.isAuthenticated = false
-      state.role = RoleType.GUEST
+      state.role = RoleType.CUSTOMER
     }
   }
 })
