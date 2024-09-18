@@ -3,6 +3,9 @@ import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, R
 import storage from 'redux-persist/lib/storage'
 import authLoginAPISlice from './slice/authLoginAPISlice'
 import { authApi } from './services/auth.services'
+import { consignApi } from './services/requestconsign.services'
+import { accountApi } from './services/account.services'
+import { valuationApi } from './services/valuation.services'
 
 // Tạo cấu hình persist
 export const persistConfig = {
@@ -14,7 +17,10 @@ export const persistConfig = {
 // Tạo rootReducer
 const rootReducer = combineReducers({
   authLoginAPI: authLoginAPISlice,
-  [authApi.reducerPath]: authApi.reducer
+  [authApi.reducerPath]: authApi.reducer,
+  [consignApi.reducerPath]: consignApi.reducer,
+  [accountApi.reducerPath]: accountApi.reducer,
+  [valuationApi.reducerPath]: valuationApi.reducer
   // Thêm các reducers khác nếu cần
 })
 
@@ -29,7 +35,11 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
       }
-    }).concat(authApi.middleware) // Đảm bảo rằng middleware của `authApi` được thêm đúng
+    })
+      .concat(authApi.middleware)
+      .concat(consignApi.middleware)
+      .concat(accountApi.middleware)
+      .concat(valuationApi.middleware) // Đảm bảo rằng middleware của `authApi` được thêm đúng
 })
 
 // Định nghĩa loại cho RootState và AppDispatch

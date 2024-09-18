@@ -1,19 +1,31 @@
-import { Layout, Typography } from 'antd'
-
-const { Header, Content, Footer } = Layout
-const { Title, Paragraph } = Typography
+import Carousel from '../../components/CardHomePage/Carousel'
+import Highlights from '../../components/CardHomePage/Hightlights'
+import LeadingPage from '../../components/CardHomePage/Leading'
+import RecentPosts from '../../components/CardHomePage/RecentPosts'
+import Testimonials from '../../components/CardHomePage/Testimonials'
 
 export default function HomePage() {
   return (
-    <Layout>
-      <Content>
-        <Title>Welcome to the Jewelry Auction</Title>
-        <Paragraph>
-          Discover exquisite jewelry pieces and participate in exciting auctions. Explore our wide range of stunning
-          jewelry and find the perfect piece for you.
-        </Paragraph>
-      </Content>
-      <Footer style={{ textAlign: 'center' }}>Jewelry Auction ©2024 Created by Your Company</Footer>
-    </Layout>
+    <div className='w-full h-full overflow-x-hidden'>
+      <div className='mb-20'>
+        <Carousel />
+      </div>
+      <hr className='border-gray-300 my-10 mx-28' /> {/* Gray line with margin */}
+      <div className='mb-20'>
+        <LeadingPage />
+      </div>
+      <hr className='border-gray-300 my-10 mx-28' /> {/* Gray line with margin */}
+      <div className='mb-20'>
+        <Testimonials />
+      </div>
+      <hr className='border-gray-300 my-10 mx-28' /> {/* Gray line with margin */}
+      <div className='mb-20'>
+        <Highlights />
+      </div>
+      <hr className='border-gray-300 my-10 mx-28' /> {/* Gray line with margin */}
+      <div className='mb-20'>
+        <RecentPosts />
+      </div>
+    </div>
   )
 }

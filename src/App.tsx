@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import { adminRoutes, manageRoutes, publicRoutes, staffRoutes } from './routes/routes'
+import { adminRoutes, publicRoutes, staffARoutes, staffCRoutes } from './routes/routes'
 import { isMobile, isTablet } from 'react-device-detect'
 import MobileMaintenance from './components/MobileMaintenance'
 import ProtectedRoutes from './components/ProtectedRoutes'
@@ -61,7 +61,7 @@ function App() {
           )
         })}
 
-        {staffRoutes.map(({ layout, component, path }, index) => {
+        {staffCRoutes.map(({ layout, component, path }, index) => {
           const Layout = layout
           const Component = component
           return (
@@ -77,7 +77,7 @@ function App() {
             />
           )
         })}
-        {manageRoutes.map(({ layout, component, path }, index) => {
+        {staffARoutes.map(({ layout, component, path }, index) => {
           const Layout = layout
           const Component = component
           return (
