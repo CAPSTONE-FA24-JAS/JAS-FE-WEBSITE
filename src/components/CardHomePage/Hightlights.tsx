@@ -64,15 +64,15 @@ export default function Highlights() {
 
   return (
     <div className='mx-56'>
-      <h2 className='text-4xl text-center mb-20 uppercase'>PAST AUCTION HIGHLIGHTS</h2>
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
+      <h2 className='mb-20 text-4xl text-center uppercase'>PAST AUCTION HIGHLIGHTS</h2>
+      <div className='grid grid-cols-1 gap-8 md:grid-cols-3'>
         {paginatedHighlights.map((item, index) => (
-          <div key={index} className='flex flex-col items-center h-96 border bg-gray-200 rounded-lg shadow-lg'>
-            <img src={item.imageUrl} alt={item.title} className='w-full h-56 object-cover mb-4 rounded-md' />
-            <div className='w-full px-4 flex flex-col items-center'>
-              <h3 className='text-lg font-semibold text-center mb-2 uppercase'>{item.title}</h3>
-              <div className='w-16 border-b-2 border-gray-400 mb-8' />
-              <p className='text-sm text-gray-600 italic font-semibold'>{item.detail}</p>
+          <div key={index} className='flex flex-col items-center bg-gray-200 border rounded-lg shadow-lg h-96'>
+            <img src={item.imageUrl} alt={item.title} className='object-cover w-full h-56 mb-4 rounded-md' />
+            <div className='flex flex-col items-center w-full px-4'>
+              <h3 className='mb-2 text-lg font-semibold text-center uppercase'>{item.title}</h3>
+              <div className='w-16 mb-8 border-b-2 border-gray-400' />
+              <p className='text-sm italic font-semibold text-gray-600'>{item.detail}</p>
             </div>
           </div>
         ))}

@@ -76,7 +76,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
   return (
     <Modal
       title='Create Confirmation Receipt'
-      visible={isVisible}
+      open={isVisible}
       onCancel={onCancel}
       okText='Create'
       cancelText='Cancel'
@@ -85,12 +85,12 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
       onOk={handleCreate}
     >
       <div className='p-0'>
-        <Title level={4} className='text-center text-xl font-bold'>
+        <Title level={4} className='text-xl font-bold text-center'>
           Cộng hòa xã hội chủ nghĩa Việt Nam
           <br />
           Độc lập - Tự do - Hạnh Phúc
         </Title>
-        <Title level={3} className='text-center text-lg font-extrabold'>
+        <Title level={3} className='text-lg font-extrabold text-center'>
           BIÊN BẢN GIAO NHẬN
         </Title>
         <Title level={5} className='font-bold'>
@@ -104,7 +104,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
             </Text>
           </Col>
           <Col span={21}>
-            <Input className='font-bold text-black mb-2 w-full' value='Jewelry Auction Company' readOnly />
+            <Input className='w-full mb-2 font-bold text-black' value='Jewelry Auction Company' readOnly />
           </Col>
         </Row>
         <Row gutter={16}>
@@ -115,7 +115,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
           </Col>
           <Col span={21}>
             <Input
-              className='font-bold text-black mb-2 w-full'
+              className='w-full mb-2 font-bold text-black'
               value='S10.05(VHGP), Nguyen Xien Street, Long Binh Ward, Thu Duc District, Ho Chi Minh City'
               readOnly
             />
@@ -128,7 +128,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
             </Text>
           </Col>
           <Col span={21}>
-            <Input className='font-bold text-black mb-2 w-full' value='ngocnhse160303@fpt.edu.vn' readOnly />
+            <Input className='w-full mb-2 font-bold text-black' value='ngocnhse160303@fpt.edu.vn' readOnly />
           </Col>
         </Row>
         <Row gutter={16}>
@@ -138,7 +138,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
             </Text>
           </Col>
           <Col span={21}>
-            <Input className='font-bold text-black mb-2 w-full' value='02158945456' readOnly />
+            <Input className='w-full mb-2 font-bold text-black' value='02158945456' readOnly />
           </Col>
         </Row>
 
@@ -154,7 +154,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
           </Col>
           <Col span={21}>
             <Input
-              className='font-bold mb-2 w-full'
+              className='w-full mb-2 font-bold'
               value={`${record?.seller?.firstName} ${record?.seller?.lastName}`}
               readOnly
             />
@@ -167,7 +167,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
             </Text>
           </Col>
           <Col span={21}>
-            <Input className='font-bold mb-2 w-full' value={record?.seller?.address} readOnly />
+            <Input className='w-full mb-2 font-bold' value={record?.seller?.address} readOnly />
           </Col>
         </Row>
         <Row gutter={16}>
@@ -177,7 +177,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
             </Text>
           </Col>
           <Col span={21}>
-            <Input className='font-bold mb-2 w-full' value={record?.seller?.citizenIdentificationCard} readOnly />
+            <Input className='w-full mb-2 font-bold' value={record?.seller?.citizenIdentificationCard} readOnly />
           </Col>
         </Row>
         <Row gutter={16}>
@@ -188,7 +188,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
           </Col>
           <Col span={21}>
             <Input
-              className='font-bold mb-2 w-full'
+              className='w-full mb-2 font-bold'
               value={idIssuanceDate}
               onChange={(e) => setIdIssuanceDate(e.target.value)}
               readOnly
@@ -203,7 +203,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
           </Col>
           <Col span={21}>
             <Input
-              className='font-bold mb-2 w-full'
+              className='w-full mb-2 font-bold'
               value={idExpirationDate}
               onChange={(e) => setIdExpirationDate(e.target.value)}
               readOnly
@@ -217,7 +217,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
             </Text>
           </Col>
           <Col span={21}>
-            <Input className='font-bold mb-2 w-full' value={record?.seller?.phoneNumber} readOnly />
+            <Input className='w-full mb-2 font-bold' value={record?.seller?.phoneNumber} readOnly />
           </Col>
         </Row>
 
@@ -231,7 +231,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
             </Text>
           </Col>
           <Col span={21}>
-            <Input className='font-bold mb-2 w-full' value={record?.name} readOnly />
+            <Input className='w-full mb-2 font-bold' value={record?.name} readOnly />
           </Col>
         </Row>
         <Row gutter={16}>
@@ -242,7 +242,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
           </Col>
           <Col span={21}>
             <Input
-              className='font-bold mb-2 w-full'
+              className='w-full mb-2 font-bold'
               value={deliveryDate}
               onChange={(e) => setDeliveryDate(e.target.value)}
             />
@@ -256,7 +256,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
           </Col>
           <Col span={21}>
             <Input
-              className='font-bold mb-2 w-full'
+              className='w-full mb-2 font-bold'
               value={actualStatusOfJewelry}
               onChange={(e) => setActualStatusOfJewelry(e.target.value)}
             />

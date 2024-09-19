@@ -10,19 +10,19 @@ export default function HomePage() {
       <div className='mb-20'>
         <Carousel />
       </div>
-      <hr className='border-gray-300 my-10 mx-28' /> {/* Gray line with margin */}
+      <hr className='my-10 border-gray-300 mx-28' /> {/* Gray line with margin */}
       <div className='mb-20'>
         <LeadingPage />
       </div>
-      <hr className='border-gray-300 my-10 mx-28' /> {/* Gray line with margin */}
+      <hr className='my-10 border-gray-300 mx-28' /> {/* Gray line with margin */}
       <div className='mb-20'>
         <Testimonials />
       </div>
-      <hr className='border-gray-300 my-10 mx-28' /> {/* Gray line with margin */}
+      <hr className='my-10 border-gray-300 mx-28' /> {/* Gray line with margin */}
       <div className='mb-20'>
         <Highlights />
       </div>
-      <hr className='border-gray-300 my-10 mx-28' /> {/* Gray line with margin */}
+      <hr className='my-10 border-gray-300 mx-28' /> {/* Gray line with margin */}
       <div className='mb-20'>
         <RecentPosts />
       </div>
