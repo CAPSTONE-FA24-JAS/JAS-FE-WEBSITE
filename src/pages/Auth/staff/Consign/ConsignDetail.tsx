@@ -83,9 +83,8 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, onUp
 
           <Form.Item label='Status' className='mt-4 font-bold'>
             <Select value={status} onChange={(value) => setStatus(value)}>
-              <Select.Option value='Approve'>Approve</Select.Option>
-              <Select.Option value='Reject'>Reject</Select.Option>
-              <Select.Option value='Pending'>Pending</Select.Option>
+              <Select.Option value='Requested'>Requested</Select.Option>
+              <Select.Option value='Preliminary Valued'>Preliminary Valued</Select.Option>
             </Select>
           </Form.Item>
         </div>

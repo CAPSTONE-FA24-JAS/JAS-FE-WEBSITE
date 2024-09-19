@@ -11,20 +11,23 @@ interface ProtectedRoutesProps {
 }
 
 export default function ProtectedRoutes({ children, allowedRoles, redirectPath }: ProtectedRoutesProps) {
-  const role = useSelector((state: RootState) => state.authLoginAPI.role)
-  console.log('role', role)
-  if (!allowedRoles.includes(role)) {
-    if (role === RoleType.CUSTOMER) {
-      return <Navigate to={redirectPath} />
-    } else if (role === RoleType.ADMIN) {
-      return <Navigate to='/admin' />
-    } else if (role === RoleType.STAFFC) {
-      return <Navigate to='/*' />
-    } else if (role === RoleType.STAFFA) {
-      return <Navigate to='/*' />
+  const roleId = useSelector((state: RootState) => state.authLoginAPI.roleId)
+
+  console.log('Role in ProtectedRoutes:', roleId)
+
+  if (roleId === RoleType.GUEST && !allowedRoles.includes(RoleType.GUEST)) {
+    return <Navigate to={redirectPath} />
+  }
+
+  if (!allowedRoles.includes(roleId)) {
+    if (roleId === RoleType.ADMIN) {
+      return <Navigate to='/admin/AdminConsignList' />
+    } else if (roleId === RoleType.STAFFC) {
+      return <Navigate to='/staff/ConsignList' />
     } else {
-      return <Navigate to='/*' />
+      return <Navigate to='/' />
     }
   }
+
   return <div>{children}</div>
 }

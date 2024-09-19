@@ -1,61 +1,44 @@
-// ValuationTabs.tsx
-import { EyeOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Col, Input, Row, Table, Tabs, Tag } from 'antd'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { EyeOutlined, PlusOutlined, SearchOutlined, FilePdfOutlined } from '@ant-design/icons'
+import { Button, Col, Input, Modal, Row, Table, Tabs, Tag } from 'antd'
+import { useEffect, useState } from 'react'
+import CreateReceipt from './CreateReceipt'
 import PreliminaryValuationDetail from './PreliminaryDetail'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../../../store'
+import { useGetPreliminaryValuationsByStaffQuery } from '../../../../services/valuation.services'
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
 
 const { Search } = Input
-const { TabPane } = Tabs
-
-const preliminaryData = [
-  {
-    id: '1',
-    valuationName: 'Diamond Ring',
-    customerName: 'John Doe',
-    contact: 'john@example.com',
-    status: 'Approve',
-    initialPrice: 5000
-  },
-  {
-    id: '2',
-    valuationName: 'Gold Necklace',
-    customerName: 'Jane Smith',
-    contact: 'jane@example.com',
-    status: 'Pending',
-    initialPrice: 3000 // Added field for initial price
-  }
-]
-
-const finalData = [
-  {
-    id: '3',
-    valuationName: 'Silver Bracelet',
-    customerName: 'Michael Johnson',
-    contact: 'michael@example.com',
-    status: 'Reject',
-    initialPrice: 1500 // Added field for initial price
-  }
-]
 
 const ValuationTabs = () => {
   const [searchText, setSearchText] = useState<string>('')
   const [modalVisible, setModalVisible] = useState<boolean>(false)
+  const [confirmationVisible, setConfirmationVisible] = useState<boolean>(false)
   const [selectedRecord, setSelectedRecord] = useState<any>(null)
-  const [currentTab, setCurrentTab] = useState<string>('1') // Track current tab
-  const navigate = useNavigate() // Initialize the navigate hook
+  const [preliminaryData, setPreliminaryData] = useState<any[]>([])
+
+  const staffId = useSelector((state: RootState) => state.authLoginAPI.id)
+
+  const { data, error, isLoading } = useGetPreliminaryValuationsByStaffQuery({
+    staffId: staffId || '',
+    pageSize: 10,
+    pageIndex: 1
+  })
+
+  useEffect(() => {
+    if (data && data.data) {
+      const fetchedData = Array.isArray(data.data.dataResponse) ? data.data.dataResponse : [data.data.dataResponse]
+      setPreliminaryData(fetchedData)
+    }
+  }, [data, error, isLoading])
 
   const handleSearch = (value: string) => {
     setSearchText(value)
   }
 
-  const filteredPreliminaryData = preliminaryData.filter((item) =>
-    item.valuationName.toLowerCase().includes(searchText.toLowerCase())
-  )
-
-  const filteredFinalData = finalData.filter((item) =>
-    item.valuationName.toLowerCase().includes(searchText.toLowerCase())
-  )
+  const filteredPreliminaryData = preliminaryData
+    .filter((item) => item.status === 'Preliminary Valued')
+    .filter((item) => item.name.toLowerCase().includes(searchText.toLowerCase()))
 
   const columns = [
     {
@@ -65,45 +48,70 @@ const ValuationTabs = () => {
     },
     {
       title: 'Valuation Name',
-      dataIndex: 'valuationName',
-      key: 'valuationName'
+      dataIndex: 'name',
+      key: 'name'
     },
     {
       title: 'Customer Name',
-      dataIndex: 'customerName',
-      key: 'customerName'
-    },
-    {
-      title: 'Contact',
-      dataIndex: 'contact',
-      key: 'contact'
+      dataIndex: 'seller',
+      key: 'seller',
+      render: (seller: any) => (seller ? `${seller.firstName} ${seller.lastName}` : '')
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
       render: (status: any) => {
-        let color = status === 'Approve' ? 'green' : status === 'Reject' ? 'red' : 'gray'
+        let color = status === 'Receipted' ? 'blue' : 'green'
         return <Tag color={color}>{status.toUpperCase()}</Tag>
       }
     },
     {
-      title: 'More',
-      key: 'more',
+      title: 'Actions',
+      key: 'actions',
       render: (text: any, record: any) => (
-        <Button
-          type='primary'
-          icon={<EyeOutlined />}
-          className='bg-blue-500 hover:bg-blue-600'
-          onClick={() => {
-            // Show the detail modal
-            setSelectedRecord(record)
-            setModalVisible(true)
-          }}
-        >
-          View
-        </Button>
+        <div>
+          <Button
+            type='primary'
+            icon={<EyeOutlined />}
+            className='bg-blue-500 hover:bg-blue-600'
+            onClick={() => {
+              setSelectedRecord(record)
+              setModalVisible(true)
+            }}
+          />
+          <Button
+            type='default'
+            icon={<PlusOutlined />}
+            className='ml-2'
+            onClick={() => {
+              setSelectedRecord(record)
+              setConfirmationVisible(true)
+            }}
+          />
+        </div>
       )
+    }
+  ]
+
+  const tabItems = [
+    {
+      key: '1',
+      label: 'Preliminary Valuation',
+      children: (
+        <Table
+          dataSource={filteredPreliminaryData}
+          columns={columns}
+          rowKey='id'
+          loading={isLoading}
+          pagination={false}
+        />
+      )
+    },
+    {
+      key: '2',
+      label: 'Final Valuation',
+      children: <Table dataSource={[]} columns={columns} rowKey='id' pagination={false} />
     }
   ]
 
@@ -129,14 +137,8 @@ const ValuationTabs = () => {
           </Row>
         </Col>
       </Row>
-      <Tabs defaultActiveKey='1' onChange={(key) => setCurrentTab(key)}>
-        <TabPane tab='Preliminary Valuation' key='1'>
-          <Table dataSource={filteredPreliminaryData} columns={columns} rowKey='id' />
-        </TabPane>
-        <TabPane tab='Final Valuation' key='2'>
-          <Table dataSource={filteredFinalData} columns={columns} rowKey='id' />
-        </TabPane>
-      </Tabs>
+
+      <Tabs defaultActiveKey='1' items={tabItems} />
 
       {selectedRecord && (
         <PreliminaryValuationDetail
@@ -149,9 +151,19 @@ const ValuationTabs = () => {
           record={selectedRecord}
           status={selectedRecord.status}
           setStatus={(status: any) => setSelectedRecord({ ...selectedRecord, status })}
-          tab={currentTab}
+          tab='1'
         />
       )}
+
+      <CreateReceipt
+        isVisible={confirmationVisible}
+        onCancel={() => setConfirmationVisible(false)}
+        onCreate={() => {
+          console.log('Creating confirmation receipt for:', selectedRecord)
+          setConfirmationVisible(false)
+        }}
+        record={selectedRecord}
+      />
     </div>
   )
 }

@@ -60,7 +60,7 @@ const RequestConsignDetail: React.FC<ConsignDetailProps> = ({
 
   const handleUpdate = () => {
     if (assignedStaff) {
-      assignStaffForValuation({ id: record.id, staffId: parseInt(assignedStaff) })
+      assignStaffForValuation({ id: record.id, staffId: parseInt(assignedStaff), status: status })
         .unwrap()
         .then((response: AssignStaffResponse) => {
           if (response.isSuccess) {
@@ -149,9 +149,8 @@ const RequestConsignDetail: React.FC<ConsignDetailProps> = ({
           </p>
           <Form.Item label='Status' className='mt-4 font-bold'>
             <Select value={status} onChange={(value) => setStatus(value)}>
-              <Select.Option value='Approve'>Approve</Select.Option>
-              <Select.Option value='Reject'>Reject</Select.Option>
-              <Select.Option value='Pending'>Pending</Select.Option>
+              <Select.Option value='Requested'>Requested</Select.Option>
+              <Select.Option value='Preliminary Valued'>Assigned</Select.Option>
             </Select>
           </Form.Item>
 

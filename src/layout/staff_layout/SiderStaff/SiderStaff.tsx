@@ -46,11 +46,8 @@ export default function SiderStaff() {
       ]),
       getItem('View request Consign', 'consign', <MdInventory className='text-base' />),
       getItem('Valuation Manage', 'manageValuation', <MdOutlineCategory className='text-base' />, [
-        getItem('Valuation List', 'valuation', <GrView className='text-base' />),
-        getItem('Create Preliminary Valuation', 'addPreliminary', <HiOutlineViewGridAdd className='text-base' />)
-      ]),
-      getItem('Tiền gửi hoàn trả', 'refund', <TbCreditCardRefund className='text-base' />),
-      getItem('Quản lí đơn hàng', 'manageOrderOfAllCustomer', <CiDeliveryTruck className='text-base' />)
+        getItem('Valuation List', 'valuation', <GrView className='text-base' />)
+      ])
     ]
   }
 
@@ -60,9 +57,6 @@ export default function SiderStaff() {
     .set('viewAllProduct', '/staff/viewAllProduct')
     .set('addProduct', '/staff/addProduct')
     .set('valuation', '/staff/valuationList')
-    .set('addPreliminary', '/staff/addPreliminary')
-    .set('refund', '/staff/refund')
-    .set('manageOrderOfAllCustomer', '/staff/manageOrderOfAllCustomer')
 
   return (
     <>

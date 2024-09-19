@@ -1,4 +1,3 @@
-// PreliminaryValuationDetail.tsx
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { Button, Form, Modal, Select } from 'antd'
 import React, { useState } from 'react'
@@ -23,10 +22,8 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
   tab
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const images = [
-    'https://hoangphucphoto.com/wp-content/uploads/2023/10/anh-ts-thumb.jpg',
-    'https://lavenderstudio.com.vn/wp-content/uploads/2017/10/chup-hinh-trang-suc-2.jpg',
-    'https://via.placeholder.com/150/0000FF/808080?text=Image+3'
+  const images = record?.imageValuations?.map((img: any) => img.imageLink) || [
+    'https://via.placeholder.com/150?text=No+Image'
   ]
 
   const nextImage = () => {
@@ -47,7 +44,7 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
           Cancel
         </Button>,
         <Button key='update' type='primary' onClick={onUpdate}>
-          Update
+          Send
         </Button>
       ]}
       width={900}
@@ -68,21 +65,35 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
 
         <div>
           <p className='text-xl font-bold mb-2'>{record?.id}</p>
-          <p className='text-xl font-bold mb-6'>{record?.valuationName}</p>
+          <p className='text-xl font-bold mb-6'>{record?.name}</p>
 
           <p className='mb-4'>
-            <strong>Customer Name:</strong> {record?.customerName}
+            <strong>Customer Name:</strong> {record?.seller?.firstName} {record?.seller?.lastName}
+          </p>
+          <p className='mb-4'>
+            <strong>Email:</strong> {record?.seller?.email}
+          </p>
+          <p className='mb-4'>
+            <strong>Phone:</strong> {record?.seller?.phoneNumber}
+          </p>
+          <p className='mb-4'>
+            <strong>Height:</strong> {record?.height} cm
+          </p>
+          <p className='mb-4'>
+            <strong>Width:</strong> {record?.width} cm
+          </p>
+          <p className='mb-4'>
+            <strong>Depth:</strong> {record?.depth} cm
+          </p>
+          <p className='mb-6'>
+            <strong>Description:</strong> {record?.description}
+          </p>
+          <p className='mb-4'>
+            <strong>Preliminary Price:</strong>{' '}
+            <span className='font-bold text-red-800'> {record?.desiredPrice} VND</span>
           </p>
 
-          {tab === '1' && (
-            <>
-              <p className='mb-4'>
-                <strong>Initial Price:</strong> ${record?.initialPrice}
-              </p>
-            </>
-          )}
-
-          <Form.Item label='Status' className='mt-4'>
+          <Form.Item label='Status' className='mt-4 font-bold'>
             <Select value={status} onChange={(value) => setStatus(value)}>
               <Select.Option value='Approve'>Approve</Select.Option>
               <Select.Option value='Reject'>Reject</Select.Option>
@@ -90,6 +101,18 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
             </Select>
           </Form.Item>
         </div>
+      </div>
+      <div className='mt-6'>
+        <p className='text-blue-500  italic'>Receipt Link</p>
+      </div>
+      {/* Note Section */}
+      <div className='mt-6'>
+        <p className='text-red-500 font-bold italic'>
+          Note: If customers accept this price, please send jewelry to the address below.
+        </p>
+        <p className='text-red-500 font-bold italic'>
+          S10.05(VHGP), Nguyen Xien Street, Long Binh Ward, Thu Duc District, Ho Chi Minh City
+        </p>
       </div>
     </Modal>
   )

@@ -43,6 +43,5 @@ const staffCRoutes: RouteProps[] = [
   { path: '/staff/valuationList', component: ValuationTabs, layout: StaffLayout },
   { path: '/staff/addPreliminary/:id', component: CreatePreliminaryValuation, layout: StaffLayout }
 ]
-const staffARoutes: RouteProps[] = []
 
-export { publicRoutes, adminRoutes, staffCRoutes, staffARoutes }
+export { publicRoutes, adminRoutes, staffCRoutes }
