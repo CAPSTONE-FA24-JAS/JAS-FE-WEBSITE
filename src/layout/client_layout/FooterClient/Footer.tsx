@@ -7,22 +7,25 @@ const { Text } = Typography
 
 export default function CustomFooter() {
   return (
-    <Footer style={{ backgroundColor: '#001529', color: '#fff', textAlign: 'center', padding: '20px 0' }}>
+    <Footer className='bg-black text-center p-5'>
       <Space direction='vertical' size='large'>
-        <Text style={{ color: '#fff', fontSize: '18px' }}>Jewelry Auction Platform</Text>
-        <Text style={{ color: '#ccc' }}>© 2024 Jewelry Auction Inc. All rights reserved.</Text>
+        {/* Platform Name */}
+        <Text className='text-white text-lg'>Jewelry Auction System</Text>
+        {/* Copyright */}
+        <Text className='text-gray-400'>© 2024 Jewelry Auction Inc. All rights reserved.</Text>
+        {/* Social Media Icons */}
         <Space size='large'>
           <a href='https://facebook.com' target='_blank' rel='noopener noreferrer'>
-            <FacebookOutlined style={{ color: '#fff', fontSize: '24px' }} />
+            <FacebookOutlined className='text-white text-2xl' />
           </a>
           <a href='https://twitter.com' target='_blank' rel='noopener noreferrer'>
-            <TwitterOutlined style={{ color: '#fff', fontSize: '24px' }} />
+            <TwitterOutlined className='text-white text-2xl' />
           </a>
           <a href='https://instagram.com' target='_blank' rel='noopener noreferrer'>
-            <InstagramOutlined style={{ color: '#fff', fontSize: '24px' }} />
+            <InstagramOutlined className='text-white text-2xl' />
           </a>
           <a href='https://github.com' target='_blank' rel='noopener noreferrer'>
-            <GithubOutlined style={{ color: '#fff', fontSize: '24px' }} />
+            <GithubOutlined className='text-white text-2xl' />
           </a>
         </Space>
       </Space>
