@@ -1,35 +1,32 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { Data } from '../types/Account.type'
 import { jwtDecode } from 'jwt-decode'
-import { Data, UserLoginResponse } from '../types/Account.type'
 
 export enum RoleType {
   CUSTOMER = '1',
   ADMIN = '2',
   STAFFC = '3',
-  STAFFA = '4'
+  GUEST = '4'
 }
 
-// Define type for the decoded token
 export interface DecodedToken {
+  Id: string
   email: string
-  exp: number
-  iss: string
-  aud: string
-  [key: string]: any // Cho phép các thuộc tính động
+  [key: string]: any
 }
 
 interface AuthLoginAPIState {
   account: Data | null
   isAuthenticated: boolean
-  userId: string | null
-  role: RoleType
+  id: string | null
+  roleId: RoleType
 }
 
 const initialState: AuthLoginAPIState = {
   account: null,
   isAuthenticated: false,
-  userId: null,
-  role: RoleType.CUSTOMER
+  id: null,
+  roleId: RoleType.GUEST
 }
 
 const authLoginAPISlice = createSlice({
@@ -38,21 +35,21 @@ const authLoginAPISlice = createSlice({
   reducers: {
     setUser: (state, action: PayloadAction<Data>) => {
       const decodedToken = jwtDecode(action.payload.accessToken) as DecodedToken
-      console.log('decodedToken', decodedToken) // Kiểm tra decoded token
-      console.log('UserLoginResponse', action.payload) // Kiểm tra response
 
-      const roleFromToken = decodedToken[
-        'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
-      ] as keyof typeof RoleType
+      const roleFromToken = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+
+      const mappedRole = Object.values(RoleType).includes(roleFromToken) ? roleFromToken : RoleType.GUEST
 
       state.account = action.payload
       state.isAuthenticated = true
-      state.role = RoleType[roleFromToken] || RoleType.CUSTOMER
+      state.id = decodedToken.Id
+      state.roleId = mappedRole as RoleType
     },
     logoutUser: (state) => {
       state.account = null
       state.isAuthenticated = false
-      state.role = RoleType.CUSTOMER
+      state.id = null
+      state.roleId = RoleType.GUEST
     }
   }
 })

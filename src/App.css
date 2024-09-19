@@ -29,3 +29,16 @@
   background-color: #f37335 !important;
   color: #fff !important;
 }
+.pdf-modal .ant-modal-body {
+  padding: 0;
+}
+
+.pdf-viewer {
+  height: 80vh;
+  overflow: auto;
+}
+
+.pdf-document {
+  width: 100%;
+  height: 100%;
+}

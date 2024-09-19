@@ -1,8 +1,10 @@
 import { PlusOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Col, Input, Row, Space, Table, Tag, message, Tooltip } from 'antd'
+import { Button, Col, Input, Row, Space, Table, Tag, message, Tooltip, notification } from 'antd'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import ConsignDetail from './ConsignDetail'
+import { RootState } from '../../../../store'
 import {
   useGetPreliminaryValuationsByStaffQuery,
   useUpdateValuationStatusMutation
@@ -16,8 +18,10 @@ const RequestConsignList = () => {
   const [selectedRecord, setSelectedRecord] = useState<any>(null)
   const [status, setStatus] = useState<string>('')
   const [searchText, setSearchText] = useState<string>('')
-  const { data, error, isLoading } = useGetPreliminaryValuationsByStaffQuery({
-    staffId: 38,
+
+  const staffId = useSelector((state: RootState) => state.authLoginAPI.id)
+  const { data, error, isLoading, refetch } = useGetPreliminaryValuationsByStaffQuery({
+    staffId: staffId || '',
     pageSize: 10,
     pageIndex: 1
   })
@@ -45,10 +49,17 @@ const RequestConsignList = () => {
   const handleUpdate = async () => {
     try {
       await updateValuationStatus({ id: selectedRecord.id, status }).unwrap()
-      message.success('Status updated successfully!')
+      notification.success({
+        message: 'Success',
+        description: 'Status updated successfully!'
+      })
       setIsModalVisible(false)
+      refetch() // Refetch the data after update
     } catch (error) {
-      message.error('Failed to update status.')
+      notification.error({
+        message: 'Error',
+        description: 'Failed to update status.'
+      })
     }
   }
 

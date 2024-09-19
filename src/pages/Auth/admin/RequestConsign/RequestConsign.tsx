@@ -19,7 +19,7 @@ const RequestConsign = () => {
 
   const showModal = (record: any) => {
     setSelectedRecord(record)
-    setStatus(record.status || '') // Ensure status is never null
+    setStatus(record.status || '')
     setIsModalVisible(true)
   }
 
@@ -128,7 +128,7 @@ const RequestConsign = () => {
             onChange: (page, pageSize) => {
               setPageIndex(page)
               setPageSize(pageSize)
-              refetch() // Refetch when the page or page size changes
+              refetch()
             }
           }}
         />

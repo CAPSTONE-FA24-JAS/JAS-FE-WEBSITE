@@ -12,7 +12,7 @@ export const consignApi = createApi({
       const user = localStorage.getItem('userLogin')
       if (user) {
         const userData = JSON.parse(user) as Data
-        const token = userData ? userData.accessToken : ''
+        const token = userData.accessToken || ''
         headers.set('authorization', `Bearer ${token}`)
       }
       return headers
@@ -29,16 +29,12 @@ export const consignApi = createApi({
       query: ({ staffId, pageSize = 10, pageIndex = 1 }) =>
         `/Valuations/getPreliminaryValuationsByStatusOfStaff?staffId=${staffId}&pageSize=${pageSize}&pageIndex=${pageIndex}`
     }),
-
-    // Gán nhân viên cho một Valuation cụ thể
     assignStaffForValuation: build.mutation<AssignStaffResponse, AssignStaffRequest>({
-      query: ({ id, staffId }) => ({
-        url: `/Valuations/AssignStaffForValuation?id=${id}&staffId=${staffId}`,
+      query: ({ id, staffId, status }) => ({
+        url: `/Valuations/AssignStaffForValuation?id=${id}&staffId=${staffId}&status=${status}`,
         method: 'PUT'
       })
     }),
-
-    // Cập nhật trạng thái cho Valuation
     updateValuationStatus: build.mutation<any, { id: number; status: string }>({
       query: ({ id, status }) => ({
         url: `/Valuations/UpdateStatusForValuations?id=${id}&status=${encodeURIComponent(status)}`,
@@ -53,5 +49,5 @@ export const {
   useGetValuationsQuery,
   useGetPreliminaryValuationsByStaffQuery,
   useAssignStaffForValuationMutation,
-  useUpdateValuationStatusMutation // Hook cho cập nhật trạng thái
+  useUpdateValuationStatusMutation
 } = consignApi

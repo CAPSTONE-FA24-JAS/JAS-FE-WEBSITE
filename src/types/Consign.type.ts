@@ -48,6 +48,7 @@ export interface Seller {
 export interface AssignStaffRequest {
   id: number
   staffId: number
+  status: string
 }
 
 export interface AssignStaffResponse {

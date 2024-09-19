@@ -1,10 +1,7 @@
 export interface CreatePreliminaryRequest {
-  name: string
-  height: number
-  width: number
-  depth: number
-  desiredPrice: number
-  description: string
+  id: number
+  status: string
+  DesiredPrice: number
 }
 export interface CreatePreliminaryRepsonse {
   code: number
@@ -40,4 +37,21 @@ export interface CreatePreliminaryRepsonseChildren {
   deletionDate: any
   deleteBy: any
   isDeleted: boolean
+}
+export interface CreateReceiptRequest {
+  id: number
+  actualStatusOfJewelry: string
+  deliveryDate: string
+}
+export interface CreateReceiptResponse {
+  id: number
+  name: string
+  valuationDocuments: ValuationDocument[]
+}
+export interface ValuationDocument {
+  fileDocument: string
+  valuationId: number
+  valuationDocumentTypeId: number
+  creationDate: string
+  createdBy: number
 }

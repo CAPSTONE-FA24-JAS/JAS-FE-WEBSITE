@@ -1,6 +1,6 @@
-import { Button, Col, Input, InputNumber, Row, Typography } from 'antd'
-import { useParams } from 'react-router-dom'
+import { Button, Col, Input, InputNumber, notification, Row, Typography } from 'antd'
 import { useEffect, useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useCreatePreliminaryMutation, useGetValuationByIdQuery } from '../../../../services/valuation.services'
 
 const { Title } = Typography
@@ -12,64 +12,71 @@ const CreatePreliminaryValuation = () => {
     weight: 0,
     height: 0,
     depth: 0,
-    preliminaryPrice: 0,
+    desiredPrice: 0,
     description: ''
   })
 
   const { id } = useParams<{ id: string }>()
-  const { data, isLoading } = useGetValuationByIdQuery({
-    id: Number(id)
-  })
-  const [createPreliminary] = useCreatePreliminaryMutation()
+  const navigate = useNavigate()
+
+  const { data, isLoading } = useGetValuationByIdQuery({ id: Number(id) })
+  const [createPreliminary, { isLoading: isCreating }] = useCreatePreliminaryMutation()
 
   useEffect(() => {
-    if (data) {
+    if (data && data.data) {
+      const { data: valuationData } = data
       setFormValues({
-        customerName: data.seller ? `${data.seller.firstName} ${data.seller.lastName}` : '',
-        jewelryName: data.name,
-        weight: data.width,
-        height: data.height,
-        depth: data.depth,
-        preliminaryPrice: data.desiredPrice || 0,
-        description: data.description
+        customerName: valuationData.seller ? `${valuationData.seller.firstName} ${valuationData.seller.lastName}` : '',
+        jewelryName: valuationData.name || '',
+        weight: valuationData.width || 0,
+        height: valuationData.height || 0,
+        depth: valuationData.depth || 0,
+        description: valuationData.description || '',
+        desiredPrice: formValues.desiredPrice // Giữ nguyên giá trị preliminaryPrice hiện tại
       })
     }
   }, [data])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
+  const handlePriceChange = (value: number | null) => {
     setFormValues((prevValues) => ({
       ...prevValues,
-      [name]: value
+      desiredPrice: value || 0
     }))
   }
 
-  const handleCreate = async () => {
+  const handleCreatePreliminary = async () => {
+    console.log('Submitting preliminary valuation with the following data:', {
+      id: Number(id),
+      status: 'Preliminary Valued',
+      DesiredPrice: formValues.desiredPrice
+    })
+
     try {
       const response = await createPreliminary({
-        name: formValues.jewelryName,
-        height: formValues.height,
-        width: formValues.weight,
-        depth: formValues.depth,
-        desiredPrice: formValues.preliminaryPrice,
-        description: formValues.description
+        id: Number(id),
+        status: 'Preliminary Valued',
+        DesiredPrice: formValues.desiredPrice
       }).unwrap()
-      console.log('Create response:', response)
+
+      console.log('API response:', response)
+
+      notification.success({
+        message: 'Success',
+        description: 'Preliminary valuation created successfully!'
+      })
+
+      navigate('/staff/valuationList')
     } catch (error) {
-      console.error('Create error:', error)
+      console.error('Failed to create preliminary valuation:', error)
+      notification.error({
+        message: 'Error',
+        description: 'Failed to create preliminary valuation. Please try again later.'
+      })
     }
   }
 
-  const handleCancel = () => {
-    setFormValues({
-      customerName: '',
-      jewelryName: '',
-      weight: 0,
-      height: 0,
-      depth: 0,
-      preliminaryPrice: 0,
-      description: ''
-    })
+  const handleBack = () => {
+    navigate(-1) // Navigate back to the previous page
   }
 
   if (isLoading) {
@@ -90,11 +97,9 @@ const CreatePreliminaryValuation = () => {
               </label>
               <Input
                 id='customerName'
-                name='customerName'
-                type='text'
                 value={formValues.customerName}
-                onChange={handleChange}
-                className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5'
+                readOnly
+                className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5'
               />
             </div>
           </Col>
@@ -105,11 +110,9 @@ const CreatePreliminaryValuation = () => {
               </label>
               <Input
                 id='jewelryName'
-                name='jewelryName'
-                type='text'
                 value={formValues.jewelryName}
-                onChange={handleChange}
-                className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5'
+                readOnly
+                className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5'
               />
             </div>
           </Col>
@@ -122,11 +125,9 @@ const CreatePreliminaryValuation = () => {
               </label>
               <InputNumber
                 id='weight'
-                name='weight'
-                min={0}
                 value={formValues.weight}
-                onChange={(value) => setFormValues((prevValues) => ({ ...prevValues, weight: value || 0 }))}
-                className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5'
+                readOnly
+                className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5'
               />
             </div>
           </Col>
@@ -137,11 +138,9 @@ const CreatePreliminaryValuation = () => {
               </label>
               <InputNumber
                 id='height'
-                name='height'
-                min={0}
                 value={formValues.height}
-                onChange={(value) => setFormValues((prevValues) => ({ ...prevValues, height: value || 0 }))}
-                className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5'
+                readOnly
+                className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5'
               />
             </div>
           </Col>
@@ -154,11 +153,9 @@ const CreatePreliminaryValuation = () => {
               </label>
               <InputNumber
                 id='depth'
-                name='depth'
-                min={0}
                 value={formValues.depth}
-                onChange={(value) => setFormValues((prevValues) => ({ ...prevValues, depth: value || 0 }))}
-                className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5'
+                readOnly
+                className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5'
               />
             </div>
           </Col>
@@ -169,11 +166,10 @@ const CreatePreliminaryValuation = () => {
               </label>
               <InputNumber
                 id='preliminaryPrice'
-                name='preliminaryPrice'
                 min={0}
-                value={formValues.preliminaryPrice}
-                onChange={(value) => setFormValues((prevValues) => ({ ...prevValues, preliminaryPrice: value || 0 }))}
-                className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5'
+                value={formValues.desiredPrice}
+                onChange={handlePriceChange}
+                className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5'
               />
             </div>
           </Col>
@@ -182,22 +178,21 @@ const CreatePreliminaryValuation = () => {
           <label htmlFor='description' className='block mb-2 text-sm font-medium text-gray-900'>
             Description
           </label>
-          <textarea
+          <Input.TextArea
             id='description'
-            name='description'
             rows={4}
             value={formValues.description}
-            onChange={handleChange}
-            className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5'
+            readOnly
+            className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5'
           />
-        </div>
-        <div className='flex justify-end gap-4'>
-          <Button onClick={handleCancel} className='bg-gray-200 text-gray-800'>
-            Cancel
-          </Button>
-          <Button type='primary' onClick={handleCreate}>
-            Create
-          </Button>
+          <div className='flex justify-between gap-4 mt-4'>
+            <Button onClick={handleBack} className='bg-gray-200 text-gray-800'>
+              Back
+            </Button>
+            <Button type='primary' onClick={handleCreatePreliminary} loading={isCreating}>
+              Create
+            </Button>
+          </div>
         </div>
       </div>
     </div>
