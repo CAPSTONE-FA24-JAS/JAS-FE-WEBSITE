@@ -31,49 +31,19 @@ function App() {
         {publicRoutes.map(({ layout, component, path }, index) => {
           const Layout = layout
           const Component = component
-          return (
-            <Route
-              key={index}
-              path={path}
-              element={
-                <ProtectedRoutes allowedRoles={[RoleType.GUEST, RoleType.CUSTOMER]} redirectPath='/login'>
-                  <Layout children={<Component />} />
-                </ProtectedRoutes>
-              }
-            />
-          )
+          return <Route key={index} path={path} element={<Layout children={<Component />} />} />
         })}
 
         {adminRoutes.map(({ layout, component, path }, index) => {
           const Layout = layout
           const Component = component
-          return (
-            <Route
-              key={index}
-              path={path}
-              element={
-                <ProtectedRoutes allowedRoles={[RoleType.ADMIN]} redirectPath='/*'>
-                  <Layout children={<Component />} />
-                </ProtectedRoutes>
-              }
-            />
-          )
+          return <Route key={index} path={path} element={<Layout children={<Component />} />} />
         })}
 
         {staffCRoutes.map(({ layout, component, path }, index) => {
           const Layout = layout
           const Component = component
-          return (
-            <Route
-              key={index}
-              path={path}
-              element={
-                <ProtectedRoutes allowedRoles={[RoleType.STAFFC]} redirectPath='/*'>
-                  <Layout children={<Component />} />
-                </ProtectedRoutes>
-              }
-            />
-          )
+          return <Route key={index} path={path} element={<Layout children={<Component />} />} />
         })}
         {/* {staffARoutes.map(({ layout, component, path }, index) => {
           const Layout = layout

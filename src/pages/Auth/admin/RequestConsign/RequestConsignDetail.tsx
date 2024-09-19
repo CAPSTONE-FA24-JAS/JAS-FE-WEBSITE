@@ -95,7 +95,7 @@ const RequestConsignDetail: React.FC<ConsignDetailProps> = ({
   return (
     <Modal
       title='Consign Detail'
-      visible={isVisible}
+      open={isVisible}
       onCancel={onCancel}
       footer={[
         <Button key='cancel' onClick={onCancel}>
@@ -126,8 +126,8 @@ const RequestConsignDetail: React.FC<ConsignDetailProps> = ({
         </div>
 
         <div>
-          <p className='text-xl font-bold mb-2'>{record?.id}</p>
-          <p className='text-xl font-bold mb-6'>{record?.name}</p>
+          <p className='mb-2 text-xl font-bold'>{record?.id}</p>
+          <p className='mb-6 text-xl font-bold'>{record?.name}</p>
 
           <p className='mb-4'>
             <strong>Customer Name:</strong> {record?.seller?.firstName} {record?.seller?.lastName}

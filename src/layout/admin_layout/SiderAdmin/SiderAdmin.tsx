@@ -87,14 +87,14 @@ export default function SiderAdmin() {
             })}
           >
             <div className='text-2xl font-bold text-black'>JAS</div>
-            <div className='text-lg font-normal up text-black'>Auctions</div>
+            <div className='text-lg font-normal text-black up'>Auctions</div>
           </div>
           <div
             className={cn('mx-auto text-center mb-4 mt-4 pb-4', {
               hidden: !collapsed
             })}
           >
-            <div className='text-xl font-bold text-black py-2'>JAS</div>
+            <div className='py-2 text-xl font-bold text-black'>JAS</div>
           </div>
         </div>
 

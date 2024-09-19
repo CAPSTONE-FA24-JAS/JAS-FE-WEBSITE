@@ -37,7 +37,7 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
   return (
     <Modal
       title={`${tab === '1' ? 'Preliminary' : 'Final'} Valuation Detail`}
-      visible={isVisible}
+      open={isVisible}
       onCancel={onCancel}
       footer={[
         <Button key='cancel' onClick={onCancel}>
@@ -48,7 +48,7 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
         </Button>
       ]}
       width={900}
-      bodyStyle={{ padding: '24px' }}
+      style={{ padding: '24px' }}
     >
       <div className='grid grid-cols-2 gap-6'>
         <div className='relative'>
@@ -64,8 +64,8 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
         </div>
 
         <div>
-          <p className='text-xl font-bold mb-2'>{record?.id}</p>
-          <p className='text-xl font-bold mb-6'>{record?.name}</p>
+          <p className='mb-2 text-xl font-bold'>{record?.id}</p>
+          <p className='mb-6 text-xl font-bold'>{record?.name}</p>
 
           <p className='mb-4'>
             <strong>Customer Name:</strong> {record?.seller?.firstName} {record?.seller?.lastName}
@@ -103,14 +103,14 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
         </div>
       </div>
       <div className='mt-6'>
-        <p className='text-blue-500  italic'>Receipt Link</p>
+        <p className='italic text-blue-500'>Receipt Link</p>
       </div>
       {/* Note Section */}
       <div className='mt-6'>
-        <p className='text-red-500 font-bold italic'>
+        <p className='italic font-bold text-red-500'>
           Note: If customers accept this price, please send jewelry to the address below.
         </p>
-        <p className='text-red-500 font-bold italic'>
+        <p className='italic font-bold text-red-500'>
           S10.05(VHGP), Nguyen Xien Street, Long Binh Ward, Thu Duc District, Ho Chi Minh City
         </p>
       </div>

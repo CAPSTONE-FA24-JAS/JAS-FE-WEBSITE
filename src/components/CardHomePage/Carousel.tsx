@@ -8,16 +8,16 @@ export default function CustomCarousel() {
     <div className=''>
       <Carousel autoplay>
         <div>
-          <img src={imageUrls1} alt='Slide 1' className='w-full h-auto  md:h-64 lg:h-72 xl:h-80' />
+          <img src={imageUrls1} alt='Slide 1' className='w-full h-auto md:h-64 lg:h-72 xl:h-80' />
         </div>
         <div>
-          <img src={imageUrls1} alt='Slide 2' className='w-full h-auto  md:h-64 lg:h-72 xl:h-80' />
+          <img src={imageUrls1} alt='Slide 2' className='w-full h-auto md:h-64 lg:h-72 xl:h-80' />
         </div>
         <div>
-          <img src={imageUrls1} alt='Slide 3' className='w-full h-auto  md:h-64 lg:h-72 xl:h-80' />
+          <img src={imageUrls1} alt='Slide 3' className='w-full h-auto md:h-64 lg:h-72 xl:h-80' />
         </div>
         <div>
-          <img src={imageUrls1} alt='Slide 4' className='w-full h-auto  md:h-64 lg:h-72 xl:h-80' />
+          <img src={imageUrls1} alt='Slide 4' className='w-full h-auto md:h-64 lg:h-72 xl:h-80' />
         </div>
       </Carousel>
     </div>
