@@ -8,7 +8,7 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
   return (
     <Layout className='min-h-screen'>
       <SiderAdmin />
-      <Layout className='bg-white'>
+      <Layout className='bg-white '>
         <HeaderAdmin />
         <ContentAdmin>{children}</ContentAdmin>
         <FooterAdmin />

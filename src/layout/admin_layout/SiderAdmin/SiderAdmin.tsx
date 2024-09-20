@@ -6,10 +6,10 @@ import { RiProductHuntLine } from 'react-icons/ri'
 import { GrView } from 'react-icons/gr'
 import { HiOutlineViewGridAdd } from 'react-icons/hi'
 import { MdInventory, MdOutlineCategory, MdOutlineMenu } from 'react-icons/md'
-import { LiaMoneyBillWaveSolid } from 'react-icons/lia'
 import { TbCreditCardRefund } from 'react-icons/tb'
 import { CiDeliveryTruck } from 'react-icons/ci'
 import { cn } from '../../../utils/cn'
+import { BarChartOutlined } from '@ant-design/icons'
 
 export default function SiderAdmin() {
   type MenuItem = Required<MenuProps>['items'][number]
@@ -22,6 +22,14 @@ export default function SiderAdmin() {
       label
     } as MenuItem
   }
+
+  const [selectedKey, setSelectedKey] = useState<string>(() => {
+    return sessionStorage.getItem('selectedKey') || ''
+  })
+
+  useEffect(() => {
+    sessionStorage.setItem('selectedKey', selectedKey)
+  }, [selectedKey])
 
   const navigate = useNavigate()
   const [collapsed, setCollapsed] = useState(window.innerWidth < 1280)
@@ -40,6 +48,7 @@ export default function SiderAdmin() {
 
   const getConditionalItems = (): MenuItem[] => {
     return [
+      getItem('OverView', 'overview', <BarChartOutlined />),
       getItem('Manage Account', 'manageaccount', <RiProductHuntLine className='text-base' />, [
         getItem('Account List', 'accountlist', <GrView className='text-base' />),
         getItem('Create Account', 'createaccount', <HiOutlineViewGridAdd className='text-base' />)
@@ -59,6 +68,8 @@ export default function SiderAdmin() {
     .set('createaccount', '/admin/createAccount')
     .set('valuation', '/admin/valuationList')
     .set('addPreliminary', '/admin/addPreliminary')
+    .set('overview', '/admin/overview')
+
 
   return (
     <>
@@ -95,17 +106,20 @@ export default function SiderAdmin() {
         </div>
 
         <Menu
-          defaultSelectedKeys={['dashboard']}
+          defaultSelectedKeys={['overview']}
+          defaultOpenKeys={!collapsed ? ['manageaccount', 'adminconsign', 'manageValuation'] : []}
+          selectedKeys={[selectedKey]}
           mode='inline'
           items={getConditionalItems()}
           onSelect={(e) => {
             const link = navUrl.get(e.key)
             if (link) {
               navigate(link)
+              setSelectedKey(e.key)
             }
           }}
           className='text-base'
-        ></Menu>
+        />
       </Sider>
     </>
   )
