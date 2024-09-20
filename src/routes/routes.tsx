@@ -36,6 +36,7 @@ const publicRoutes: RouteProps[] = [
   { path: '/detaillot/:id', component: LotDetail, layout: ClientLayout }
 ]
 const adminRoutes: RouteProps[] = [
+
   { path: '/admin/', component: Overview, layout: AdminLayout },
   { path: '/admin/overview', component: Overview, layout: AdminLayout },
   { path: '/admin/AdminConsignList', component: RequestConsign, layout: AdminLayout },
@@ -43,7 +44,6 @@ const adminRoutes: RouteProps[] = [
   { path: '/admin/createAccount', component: CreateAccount, layout: AdminLayout }
 ]
 const staffCRoutes: RouteProps[] = [
-  { path: '/staff/', component: ConsignList, layout: StaffLayout },
   { path: '/staff/ConsignList', component: ConsignList, layout: StaffLayout },
   { path: '/staff/valuationList', component: ValuationTabs, layout: StaffLayout },
   { path: '/staff/addPreliminary/:id', component: CreatePreliminaryValuation, layout: StaffLayout },

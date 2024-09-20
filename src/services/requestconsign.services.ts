@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { Data } from '../types/Account.type'
-import { AssignStaffRequest, AssignStaffResponse } from '../types/Consign.type'
+import { AssignStaffRequest, AssignStaffResponse, DataConsign } from '../types/Consign.type'
 import baseUrl from '../utils/http'
 
 // Tạo API với Redux Toolkit
@@ -21,14 +21,21 @@ export const consignApi = createApi({
   refetchOnMountOrArgChange: true,
   endpoints: (build) => ({
     getValuations: build.query({
-      query: ({ pageSize = 10, pageIndex = 1 }) =>
-        `/Valuations/getValuations?pageSize=${pageSize}&pageIndex=${pageIndex}`
+      query: ({ pageSize, pageIndex }) => `/Valuations/getValuations?pageSize=${pageSize}&pageIndex=${pageIndex}`,
+      transformResponse: (response: any) => ({
+        dataResponse: response.data.dataResponse,
+        totalItemRepsone: response.data.totalItemRepsone
+      })
+    }),
+    getPreliminaryValuationsByStaff: build.query({
+      query: ({ staffId, pageSize, pageIndex }) =>
+        `/Valuations/getPreliminaryValuationsByStatusOfStaff?staffId=${staffId}&pageSize=${pageSize}&pageIndex=${pageIndex}`,
+      transformResponse: (response: any) => ({
+        dataResponse: response.data.dataResponse,
+        totalItemRepsone: response.data.totalItemRepsone
+      })
     }),
 
-    getPreliminaryValuationsByStaff: build.query({
-      query: ({ staffId, pageSize = 10, pageIndex = 1 }) =>
-        `/Valuations/getPreliminaryValuationsByStatusOfStaff?staffId=${staffId}&pageSize=${pageSize}&pageIndex=${pageIndex}`
-    }),
     assignStaffForValuation: build.mutation<AssignStaffResponse, AssignStaffRequest>({
       query: ({ id, staffId, status }) => ({
         url: `/Valuations/AssignStaffForValuation?id=${id}&staffId=${staffId}&status=${status}`,

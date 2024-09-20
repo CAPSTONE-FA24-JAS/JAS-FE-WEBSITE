@@ -2,11 +2,11 @@ export interface Root {
   code: number
   message: string
   isSuccess: boolean
-  data: Data
+  data: DataConsign
   errorMessages: any
 }
 
-export interface Data {
+export interface DataConsign {
   dataResponse: DataConsignResponse[]
   totalItemRepsone: number
 }

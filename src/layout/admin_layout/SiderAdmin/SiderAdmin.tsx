@@ -57,9 +57,7 @@ export default function SiderAdmin() {
       getItem('Valuation Manage', 'manageValuation', <MdOutlineCategory className='text-base' />, [
         getItem('Valuation List', 'valuation', <GrView className='text-base' />),
         getItem('Create Preliminary Valuation', 'addPreliminary', <HiOutlineViewGridAdd className='text-base' />)
-      ]),
-      getItem('Tiền gửi hoàn trả', 'refund', <TbCreditCardRefund className='text-base' />),
-      getItem('Quản lí đơn hàng', 'manageOrderOfAllCustomer', <CiDeliveryTruck className='text-base' />)
+      ])
     ]
   }
 
@@ -70,9 +68,8 @@ export default function SiderAdmin() {
     .set('createaccount', '/admin/createAccount')
     .set('valuation', '/admin/valuationList')
     .set('addPreliminary', '/admin/addPreliminary')
-    .set('refund', '/admin/refund')
-    .set('manageOrderOfAllCustomer', '/admin/manageOrderOfAllCustomer')
     .set('overview', '/admin/overview')
+
 
   return (
     <>
