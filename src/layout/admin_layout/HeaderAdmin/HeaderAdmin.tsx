@@ -38,8 +38,8 @@ export default function HeaderAdmin() {
   ]
 
   return (
-    <Header className='fixed z-auto flex w-full border-b border-gray-200 bg-white px-5'>
-      <div className='flex justify-end items-center '>
+    <Header className='fixed z-50 flex w-full px-5 bg-white border-b border-gray-200'>
+      <div className='flex items-center justify-end '>
         <Dropdown menu={{ items: notificationItems }} placement='bottomRight' trigger={['click']}>
           <Badge count={2} className='mr-4'>
             <BellOutlined className='cursor-pointer' style={{ fontSize: '24px' }} />

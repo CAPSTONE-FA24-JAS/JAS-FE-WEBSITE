@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Table, Button, Space, Tag, Avatar, Input, notification } from 'antd'
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
@@ -87,7 +87,7 @@ const ManageAccount = () => {
 
   return (
     <div className='p-4'>
-      <div className='flex justify-between items-center mb-4'>
+      <div className='flex items-center justify-between mb-4'>
         <h2 className='text-2xl font-bold'>Manage Accounts</h2>
         <div className='flex items-center space-x-4'>
           <Search placeholder='Search by name' onSearch={handleSearch} enterButton style={{ width: 300 }} />
