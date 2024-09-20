@@ -18,12 +18,13 @@ const RequestConsignList = () => {
   const [selectedRecord, setSelectedRecord] = useState<any>(null)
   const [status, setStatus] = useState<string>('')
   const [searchText, setSearchText] = useState<string>('')
-
+  const [pageIndex, setPageIndex] = useState<number>(1)
+  const [pageSize, setPageSize] = useState<number>(5)
   const staffId = useSelector((state: RootState) => state.authLoginAPI.id)
   const { data, error, isLoading, refetch } = useGetPreliminaryValuationsByStaffQuery({
     staffId: staffId || '',
-    pageSize: 10,
-    pageIndex: 1
+    pageIndex,
+    pageSize
   })
 
   const [updateValuationStatus] = useUpdateValuationStatusMutation()
@@ -68,7 +69,7 @@ const RequestConsignList = () => {
   }
 
   const filteredDataSource =
-    data?.data?.dataResponse.filter(
+    data?.dataResponse.filter(
       (item: any) =>
         (item.seller.firstName || '').toLowerCase().includes(searchText.toLowerCase()) ||
         (item.seller.lastName || '').toLowerCase().includes(searchText.toLowerCase())
@@ -111,21 +112,11 @@ const RequestConsignList = () => {
       render: (text: any, record: any) => (
         <Space>
           <Tooltip title='View Detail'>
-            <Button
-              type='primary'
-              icon={<EyeOutlined />}
-              className='bg-blue-500 hover:bg-blue-600'
-              onClick={() => showModal(record)}
-            />
+            <Button icon={<EyeOutlined />} onClick={() => showModal(record)} />
           </Tooltip>
           {record.status === 'Preliminary Valued' && (
             <Tooltip title='Create Preliminary Valuation'>
-              <Button
-                type='primary'
-                icon={<PlusOutlined />}
-                className='hover:bg-green-600'
-                onClick={() => navigate(`/staff/addPreliminary/${record.id}`)}
-              />
+              <Button icon={<PlusOutlined />} onClick={() => navigate(`/staff/addPreliminary/${record.id}`)} />
             </Tooltip>
           )}
         </Space>
@@ -155,8 +146,27 @@ const RequestConsignList = () => {
           </Row>
         </Col>
       </Row>
-
-      <Table dataSource={filteredDataSource} columns={columns} rowKey='id' />
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>Error loading data</p>
+      ) : (
+        <Table
+          dataSource={filteredDataSource}
+          columns={columns}
+          rowKey='id'
+          pagination={{
+            total: data?.totalItemRepsone,
+            current: pageIndex,
+            pageSize: pageSize,
+            onChange: (page, pageSize) => {
+              setPageIndex(page)
+              setPageSize(pageSize)
+              refetch()
+            }
+          }}
+        />
+      )}
 
       <ConsignDetail
         isVisible={isModalVisible}

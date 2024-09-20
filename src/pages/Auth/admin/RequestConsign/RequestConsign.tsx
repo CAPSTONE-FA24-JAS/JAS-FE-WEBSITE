@@ -6,15 +6,14 @@ import { DeleteOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons'
 
 const { Search } = Input
 
-const RequestConsign = () => {
+export default function RequestConsign() {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [selectedRecord, setSelectedRecord] = useState<any>(null)
   const [status, setStatus] = useState<string>('')
   const [searchText, setSearchText] = useState<string>('')
   const [pageIndex, setPageIndex] = useState<number>(1)
-  const [pageSize, setPageSize] = useState<number>(10)
+  const [pageSize, setPageSize] = useState<number>(5)
 
-  // Fetch data from the API with pagination
   const { data, isLoading, error, refetch } = useGetValuationsQuery({ pageSize, pageIndex })
 
   const showModal = (record: any) => {
@@ -38,7 +37,7 @@ const RequestConsign = () => {
   }
 
   const filteredDataSource =
-    data?.data?.dataResponse.filter(
+    data?.dataResponse.filter(
       (item: any) =>
         (item.seller.firstName || '').toLowerCase().includes(searchText.toLowerCase()) ||
         (item.seller.lastName || '').toLowerCase().includes(searchText.toLowerCase())
@@ -74,7 +73,7 @@ const RequestConsign = () => {
         if (!status) {
           return <Tag color='gray'>Unknown</Tag>
         }
-        let color = status === 'Approve' ? 'green' : status === 'Reject' ? 'red' : 'gray'
+        let color = status === 'Approved' ? 'green' : status === 'Requested' ? 'blue' : 'gray'
         return <Tag color={color}>{status.toUpperCase()}</Tag>
       }
     },
@@ -112,6 +111,7 @@ const RequestConsign = () => {
           </Row>
         </Col>
       </Row>
+
       {isLoading ? (
         <p>Loading...</p>
       ) : error ? (
@@ -122,7 +122,7 @@ const RequestConsign = () => {
           columns={columns}
           rowKey='id'
           pagination={{
-            total: data?.totalCount,
+            total: data?.totalItemRepsone,
             current: pageIndex,
             pageSize: pageSize,
             onChange: (page, pageSize) => {
@@ -146,5 +146,3 @@ const RequestConsign = () => {
     </div>
   )
 }
-
-export default RequestConsign
