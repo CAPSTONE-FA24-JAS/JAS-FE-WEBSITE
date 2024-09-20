@@ -1,9 +1,9 @@
 import { Avatar, Button, notification, Space, Table, TableProps, Tag } from 'antd'
 import { useState } from 'react'
-import UserDetail from '../../../../components/modal/UserDetail'
 import { DeleteOutlined, EditOutlined, FundProjectionScreenOutlined, UserOutlined } from '@ant-design/icons'
 import { useDeleteAccountMutation, useGetListUsersQuery } from '../../../../services/account.services'
 import { AdminGetListUserChildrenResponse } from '../../../../types/Account.type'
+import UserDetail from './modal/UserDetail'
 
 const Overview = () => {
   const [modalVisible, setModalVisible] = useState(false)

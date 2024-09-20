@@ -8,6 +8,7 @@ import Overview from '../pages/Auth/admin/ManageAccount/OverView'
 import RequestConsign from '../pages/Auth/admin/RequestConsign/RequestConsign'
 import LoginPage from '../pages/Auth/login/LoginPage'
 import ConsignList from '../pages/Auth/staff/Consign/ConsignList'
+import FinanceProofList from '../pages/Auth/staff/FinanceProof/FinanceProofList'
 import CreatePreliminaryValuation from '../pages/Auth/staff/Valuation/CreatePreliminary'
 import ValuationTabs from '../pages/Auth/staff/Valuation/ValuationList'
 import LotDetail from '../pages/clientPages/DetailLot'
@@ -45,7 +46,8 @@ const staffCRoutes: RouteProps[] = [
   { path: '/staff/', component: ConsignList, layout: StaffLayout },
   { path: '/staff/ConsignList', component: ConsignList, layout: StaffLayout },
   { path: '/staff/valuationList', component: ValuationTabs, layout: StaffLayout },
-  { path: '/staff/addPreliminary/:id', component: CreatePreliminaryValuation, layout: StaffLayout }
+  { path: '/staff/addPreliminary/:id', component: CreatePreliminaryValuation, layout: StaffLayout },
+  { path: '/staff/financeproof', component: FinanceProofList, layout: StaffLayout }
 ]
 
 export { publicRoutes, adminRoutes, staffCRoutes }
