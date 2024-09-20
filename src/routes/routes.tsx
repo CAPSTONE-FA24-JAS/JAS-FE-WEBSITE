@@ -4,6 +4,7 @@ import LoginLayout from '../layout/login_layout/LoginLayout'
 import StaffLayout from '../layout/staff_layout/StaffLayout'
 import ManageAccount from '../pages/Auth/admin/ManageAccount/AccountList'
 import CreateAccount from '../pages/Auth/admin/ManageAccount/CreateAccount'
+import Overview from '../pages/Auth/admin/ManageAccount/OverView'
 import RequestConsign from '../pages/Auth/admin/RequestConsign/RequestConsign'
 import LoginPage from '../pages/Auth/login/LoginPage'
 import ConsignList from '../pages/Auth/staff/Consign/ConsignList'
@@ -34,7 +35,8 @@ const publicRoutes: RouteProps[] = [
   { path: '/detaillot/:id', component: LotDetail, layout: ClientLayout }
 ]
 const adminRoutes: RouteProps[] = [
-  { path: '/admin/', component: RequestConsign, layout: AdminLayout },
+  { path: '/admin/', component: Overview, layout: AdminLayout },
+  { path: '/admin/overview', component: Overview, layout: AdminLayout },
   { path: '/admin/AdminConsignList', component: RequestConsign, layout: AdminLayout },
   { path: '/admin/AccountList', component: ManageAccount, layout: AdminLayout },
   { path: '/admin/createAccount', component: CreateAccount, layout: AdminLayout }
