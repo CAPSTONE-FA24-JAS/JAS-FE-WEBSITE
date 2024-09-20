@@ -29,7 +29,7 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, onUp
   return (
     <Modal
       title='Consign Detail'
-      visible={isVisible}
+      open={isVisible}
       onCancel={onCancel}
       footer={[
         <Button key='cancel' onClick={onCancel}>
@@ -40,7 +40,7 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, onUp
         </Button>
       ]}
       width={900}
-      bodyStyle={{ padding: '24px' }}
+      style={{ padding: '24px' }}
     >
       <div className='grid grid-cols-2 gap-6'>
         <div className='relative'>
@@ -56,8 +56,8 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, onUp
         </div>
 
         <div>
-          <p className='text-xl font-bold mb-2'>{record?.id}</p>
-          <p className='text-xl font-bold mb-6'>{record?.name}</p>
+          <p className='mb-2 text-xl font-bold'>{record?.id}</p>
+          <p className='mb-6 text-xl font-bold'>{record?.name}</p>
 
           <p className='mb-4'>
             <strong>Customer Name:</strong> {record?.seller?.firstName} {record?.seller?.lastName}

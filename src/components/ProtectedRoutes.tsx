@@ -22,9 +22,11 @@ export default function ProtectedRoutes({ children, allowedRoles, redirectPath }
   if (!allowedRoles.includes(roleId)) {
     if (roleId === RoleType.ADMIN) {
       return <Navigate to='/admin/AdminConsignList' />
-    } else if (roleId === RoleType.STAFFC) {
+    }
+    if (roleId === RoleType.STAFFC) {
       return <Navigate to='/staff/ConsignList' />
-    } else {
+    }
+    if (!roleId) {
       return <Navigate to='/' />
     }
   }
