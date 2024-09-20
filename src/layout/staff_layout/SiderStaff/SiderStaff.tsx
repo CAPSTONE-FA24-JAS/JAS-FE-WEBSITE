@@ -5,11 +5,9 @@ import Sider from 'antd/es/layout/Sider'
 import { RiProductHuntLine } from 'react-icons/ri'
 import { GrView } from 'react-icons/gr'
 import { HiOutlineViewGridAdd } from 'react-icons/hi'
-import { MdInventory, MdOutlineCategory, MdOutlineMenu } from 'react-icons/md'
-import { LiaMoneyBillWaveSolid } from 'react-icons/lia'
-import { TbCreditCardRefund } from 'react-icons/tb'
-import { CiDeliveryTruck } from 'react-icons/ci'
+import { MdOutlineCategory, MdOutlineInventory2, MdOutlineMenu } from 'react-icons/md'
 import { cn } from '../../../utils/cn'
+import { TbZoomMoney } from 'react-icons/tb'
 
 export default function SiderStaff() {
   type MenuItem = Required<MenuProps>['items'][number]
@@ -25,6 +23,14 @@ export default function SiderStaff() {
 
   const navigate = useNavigate()
   const [collapsed, setCollapsed] = useState(window.innerWidth < 1280)
+
+  const [selectedKey, setSelectedKey] = useState<string>(() => {
+    return sessionStorage.getItem('selectedKey') || ''
+  })
+
+  useEffect(() => {
+    sessionStorage.setItem('selectedKey', selectedKey)
+  }, [selectedKey])
 
   useEffect(() => {
     const handleResize = () => {
@@ -44,10 +50,11 @@ export default function SiderStaff() {
         getItem('Xem tất cả sản phẩm', 'viewAllProduct', <GrView className='text-base' />),
         getItem('Thêm sản phẩm', 'addProduct', <HiOutlineViewGridAdd className='text-base' />)
       ]),
-      getItem('View request Consign', 'consign', <MdInventory className='text-base' />),
+      getItem('View request Consign', 'consign', <MdOutlineInventory2 className='text-base' />),
       getItem('Valuation Manage', 'manageValuation', <MdOutlineCategory className='text-base' />, [
         getItem('Valuation List', 'valuation', <GrView className='text-base' />)
-      ])
+      ]),
+      getItem('Finance Proof', 'financeProof', <TbZoomMoney className='text-base' />)
     ]
   }
 
@@ -57,6 +64,7 @@ export default function SiderStaff() {
     .set('viewAllProduct', '/staff/viewAllProduct')
     .set('addProduct', '/staff/addProduct')
     .set('valuation', '/staff/valuationList')
+    .set('financeProof', '/staff/financeproof')
 
   return (
     <>
@@ -81,25 +89,28 @@ export default function SiderStaff() {
             })}
           >
             <div className='text-2xl font-bold text-black'>JAS</div>
-            <div className='text-lg font-normal up text-black'>Auctions</div>
+            <div className='text-lg font-normal text-black up'>Auctions</div>
           </div>
           <div
             className={cn('mx-auto text-center mb-4 mt-4 pb-4', {
               hidden: !collapsed
             })}
           >
-            <div className='text-xl font-bold text-black py-2'>JAS</div>
+            <div className='py-2 text-xl font-bold text-black'>JAS</div>
           </div>
         </div>
 
         <Menu
           defaultSelectedKeys={['dashboard']}
+          defaultOpenKeys={['manageProduct', 'manageValuation']}
+          selectedKeys={[selectedKey]}
           mode='inline'
           items={getConditionalItems()}
           onSelect={(e) => {
             const link = navUrl.get(e.key)
             if (link) {
               navigate(link)
+              setSelectedKey(e.key)
             }
           }}
           className='text-base'
