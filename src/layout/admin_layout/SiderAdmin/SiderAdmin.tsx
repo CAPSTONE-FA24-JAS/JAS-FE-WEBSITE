@@ -2,12 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { Menu, MenuProps } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import Sider from 'antd/es/layout/Sider'
-import { RiProductHuntLine } from 'react-icons/ri'
+import { RiAuctionLine, RiProductHuntLine } from 'react-icons/ri'
 import { GrView } from 'react-icons/gr'
 import { HiOutlineViewGridAdd } from 'react-icons/hi'
 import { MdInventory, MdOutlineCategory, MdOutlineMenu } from 'react-icons/md'
-import { TbCreditCardRefund } from 'react-icons/tb'
-import { CiDeliveryTruck } from 'react-icons/ci'
 import { cn } from '../../../utils/cn'
 import { BarChartOutlined } from '@ant-design/icons'
 
@@ -57,6 +55,10 @@ export default function SiderAdmin() {
       getItem('Valuation Manage', 'manageValuation', <MdOutlineCategory className='text-base' />, [
         getItem('Valuation List', 'valuation', <GrView className='text-base' />),
         getItem('Create Preliminary Valuation', 'addPreliminary', <HiOutlineViewGridAdd className='text-base' />)
+      ]),
+      getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
+        getItem('Auction List', 'auctionlist', <GrView className='text-base' />),
+        getItem('Lot List', 'lotList', <GrView className='text-base' />)
       ])
     ]
   }
@@ -69,58 +71,55 @@ export default function SiderAdmin() {
     .set('valuation', '/admin/valuationList')
     .set('addPreliminary', '/admin/addPreliminary')
     .set('overview', '/admin/overview')
-
-
+    .set('auctionlist', '/admin/auctionlist')
+    .set('lotList', '/admin/lotList')
   return (
-    <>
-      <Sider
-        theme='light'
-        collapsible
-        collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
-        className='overflow-hidden border-r-[1px]'
-        trigger={
-          <div className='w-full border-r-[1px] border-t-[1px] flex items-center justify-center text-2xl pt-2'>
-            <MdOutlineMenu />
-          </div>
-        }
-        width={256}
-      >
-        <div className='border-r-[1px] border-gray-200'>
-          {/* Thay thế phần img bằng text JAS Auctions */}
-          <div
-            className={cn('mx-auto text-center mb-6 mt-6 pb-6', {
-              hidden: collapsed
-            })}
-          >
-            <div className='text-2xl font-bold text-black'>JAS</div>
-            <div className='text-lg font-normal text-black up'>Auctions</div>
-          </div>
-          <div
-            className={cn('mx-auto text-center mb-4 mt-4 pb-4', {
-              hidden: !collapsed
-            })}
-          >
-            <div className='py-2 text-xl font-bold text-black'>JAS</div>
-          </div>
+    <Sider
+      theme='light'
+      collapsible
+      collapsed={collapsed}
+      onCollapse={(value) => setCollapsed(value)}
+      className='overflow-hidden border-r-[1px]'
+      trigger={
+        <div className='w-full border-r-[1px] border-t-[1px] flex items-center justify-center text-2xl pt-2'>
+          <MdOutlineMenu />
         </div>
+      }
+      width={256}
+    >
+      <div className='border-r-[1px] border-gray-200'>
+        <div
+          className={cn('mx-auto text-center mb-6 mt-6 pb-6', {
+            hidden: collapsed
+          })}
+        >
+          <div className='text-2xl font-bold text-black'>JAS</div>
+          <div className='text-lg font-normal text-black up'>Auctions</div>
+        </div>
+        <div
+          className={cn('mx-auto text-center mb-4 mt-4 pb-4', {
+            hidden: !collapsed
+          })}
+        >
+          <div className='py-2 text-xl font-bold text-black'>JAS</div>
+        </div>
+      </div>
 
-        <Menu
-          defaultSelectedKeys={['overview']}
-          defaultOpenKeys={!collapsed ? ['manageaccount', 'adminconsign', 'manageValuation'] : []}
-          selectedKeys={[selectedKey]}
-          mode='inline'
-          items={getConditionalItems()}
-          onSelect={(e) => {
-            const link = navUrl.get(e.key)
-            if (link) {
-              navigate(link)
-              setSelectedKey(e.key)
-            }
-          }}
-          className='text-base'
-        />
-      </Sider>
-    </>
+      <Menu
+        defaultSelectedKeys={['overview']}
+        defaultOpenKeys={!collapsed ? ['manageaccount', 'adminconsign', 'manageValuation', 'auctionlist'] : []}
+        selectedKeys={[selectedKey]}
+        mode='inline'
+        items={getConditionalItems()}
+        onSelect={(e) => {
+          const link = navUrl.get(e.key)
+          if (link) {
+            navigate(link)
+            setSelectedKey(e.key)
+          }
+        }}
+        className='text-base'
+      />
+    </Sider>
   )
 }
