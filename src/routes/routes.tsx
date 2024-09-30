@@ -2,6 +2,8 @@ import AdminLayout from '../layout/admin_layout/AdminLayout'
 import ClientLayout from '../layout/client_layout/ClientLayout'
 import LoginLayout from '../layout/login_layout/LoginLayout'
 import StaffLayout from '../layout/staff_layout/StaffLayout'
+import AuctionList from '../pages/Auth/admin/Auction/AuctionList'
+import LotList from '../pages/Auth/admin/Lot/LotList'
 import ManageAccount from '../pages/Auth/admin/ManageAccount/AccountList'
 import CreateAccount from '../pages/Auth/admin/ManageAccount/CreateAccount'
 import Overview from '../pages/Auth/admin/ManageAccount/OverView'
@@ -36,18 +38,21 @@ const publicRoutes: RouteProps[] = [
   { path: '/detaillot/:id', component: LotDetail, layout: ClientLayout }
 ]
 const adminRoutes: RouteProps[] = [
-
   { path: '/admin/', component: Overview, layout: AdminLayout },
   { path: '/admin/overview', component: Overview, layout: AdminLayout },
   { path: '/admin/AdminConsignList', component: RequestConsign, layout: AdminLayout },
   { path: '/admin/AccountList', component: ManageAccount, layout: AdminLayout },
-  { path: '/admin/createAccount', component: CreateAccount, layout: AdminLayout }
+  { path: '/admin/createAccount', component: CreateAccount, layout: AdminLayout },
+  { path: '/admin/auctionlist', component: AuctionList, layout: AdminLayout },
+  { path: '/admin/lotlist', component: LotList, layout: AdminLayout }
 ]
 const staffCRoutes: RouteProps[] = [
   { path: '/staff/ConsignList', component: ConsignList, layout: StaffLayout },
   { path: '/staff/valuationList', component: ValuationTabs, layout: StaffLayout },
   { path: '/staff/addPreliminary/:id', component: CreatePreliminaryValuation, layout: StaffLayout },
-  { path: '/staff/financeproof', component: FinanceProofList, layout: StaffLayout }
+  { path: '/staff/financeproof', component: FinanceProofList, layout: StaffLayout },
+  { path: '/staff/auctionlist', component: AuctionList, layout: StaffLayout },
+  { path: '/staff/lotlist', component: LotList, layout: AdminLayout }
 ]
 
 export { publicRoutes, adminRoutes, staffCRoutes }

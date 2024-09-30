@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Menu, MenuProps } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import Sider from 'antd/es/layout/Sider'
-import { RiProductHuntLine } from 'react-icons/ri'
+import { RiAuctionLine, RiProductHuntLine } from 'react-icons/ri'
 import { GrView } from 'react-icons/gr'
 import { HiOutlineViewGridAdd } from 'react-icons/hi'
 import { MdOutlineCategory, MdOutlineInventory2, MdOutlineMenu } from 'react-icons/md'
@@ -54,7 +54,10 @@ export default function SiderStaff() {
       getItem('Valuation Manage', 'manageValuation', <MdOutlineCategory className='text-base' />, [
         getItem('Valuation List', 'valuation', <GrView className='text-base' />)
       ]),
-      getItem('Finance Proof', 'financeProof', <TbZoomMoney className='text-base' />)
+      getItem('Finance Proof', 'financeProof', <TbZoomMoney className='text-base' />),
+      getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
+        getItem('Auction List', 'auctionlist', <GrView className='text-base' />)
+      ])
     ]
   }
 
@@ -65,7 +68,7 @@ export default function SiderStaff() {
     .set('addProduct', '/staff/addProduct')
     .set('valuation', '/staff/valuationList')
     .set('financeProof', '/staff/financeproof')
-
+    .set('auctionlist', '/staff/auctionlist')
   return (
     <>
       <Sider
@@ -102,7 +105,7 @@ export default function SiderStaff() {
 
         <Menu
           defaultSelectedKeys={['dashboard']}
-          defaultOpenKeys={['manageProduct', 'manageValuation']}
+          defaultOpenKeys={['manageProduct', 'manageValuation', 'auctionlist']}
           selectedKeys={[selectedKey]}
           mode='inline'
           items={getConditionalItems()}
