@@ -3,6 +3,7 @@ import { Modal, Form, Input, DatePicker, TimePicker, Select, Button, Upload, Ima
 import { useForm, Controller } from 'react-hook-form'
 import { PlusOutlined } from '@ant-design/icons'
 import type { GetProp, UploadFile, UploadProps } from 'antd'
+import dayjs from 'dayjs'
 
 const { Option } = Select
 
@@ -35,14 +36,14 @@ const getBase64 = (file: FileType): Promise<string> =>
 
 const AddAuctionModal = (props: AddAuctionModalProps) => {
   const { visible, onCancel, onAdd } = props
-  const { control, handleSubmit } = useForm()
+  const { control, handleSubmit } = useForm<AuctionFormData>()
   const [previewOpen, setPreviewOpen] = useState(false)
   const [previewImage, setPreviewImage] = useState('')
   const [fileList, setFileList] = useState<UploadFile[]>([])
 
-  const onSubmit = (data: any) => {
-    console.log(data)
-    onAdd({ ...data, images: fileList })
+  const onSubmit = (data: AuctionFormData) => {
+    const formData = { ...data, images: fileList }
+    onAdd(formData)
   }
 
   const handlePreview = async (file: UploadFile) => {
@@ -53,7 +54,9 @@ const AddAuctionModal = (props: AddAuctionModalProps) => {
     setPreviewOpen(true)
   }
 
-  const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => setFileList(newFileList)
+  const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
+    setFileList(newFileList)
+  }
 
   const uploadButton = (
     <div>
@@ -106,7 +109,12 @@ const AddAuctionModal = (props: AddAuctionModalProps) => {
               rules={{ required: 'Start time is required' }}
               render={({ field }) => (
                 <Form.Item label='Start Time'>
-                  <TimePicker {...field} className='w-full' format='HH:mm' />
+                  <TimePicker
+                    {...field}
+                    className='w-full'
+                    format='HH:mm'
+                    value={field.value ? dayjs(field.value, 'HH:mm') : null}
+                  />
                 </Form.Item>
               )}
             />
@@ -130,7 +138,12 @@ const AddAuctionModal = (props: AddAuctionModalProps) => {
               rules={{ required: 'End time is required' }}
               render={({ field }) => (
                 <Form.Item label='End Time'>
-                  <TimePicker {...field} className='w-full' format='HH:mm' />
+                  <TimePicker
+                    {...field}
+                    className='w-full'
+                    format='HH:mm'
+                    value={field.value ? dayjs(field.value, 'HH:mm') : null}
+                  />
                 </Form.Item>
               )}
             />
@@ -151,11 +164,11 @@ const AddAuctionModal = (props: AddAuctionModalProps) => {
 
           <Form.Item label='Images:'>
             <Upload
-              beforeUpload={(file) => {}} // Prevent upload
               listType='picture-card'
               fileList={fileList}
               onPreview={handlePreview}
               onChange={handleChange}
+              beforeUpload={() => false} // Prevent auto upload
             >
               {fileList.length >= 4 ? null : uploadButton}
             </Upload>
