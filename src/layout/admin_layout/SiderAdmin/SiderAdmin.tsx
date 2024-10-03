@@ -56,10 +56,12 @@ export default function SiderAdmin() {
         getItem('Valuation List', 'valuation', <GrView className='text-base' />),
         getItem('Create Preliminary Valuation', 'addPreliminary', <HiOutlineViewGridAdd className='text-base' />)
       ]),
+      getItem('Manage Win', 'managewin', <BarChartOutlined />)
       getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
         getItem('Auction List', 'auctionlist', <GrView className='text-base' />),
         getItem('Lot List', 'lotList', <GrView className='text-base' />)
       ])
+
     ]
   }
 
@@ -71,8 +73,10 @@ export default function SiderAdmin() {
     .set('valuation', '/admin/valuationList')
     .set('addPreliminary', '/admin/addPreliminary')
     .set('overview', '/admin/overview')
+    .set('managewin', '/admin/managewin')
     .set('auctionlist', '/admin/auctionlist')
     .set('lotList', '/admin/lotList')
+
   return (
     <Sider
       theme='light'
