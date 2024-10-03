@@ -1,12 +1,16 @@
 import { useState } from 'react'
-import { Table, Button, Space, Tag, Avatar, Input, notification } from 'antd'
+import { Table, Button, Space, Tag, Avatar, Input, notification, TableProps } from 'antd'
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { useDeleteAccountMutation, useGetListUsersQuery } from '../../../../services/account.services'
+import { AdminGetListUserChildrenResponse } from '../../../../types/Account.type'
+import UserDetail from './modal/UserDetail'
 
 const { Search } = Input
 
 const ManageAccount = () => {
+  const [modalVisible, setModalVisible] = useState(false)
+  const [selectedUser, setSelectedUser] = useState(null)
   const [searchText, setSearchText] = useState<string>('')
   const navigate = useNavigate()
   const { data, isLoading, isError, refetch } = useGetListUsersQuery()
@@ -22,7 +26,14 @@ const ManageAccount = () => {
   const handleSearch = (value: string) => {
     setSearchText(value)
   }
-
+  const handleUserClick = (user: any) => {
+    setSelectedUser(user)
+    setModalVisible(true)
+  }
+  const handleCloseModal = () => {
+    setModalVisible(false)
+    setSelectedUser(null)
+  }
   // Handle create account button click
   const handleNewAccount = () => {
     navigate('/admin/createAccount') // Navigate to the create account page
@@ -45,7 +56,7 @@ const ManageAccount = () => {
     }
   }
 
-  const columns = [
+  const columns: TableProps<AdminGetListUserChildrenResponse>['columns'] = [
     {
       title: 'Avatar',
       dataIndex: 'profilePicture',
@@ -54,18 +65,34 @@ const ManageAccount = () => {
     },
     {
       title: 'Name',
+      dataIndex: 'name',
       key: 'name',
-      render: (record: any) => `${record.firstName} ${record.lastName}`
+      render: (_, record) => (
+        <a onClick={() => handleUserClick(record)}>
+          {record.firstName} {record.lastName}
+        </a>
+      )
     },
     {
-      title: 'Role Name',
+      title: 'Role',
       dataIndex: 'roleName',
-      key: 'roleName'
+      key: 'roleName',
+      filters: [
+        { text: 'Staff', value: 'Staff Care' },
+        { text: 'Admin', value: 'Admin' },
+        { text: 'Customer', value: 'Customer' }
+      ],
+      onFilter: (value, record) => record.roleName.trim() === value.toString().trim()
     },
     {
-      title: 'Contact',
+      title: 'Phone Number',
       dataIndex: 'phoneNumber',
-      key: 'contact'
+      key: 'phoneNumber'
+    },
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email'
     },
     {
       title: 'Status',
@@ -76,9 +103,9 @@ const ManageAccount = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: any, record: any) => (
+      render: (_, record: any) => (
         <Space>
-          <Button type='primary' icon={<EditOutlined />}></Button>
+          <Button onClick={handleUserClick} type='primary' icon={<EditOutlined />}></Button>
           <Button type='primary' danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)}></Button>
         </Space>
       )
@@ -90,7 +117,12 @@ const ManageAccount = () => {
       <div className='flex items-center justify-between mb-4'>
         <h2 className='text-2xl font-bold'>Manage Accounts</h2>
         <div className='flex items-center space-x-4'>
-          <Search placeholder='Search by name' onSearch={handleSearch} enterButton style={{ width: 300 }} />
+          <input
+            onChange={(e) => setSearchText(e.target.value)}
+            type='text'
+            placeholder='Search for users'
+            className='px-3 py-2  text-sm text-gray-600 placeholder-gray-400 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400'
+          />
           <Button type='primary' icon={<PlusOutlined />} onClick={handleNewAccount}>
             Create Account
           </Button>
@@ -101,8 +133,9 @@ const ManageAccount = () => {
       ) : isError ? (
         <div>Error loading data</div>
       ) : (
-        <Table dataSource={filteredData} columns={columns} rowKey='id' />
+        <Table dataSource={filteredData} pagination={{ pageSize: 6 }} columns={columns} rowKey='id' />
       )}
+      <UserDetail visible={modalVisible} onClose={handleCloseModal} user={selectedUser} />
     </div>
   )
 }

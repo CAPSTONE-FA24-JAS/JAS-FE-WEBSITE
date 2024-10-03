@@ -1,5 +1,5 @@
 import { Modal } from 'antd'
-import { AdminGetListUserChildrenResponse } from '../../types/Account.type'
+import { AdminGetListUserChildrenResponse } from '../../../../../types/Account.type'
 
 const UserDetail = ({
   visible,

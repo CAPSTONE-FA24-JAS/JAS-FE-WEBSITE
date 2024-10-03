@@ -57,7 +57,8 @@ export default function SiderAdmin() {
       getItem('Valuation Manage', 'manageValuation', <MdOutlineCategory className='text-base' />, [
         getItem('Valuation List', 'valuation', <GrView className='text-base' />),
         getItem('Create Preliminary Valuation', 'addPreliminary', <HiOutlineViewGridAdd className='text-base' />)
-      ])
+      ]),
+      getItem('Manage Win', 'managewin', <BarChartOutlined />)
     ]
   }
 
@@ -69,7 +70,7 @@ export default function SiderAdmin() {
     .set('valuation', '/admin/valuationList')
     .set('addPreliminary', '/admin/addPreliminary')
     .set('overview', '/admin/overview')
-
+    .set('managewin', '/admin/managewin')
 
   return (
     <>
