@@ -74,8 +74,8 @@ const Overview = () => {
     },
     {
       title: 'Phone Number',
-      dataIndex: 'phone',
-      key: 'phone'
+      dataIndex: 'phoneNumber',
+      key: 'phoneNumber'
     },
     {
       title: 'Email',
