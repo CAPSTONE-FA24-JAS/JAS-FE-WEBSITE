@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from 'react'
-import { Menu, MenuProps } from 'antd'
-import { useNavigate } from 'react-router-dom'
-import Sider from 'antd/es/layout/Sider'
-import { RiAuctionLine, RiProductHuntLine } from 'react-icons/ri'
-import { GrView } from 'react-icons/gr'
-import { HiOutlineViewGridAdd } from 'react-icons/hi'
-import { MdInventory, MdOutlineCategory, MdOutlineMenu } from 'react-icons/md'
-import { cn } from '../../../utils/cn'
 import { BarChartOutlined } from '@ant-design/icons'
+import { Menu, MenuProps } from 'antd'
+import Sider from 'antd/es/layout/Sider'
+import React, { useEffect, useState } from 'react'
+import { MdOutlineMenu } from 'react-icons/md'
+import { useNavigate } from 'react-router-dom'
+import { cn } from '../../../utils/cn'
 
-export default function SiderAdmin() {
+export default function SiderAppraiser() {
   type MenuItem = Required<MenuProps>['items'][number]
 
   function getItem(label: React.ReactNode, key: React.Key, icon?: React.ReactNode, children?: MenuItem[]): MenuItem {
@@ -46,37 +43,19 @@ export default function SiderAdmin() {
 
   const getConditionalItems = (): MenuItem[] => {
     return [
-      getItem('OverView', 'overview', <BarChartOutlined />),
-      getItem('Manage Account', 'manageaccount', <RiProductHuntLine className='text-base' />, [
-        getItem('Account List', 'accountlist', <GrView className='text-base' />),
-        getItem('Create Account', 'createaccount', <HiOutlineViewGridAdd className='text-base' />)
-      ]),
-      getItem('View request Consign', 'adminconsign', <MdInventory className='text-base' />),
-      getItem('Valuation Manage', 'manageValuation', <MdOutlineCategory className='text-base' />, [
-        getItem('Valuation List', 'valuation', <GrView className='text-base' />),
-        getItem('Create Preliminary Valuation', 'addPreliminary', <HiOutlineViewGridAdd className='text-base' />)
-      ]),
-      getItem('Manage Win', 'managewin', <BarChartOutlined />)
-      getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
-        getItem('Auction List', 'auctionlist', <GrView className='text-base' />),
-        getItem('Lot List', 'lotList', <GrView className='text-base' />)
+      getItem('Request Consign', 'requestConsign', <BarChartOutlined />),
+      getItem('Valuation', 'valuation', <BarChartOutlined />, [
+        getItem('Preliminary Valuation List', 'preliminaryList', <BarChartOutlined />),
+        getItem('Final Valuation List', 'finalList', <BarChartOutlined />)
       ])
-
     ]
   }
 
   const navUrl = new Map<string, string>()
   navUrl
-    .set('adminconsign', '/admin/AdminConsignList')
-    .set('accountlist', '/admin/AccountList')
-    .set('createaccount', '/admin/createAccount')
-    .set('valuation', '/admin/valuationList')
-    .set('addPreliminary', '/admin/addPreliminary')
-    .set('overview', '/admin/overview')
-    .set('managewin', '/admin/managewin')
-    .set('auctionlist', '/admin/auctionlist')
-    .set('lotList', '/admin/lotList')
-
+    .set('requestConsign', '/appraiser/requestConsign')
+    .set('preliminaryList', '/appraiser/preliminaryList')
+    .set('finalList', '/appraiser/finalList')
   return (
     <Sider
       theme='light'

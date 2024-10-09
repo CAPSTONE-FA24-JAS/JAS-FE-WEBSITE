@@ -20,11 +20,17 @@ export default function ProtectedRoutes({ children, allowedRoles, redirectPath }
   }
 
   if (!allowedRoles.includes(roleId)) {
-    if (roleId === RoleType.ADMIN) {
-      return <Navigate to='/admin/overview' />
+    if (roleId === RoleType.MANAGER) {
+      return <Navigate to='/manager/managerConsignList' />
     }
     if (roleId === RoleType.STAFFC) {
       return <Navigate to='/staff/ConsignList' />
+    }
+    if (roleId === RoleType.APPRAISER) {
+      return <Navigate to='/appraiser/requestConsign' />
+    }
+    if (roleId === RoleType.ADMIN) {
+      return <Navigate to='/admin/overview' />
     }
     if (!roleId) {
       return <Navigate to='/' />
