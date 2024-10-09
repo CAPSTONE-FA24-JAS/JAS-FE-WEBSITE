@@ -13,6 +13,7 @@ interface ConsignDetailProps {
 
 const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, onUpdate, record, status, setStatus }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [appraiser, setAppraiser] = useState('')
 
   const images = record?.imageValuations?.map((img: any) => img.imageLink) || [
     'https://via.placeholder.com/150?text=No+Image'
@@ -24,6 +25,16 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, onUp
 
   const prevImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length)
+  }
+
+  const sendRequestToAppraiser = () => {
+    // Logic to send request to the appraiser
+    if (appraiser) {
+      console.log(`Request sent to appraiser: ${appraiser}`)
+      // Implement the actual request to backend API or logic to handle the appraiser request
+    } else {
+      console.error('Please select an appraiser.')
+    }
   }
 
   return (
@@ -87,6 +98,19 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, onUp
               <Select.Option value='Preliminary Valued'>Preliminary Valued</Select.Option>
             </Select>
           </Form.Item>
+
+          {/* Appraiser selection */}
+          <Form.Item label='Appraiser' className='mt-4 font-bold'>
+            <Select value={appraiser} onChange={(value) => setAppraiser(value)} placeholder='Select an appraiser'>
+              <Select.Option value='Appraiser 1'>Appraiser 1</Select.Option>
+              <Select.Option value='Appraiser 2'>Appraiser 2</Select.Option>
+              <Select.Option value='Appraiser 3'>Appraiser 3</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Button type='primary' onClick={sendRequestToAppraiser} className='mt-4'>
+            Send Request to Appraiser
+          </Button>
         </div>
       </div>
     </Modal>
