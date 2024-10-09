@@ -5,7 +5,7 @@ import { useCreatePreliminaryMutation, useGetValuationByIdQuery } from '../../..
 
 const { Title } = Typography
 
-const CreatePreliminaryValuation = () => {
+const CreatePreliminaryValuationAppraiser = () => {
   const [formValues, setFormValues] = useState({
     customerName: '',
     jewelryName: '',
@@ -32,7 +32,7 @@ const CreatePreliminaryValuation = () => {
         height: valuationData.height || 0,
         depth: valuationData.depth || 0,
         description: valuationData.description || '',
-        desiredPrice: formValues.desiredPrice // Giữ nguyên giá trị preliminaryPrice hiện tại
+        desiredPrice: formValues.desiredPrice
       })
     }
   }, [data])
@@ -76,7 +76,7 @@ const CreatePreliminaryValuation = () => {
   }
 
   const handleBack = () => {
-    navigate(-1) // Navigate back to the previous page
+    navigate(-1)
   }
 
   if (isLoading) {
@@ -199,4 +199,4 @@ const CreatePreliminaryValuation = () => {
   )
 }
 
-export default CreatePreliminaryValuation
+export default CreatePreliminaryValuationAppraiser

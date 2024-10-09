@@ -4,9 +4,11 @@ import { jwtDecode } from 'jwt-decode'
 
 export enum RoleType {
   CUSTOMER = '1',
-  ADMIN = '2',
+  MANAGER = '2',
   STAFFC = '3',
-  GUEST = '4'
+  APPRAISER = '4',
+  ADMIN = '5',
+  GUEST = '6'
 }
 
 export interface DecodedToken {

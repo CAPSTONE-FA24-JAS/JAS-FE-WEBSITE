@@ -36,7 +36,7 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
 
   return (
     <Modal
-      title={`${tab === '1' ? 'Preliminary' : 'Final'} Valuation Detail`}
+      title='Preliminary Valuation Detail'
       open={isVisible}
       onCancel={onCancel}
       footer={[
