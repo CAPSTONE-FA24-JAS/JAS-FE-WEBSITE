@@ -86,3 +86,18 @@ export interface AdminGetFilterByRoleChildrenResponse {
   roleId: number
   roleName: string
 }
+
+export interface CreateNewStaffForm {
+  email: string
+  passwordHash: string
+  phoneNumber: string
+  roleId: number
+  createStaffDTO: CreateStaffDTO
+}
+export interface CreateStaffDTO {
+  firstName: string
+  lastName: string
+  profilePicture: string
+  gender: string
+  dateOfBirth: string
+}
