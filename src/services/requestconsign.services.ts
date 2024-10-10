@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { Data } from '../types/Account.type'
-import { AssignStaffRequest, AssignStaffResponse, DataConsign } from '../types/Consign.type'
+import { AssignStaffRequest, AssignStaffResponse } from '../types/Consign.type'
 import baseUrl from '../utils/http'
 
 // Tạo API với Redux Toolkit

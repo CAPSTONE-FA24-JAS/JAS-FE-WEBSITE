@@ -1,32 +1,68 @@
-import { useForm } from 'react-hook-form'
-import { useState } from 'react'
-import { SlCalender } from 'react-icons/sl'
-import { Avatar, Image } from 'antd'
+import React, { useState, ChangeEvent } from 'react'
+import { useForm, SubmitHandler } from 'react-hook-form'
+import { Image } from 'antd'
+import { CreateNewStaffForm } from '../../../../types/Account.type'
+import { useCreateNewStaffMutation } from '../../../../services/createAccountStaff.service'
 
-const User = () => {
+interface FormData {
+  firstName: string
+  lastName: string
+  gender: 'Female' | 'Male' | 'Other'
+  dateOfBirth: string
+  address: string
+  phoneNumber: string
+  email: string
+  password: string
+  roleId: string
+}
+
+const User: React.FC = () => {
   const {
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm({
+  } = useForm<FormData>({
     defaultValues: {
-      name: '',
+      firstName: '',
+      lastName: '',
       gender: 'Female',
-      dateOfBirth: '12/09/2024',
-      addressLine: '',
-      district: '',
-      city: '',
+      dateOfBirth: '',
+      address: '',
       phoneNumber: '',
       email: '',
-      role: 'Staff'
+      password: '',
+      roleId: '3'
     }
   })
 
-  const onSubmit = (data: any) => {
-    console.log('Form submitted:', data)
+  const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const [showPassword, setShowPassword] = useState<boolean>(false)
+
+  const [createNewStaff, { isLoading: loading }] = useCreateNewStaffMutation()
+
+  const onSubmit: SubmitHandler<FormData> = (data) => {
+    const formData: CreateNewStaffForm = {
+      email: data.email,
+      passwordHash: data.password, // Note: In a real app, you'd hash this on the server
+      phoneNumber: data.phoneNumber,
+      roleId: parseInt(data.roleId),
+      createStaffDTO: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        profilePicture: selectedImage ? URL.createObjectURL(selectedImage) : '',
+        gender: data.gender,
+        dateOfBirth: data.dateOfBirth
+      }
+    }
+    createNewStaff(formData)
+    console.log('Form submitted:', formData)
   }
 
-  const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedImage(e.target.files[0])
+    }
+  }
 
   return (
     <div className='w-full p-8 mx-auto bg-gray-100 rounded-lg'>
@@ -53,24 +89,30 @@ const User = () => {
             id='img'
             name='img'
             accept='image/*'
-            style={{ display: 'none' }} // Hide the input element
-            onChange={(e) => {
-              if (e.target.files && e.target.files[0]) {
-                setSelectedImage(e.target.files[0])
-              }
-            }}
+            style={{ display: 'none' }}
+            onChange={handleImageChange}
           />
         </div>
 
         <div className='col-span-1 space-y-4'>
           <div>
-            <label className='block text-sm font-medium text-gray-700'>Name</label>
+            <label className='block text-sm font-medium text-gray-700'>First Name</label>
             <input
-              {...register('name', { required: 'Name is required' })}
-              placeholder='Enter here...'
+              {...register('firstName', { required: 'First name is required' })}
+              placeholder='Enter first name'
               className='block w-full px-3 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'
             />
-            {errors.name && <p className='mt-1 text-xs text-red-600'>{errors.name.message}</p>}
+            {errors.firstName && <p className='mt-1 text-xs text-red-600'>{errors.firstName.message}</p>}
+          </div>
+
+          <div>
+            <label className='block text-sm font-medium text-gray-700'>Last Name</label>
+            <input
+              {...register('lastName', { required: 'Last name is required' })}
+              placeholder='Enter last name'
+              className='block w-full px-3 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+            />
+            {errors.lastName && <p className='mt-1 text-xs text-red-600'>{errors.lastName.message}</p>}
           </div>
 
           <div>
@@ -89,12 +131,10 @@ const User = () => {
             <label className='block text-sm font-medium text-gray-700'>Date of Birth</label>
             <div className='relative mt-1 rounded-md shadow-sm'>
               <input
+                type='date'
                 {...register('dateOfBirth', { required: 'Date of Birth is required' })}
                 className='block w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500'
               />
-              <div className='absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none'>
-                <SlCalender className='w-5 h-5 text-gray-400' />
-              </div>
             </div>
             {errors.dateOfBirth && <p className='mt-1 text-xs text-red-600'>{errors.dateOfBirth.message}</p>}
           </div>
@@ -102,13 +142,13 @@ const User = () => {
 
         <div className='grid grid-cols-2 col-span-2 gap-6'>
           <div>
-            <label className='block text-sm font-medium text-gray-700'>Address Line</label>
+            <label className='block text-sm font-medium text-gray-700'>Address</label>
             <input
-              {...register('addressLine', { required: 'Address is required' })}
-              placeholder='Enter here...'
+              {...register('address', { required: 'Address is required' })}
+              placeholder='Enter full address'
               className='block w-full px-3 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'
             />
-            {errors.addressLine && <p className='mt-1 text-xs text-red-600'>{errors.addressLine.message}</p>}
+            {errors.address && <p className='mt-1 text-xs text-red-600'>{errors.address.message}</p>}
           </div>
 
           <div>
@@ -121,20 +161,10 @@ const User = () => {
                   message: 'Please enter a valid 10-digit phone number'
                 }
               })}
-              placeholder='Enter here...'
+              placeholder='Enter phone number'
               className='block w-full px-3 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'
             />
             {errors.phoneNumber && <p className='mt-1 text-xs text-red-600'>{errors.phoneNumber.message}</p>}
-          </div>
-
-          <div>
-            <label className='block text-sm font-medium text-gray-700'>District</label>
-            <input
-              {...register('district', { required: 'District is required' })}
-              placeholder='Enter here...'
-              className='block w-full px-3 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'
-            />
-            {errors.district && <p className='mt-1 text-xs text-red-600'>{errors.district.message}</p>}
           </div>
 
           <div>
@@ -147,31 +177,39 @@ const User = () => {
                   message: 'Please enter a valid email address'
                 }
               })}
-              placeholder='Enter here...'
+              placeholder='Enter email'
               className='block w-full px-3 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'
             />
             {errors.email && <p className='mt-1 text-xs text-red-600'>{errors.email.message}</p>}
           </div>
 
           <div>
-            <label className='block text-sm font-medium text-gray-700'>City</label>
-            <input
-              {...register('city', { required: 'City is required' })}
-              placeholder='Enter here...'
-              className='block w-full px-3 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'
-            />
-            {errors.city && <p className='mt-1 text-xs text-red-600'>{errors.city.message}</p>}
+            <label className='block text-sm font-medium text-gray-700'>Password</label>
+            <div className='relative'>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                {...register('password', { required: 'Password is required' })}
+                placeholder='Enter password'
+                className='block w-full px-3 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+              />
+              <button
+                type='button'
+                className='absolute inset-y-0 right-0 flex items-center px-3 text-sm text-gray-600'
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
+            {errors.password && <p className='mt-1 text-xs text-red-600'>{errors.password.message}</p>}
           </div>
 
           <div>
             <label className='block text-sm font-medium text-gray-700'>Role</label>
             <select
-              {...register('role')}
+              {...register('roleId')}
               className='block w-full px-3 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'
             >
-              <option value='Staff'>Staff</option>
-              <option value='Manager'>Manager</option>
-              <option value='Admin'>Admin</option>
+              <option value='3'>Staff</option>
             </select>
           </div>
         </div>
@@ -184,10 +222,11 @@ const User = () => {
             Cancel
           </button>
           <button
+            disabled={loading}
             type='submit'
             className='px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
           >
-            Save
+            Create
           </button>
         </div>
       </form>

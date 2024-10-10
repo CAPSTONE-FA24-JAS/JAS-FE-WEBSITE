@@ -1,12 +1,10 @@
 import { useState } from 'react'
-import { Table, Button, Space, Tag, Avatar, Input, notification, TableProps } from 'antd'
+import { Table, Button, Space, Tag, Avatar, notification, TableProps } from 'antd'
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { useDeleteAccountMutation, useGetListUsersQuery } from '../../../../services/account.services'
 import { AdminGetListUserChildrenResponse } from '../../../../types/Account.type'
 import UserDetail from './modal/UserDetail'
-
-const { Search } = Input
 
 const ManageAccount = () => {
   const [modalVisible, setModalVisible] = useState(false)
@@ -17,15 +15,10 @@ const ManageAccount = () => {
   const [deleteAccount] = useDeleteAccountMutation()
 
   // Filtered data based on search input
-  const filteredData =
-    data?.data.filter((item) =>
-      `${item.firstName} ${item.lastName}`.toLowerCase().includes(searchText.toLowerCase())
-    ) || []
+  const filteredData = Array.isArray(data?.data)
+    ? data.data.filter((item) => `${item.firstName} ${item.lastName}`.toLowerCase().includes(searchText.toLowerCase()))
+    : []
 
-  // Handle search input
-  const handleSearch = (value: string) => {
-    setSearchText(value)
-  }
   const handleUserClick = (user: any) => {
     setSelectedUser(user)
     setModalVisible(true)
@@ -121,7 +114,7 @@ const ManageAccount = () => {
             onChange={(e) => setSearchText(e.target.value)}
             type='text'
             placeholder='Search for users'
-            className='px-3 py-2  text-sm text-gray-600 placeholder-gray-400 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400'
+            className='px-3 py-2 text-sm text-gray-600 placeholder-gray-400 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400'
           />
           <Button type='primary' icon={<PlusOutlined />} onClick={handleNewAccount}>
             Create Account
