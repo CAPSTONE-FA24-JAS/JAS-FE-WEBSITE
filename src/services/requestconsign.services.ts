@@ -28,7 +28,7 @@ export const consignApi = createApi({
       })
     }),
     getPreliminaryValuationsByStaff: build.query({
-      query: ({ staffId, pageSize, pageIndex }) =>
+      query: ({ staffId, status, pageSize, pageIndex }) =>
         `/Valuations/getPreliminaryValuationsByStatusOfStaff?staffId=${staffId}&pageSize=${pageSize}&pageIndex=${pageIndex}`,
       transformResponse: (response: any) => ({
         dataResponse: response.data.dataResponse,
@@ -42,7 +42,7 @@ export const consignApi = createApi({
         method: 'PUT'
       })
     }),
-    updateValuationStatus: build.mutation<any, { id: number; status: string }>({
+    updateValuationStatus: build.mutation<any, { id: number; status: number }>({
       query: ({ id, status }) => ({
         url: `/Valuations/UpdateStatusForValuations?id=${id}&status=${encodeURIComponent(status)}`,
         method: 'PUT'

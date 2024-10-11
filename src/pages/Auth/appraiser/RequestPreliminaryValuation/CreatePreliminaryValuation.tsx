@@ -12,7 +12,8 @@ const CreatePreliminaryValuationAppraiser = () => {
     weight: 0,
     height: 0,
     depth: 0,
-    desiredPrice: 0,
+    estimatePriceMin: 0,
+    estimatePriceMax: 0,
     description: ''
   })
 
@@ -32,30 +33,40 @@ const CreatePreliminaryValuationAppraiser = () => {
         height: valuationData.height || 0,
         depth: valuationData.depth || 0,
         description: valuationData.description || '',
-        desiredPrice: formValues.desiredPrice
+        estimatePriceMin: formValues.estimatePriceMin,
+        estimatePriceMax: formValues.estimatePriceMax
       })
     }
   }, [data])
 
-  const handlePriceChange = (value: number | null) => {
+  const handleEstimatePriceMinChange = (value: number | null) => {
     setFormValues((prevValues) => ({
       ...prevValues,
-      desiredPrice: value || 0
+      estimatePriceMin: value || 0
+    }))
+  }
+
+  const handleEstimatePriceMaxChange = (value: number | null) => {
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      estimatePriceMax: value || 0
     }))
   }
 
   const handleCreatePreliminary = async () => {
     console.log('Submitting preliminary valuation with the following data:', {
       id: Number(id),
-      status: 'Preliminary Valued',
-      DesiredPrice: formValues.desiredPrice
+      status: 3,
+      estimatePriceMin: formValues.estimatePriceMin,
+      estimatePriceMax: formValues.estimatePriceMax
     })
 
     try {
       const response = await createPreliminary({
         id: Number(id),
-        status: 'Preliminary Valued',
-        DesiredPrice: formValues.desiredPrice
+        status: 3,
+        estimatePriceMin: formValues.estimatePriceMin,
+        estimatePriceMax: formValues.estimatePriceMax
       }).unwrap()
 
       console.log('API response:', response)
@@ -161,14 +172,30 @@ const CreatePreliminaryValuationAppraiser = () => {
           </Col>
           <Col span={12}>
             <div className='mb-4'>
-              <label htmlFor='preliminaryPrice' className='block mb-2 text-sm font-medium text-gray-900'>
-                Preliminary Price
+              <label htmlFor='estimatePriceMin' className='block mb-2 text-sm font-medium text-gray-900'>
+                Estimate Price Min
               </label>
               <InputNumber
-                id='preliminaryPrice'
+                id='estimatePriceMin'
                 min={0}
-                value={formValues.desiredPrice}
-                onChange={handlePriceChange}
+                value={formValues.estimatePriceMin}
+                onChange={handleEstimatePriceMinChange}
+                className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5'
+              />
+            </div>
+          </Col>
+        </Row>
+        <Row gutter={16}>
+          <Col span={12}>
+            <div className='mb-4'>
+              <label htmlFor='estimatePriceMax' className='block mb-2 text-sm font-medium text-gray-900'>
+                Estimate Price Max
+              </label>
+              <InputNumber
+                id='estimatePriceMax'
+                min={0}
+                value={formValues.estimatePriceMax}
+                onChange={handleEstimatePriceMaxChange}
                 className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5'
               />
             </div>

@@ -1,19 +1,20 @@
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
-import { Button, Form, Modal, Select } from 'antd'
+import { Button, Modal, notification } from 'antd'
 import React, { useState } from 'react'
+import { useUpdatePreliminaryValuationStatusMutation } from '../../../../services/valuation.services'
 
 interface ConsignDetailProps {
   isVisible: boolean
   onCancel: () => void
-  onUpdate: () => void
   record: any
   status: string
   setStatus: (status: string) => void
+  refetch: () => void
 }
 
-const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, onUpdate, record, status, setStatus }) => {
+const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, record, setStatus, refetch }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [appraiser, setAppraiser] = useState('')
+  const [updateStatus] = useUpdatePreliminaryValuationStatusMutation() // Use the mutation
 
   const images = record?.imageValuations?.map((img: any) => img.imageLink) || [
     'https://via.placeholder.com/150?text=No+Image'
@@ -27,13 +28,18 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, onUp
     setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length)
   }
 
-  const sendRequestToAppraiser = () => {
-    // Logic to send request to the appraiser
-    if (appraiser) {
-      console.log(`Request sent to appraiser: ${appraiser}`)
-      // Implement the actual request to backend API or logic to handle the appraiser request
-    } else {
-      console.error('Please select an appraiser.')
+  const handleUpdateStatus = async () => {
+    try {
+      const response = await updateStatus({ id: record.id, status: 2 }).unwrap()
+      notification.success({
+        message: 'Has sent a request for appraisal!'
+      })
+      setStatus('Requested')
+      refetch()
+    } catch (error) {
+      notification.error({
+        message: 'Status Update Failed'
+      })
     }
   }
 
@@ -46,8 +52,8 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, onUp
         <Button key='cancel' onClick={onCancel}>
           Cancel
         </Button>,
-        <Button key='update' type='primary' onClick={onUpdate}>
-          Update
+        <Button key='update' type='primary' onClick={handleUpdateStatus}>
+          Request
         </Button>
       ]}
       width={900}
@@ -69,48 +75,40 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, onUp
         <div>
           <p className='mb-2 text-xl font-bold'>{record?.id}</p>
           <p className='mb-6 text-xl font-bold'>{record?.name}</p>
-
-          <p className='mb-4'>
-            <strong>Customer Name:</strong> {record?.seller?.firstName} {record?.seller?.lastName}
-          </p>
-          <p className='mb-4'>
-            <strong>Email:</strong> {record?.seller?.email}
-          </p>
-          <p className='mb-4'>
-            <strong>Phone:</strong> {record?.seller?.phoneNumber}
-          </p>
-          <p className='mb-4'>
-            <strong>Width:</strong> {record?.width} cm
-          </p>
-          <p className='mb-4'>
-            <strong>Height:</strong> {record?.height} cm
-          </p>
-          <p className='mb-4'>
-            <strong>Depth:</strong> {record?.depth} cm
-          </p>
-          <p className='mb-6'>
-            <strong>Description:</strong> {record?.description}
-          </p>
-
-          <Form.Item label='Status' className='mt-4 font-bold'>
-            <Select value={status} onChange={(value) => setStatus(value)}>
-              <Select.Option value='Requested'>Requested</Select.Option>
-              <Select.Option value='Preliminary Valued'>Preliminary Valued</Select.Option>
-            </Select>
-          </Form.Item>
-
-          {/* Appraiser selection */}
-          <Form.Item label='Appraiser' className='mt-4 font-bold'>
-            <Select value={appraiser} onChange={(value) => setAppraiser(value)} placeholder='Select an appraiser'>
-              <Select.Option value='Appraiser 1'>Appraiser 1</Select.Option>
-              <Select.Option value='Appraiser 2'>Appraiser 2</Select.Option>
-              <Select.Option value='Appraiser 3'>Appraiser 3</Select.Option>
-            </Select>
-          </Form.Item>
-
-          <Button type='primary' onClick={sendRequestToAppraiser} className='mt-4'>
-            Send Request to Appraiser
-          </Button>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Customer Name:</strong>
+            <span className=' font-semibold'>
+              {record?.seller?.firstName} {record?.seller?.lastName}
+            </span>
+          </div>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Email:</strong>
+            <span className=' font-semibold'>{record?.seller?.accountDTO.email}</span>
+          </div>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Phone:</strong>
+            <span className=' font-semibold'>{record?.seller?.phoneNumber}</span>
+          </div>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Width:</strong>
+            <span className=' font-semibold'>{record?.width} cm</span>
+          </div>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Height:</strong>
+            <span className=' font-semibold'>{record?.height} cm</span>
+          </div>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Depth:</strong>
+            <span className=' font-semibold'>{record?.depth} cm</span>
+          </div>
+          <div className='mb-6 flex'>
+            <strong className='w-1/3'>Description:</strong>
+            <span className=' font-semibold'>{record?.description}</span>
+          </div>
+          <div className='mt-4 flex'>
+            <strong className='w-1/3'>Status:</strong>
+            <span className='text-red-600 font-semibold'>{record?.status}</span>
+          </div>
         </div>
       </div>
     </Modal>

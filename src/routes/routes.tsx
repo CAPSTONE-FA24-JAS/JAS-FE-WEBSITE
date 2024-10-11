@@ -47,7 +47,7 @@ const publicRoutes: RouteProps[] = [
   { path: '/detaillot/:id', component: LotDetail, layout: ClientLayout }
 ]
 const managerRoutes: RouteProps[] = [
-  { path: '/manager/managerConsignList', component: RequestConsign, layout: ManagerLayout },
+  { path: '/manager/ConsignList', component: RequestConsign, layout: ManagerLayout },
   { path: '/manager/managewin', component: ManageWinList, layout: ManagerLayout },
   { path: '/manager/auctionlist', component: AuctionList, layout: ManagerLayout },
   { path: '/manager/lotlist', component: LotList, layout: ManagerLayout }
@@ -56,6 +56,7 @@ const appraiserRoutes: RouteProps[] = [
   { path: '/appraiser/requestConsign', component: RequestPreliminaryList, layout: AppraiserLayout },
   { path: '/appraiser/createPreliminary/:id', component: CreatePreliminaryValuationAppraiser, layout: AppraiserLayout },
   { path: '/appraiser/preliminaryList', component: PreliminaryValuationList, layout: AppraiserLayout },
+  { path: '/appraiser/createPreliminary/:id', component: CreatePreliminaryValuationAppraiser, layout: AppraiserLayout },
   { path: '/appraiser/createFinal/:id', component: CreateFinalValuation, layout: AppraiserLayout },
   { path: '/appraiser/finalList', component: FinalValuationList, layout: AppraiserLayout }
 ]
@@ -72,7 +73,6 @@ const staffCRoutes: RouteProps[] = [
   { path: '/staff/financeproof', component: FinanceProofList, layout: StaffLayout },
   { path: '/staff/auctionlist', component: AuctionList, layout: StaffLayout },
   { path: '/staff/authorization', component: CreateAuthorization, layout: StaffLayout },
-  { path: '/staff/lotlist', component: LotList, layout: StaffLayout },
   { path: '/staff/mymission', component: MyMissionList, layout: StaffLayout }
 ]
 
