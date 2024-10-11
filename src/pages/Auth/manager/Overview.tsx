@@ -13,10 +13,9 @@ const Overview = () => {
   const { data, isLoading, refetch } = useGetListUsersQuery()
   const [deleteAccount] = useDeleteAccountMutation()
 
-  const filteredData =
-    data?.data.filter((item) =>
-      `${item.firstName} ${item.lastName}`.toLowerCase().includes(searchText.toLowerCase())
-    ) || []
+  const filteredData = Array.isArray(data?.data)
+    ? data.data.filter((item) => `${item.firstName} ${item.lastName}`.toLowerCase().includes(searchText.toLowerCase()))
+    : []
 
   const handleUserClick = (user: any) => {
     setSelectedUser(user)

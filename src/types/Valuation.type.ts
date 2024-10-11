@@ -1,7 +1,8 @@
 export interface CreatePreliminaryRequest {
   id: number
-  status: string
-  DesiredPrice: number
+  status: number
+  estimatePriceMin: number
+  estimatePriceMax: number
 }
 export interface CreatePreliminaryRepsonse {
   code: number

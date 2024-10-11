@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { Data } from '../types/Account.type'
-import { AssignStaffRequest, AssignStaffResponse, DataConsign } from '../types/Consign.type'
+import { AssignStaffRequest, AssignStaffResponse } from '../types/Consign.type'
 import baseUrl from '../utils/http'
 
 // Tạo API với Redux Toolkit
@@ -28,7 +28,7 @@ export const consignApi = createApi({
       })
     }),
     getPreliminaryValuationsByStaff: build.query({
-      query: ({ staffId, pageSize, pageIndex }) =>
+      query: ({ staffId, status, pageSize, pageIndex }) =>
         `/Valuations/getPreliminaryValuationsByStatusOfStaff?staffId=${staffId}&pageSize=${pageSize}&pageIndex=${pageIndex}`,
       transformResponse: (response: any) => ({
         dataResponse: response.data.dataResponse,
@@ -42,7 +42,7 @@ export const consignApi = createApi({
         method: 'PUT'
       })
     }),
-    updateValuationStatus: build.mutation<any, { id: number; status: string }>({
+    updateValuationStatus: build.mutation<any, { id: number; status: number }>({
       query: ({ id, status }) => ({
         url: `/Valuations/UpdateStatusForValuations?id=${id}&status=${encodeURIComponent(status)}`,
         method: 'PUT'

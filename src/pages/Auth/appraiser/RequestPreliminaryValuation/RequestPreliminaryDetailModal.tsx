@@ -1,81 +1,99 @@
-import React from 'react'
-import { Modal, Input, Select, Button } from 'antd'
-
-const { Option } = Select
+import React, { useState } from 'react'
+import { Modal, Button, notification } from 'antd'
+import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 
 interface ValuationDetailsModalProps {
   visible: boolean
   onCancel: () => void
-  onUpdate: () => void // Added onUpdate prop
-  record: any
+  onUpdate: () => void
+  record: any // You may want to define a more specific type here
 }
 
 const ValuationDetailsModal: React.FC<ValuationDetailsModalProps> = ({ visible, onCancel, onUpdate, record }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+
+  const handleUpdate = () => {
+    notification.success({
+      message: 'Update Successful',
+      description: 'Valuation details have been updated successfully.'
+    })
+    onUpdate() // Call onUpdate to close modal
+  }
+
+  const images = record?.imageValuations?.map((image: any) => image.imageLink) || []
+
+  const nextImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length)
+  }
+
+  const prevImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length)
+  }
+
   return (
     <Modal
       title='Valuation Details'
-      visible={visible}
+      open={visible}
       onCancel={onCancel}
       footer={null}
       width={900}
       style={{ padding: '24px' }}
     >
       <div className='grid grid-cols-2 gap-6'>
-        <div className='flex items-center justify-center'>
-          <img
-            src='https://via.placeholder.com/300?text=Valuation+Image'
-            alt='Valuation Item'
-            className='max-w-full rounded-lg'
-          />
+        <div className='relative'>
+          <div className='flex items-center justify-center mb-4'>
+            {images.length > 0 ? (
+              <img src={images[currentImageIndex]} alt='Valuation Item' className='max-w-full rounded-lg' />
+            ) : (
+              <p>No images available</p>
+            )}
+          </div>
+          <div className='absolute inset-y-0 left-0 flex items-center justify-center pl-3'>
+            <Button icon={<LeftOutlined />} onClick={prevImage} className='bg-gray-300 hover:bg-gray-400' />
+          </div>
+          <div className='absolute inset-y-0 right-0 flex items-center justify-center pr-3'>
+            <Button icon={<RightOutlined />} onClick={nextImage} className='bg-gray-300 hover:bg-gray-400' />
+          </div>
         </div>
 
         <div>
-          <p className='mb-4'>
-            <strong>{record?.id}</strong>
-          </p>
-          <p className='mb-4'>
-            <strong>{record?.valuationName}</strong>
-          </p>
-          <p className='mb-4'>
-            <strong>Customer Name:</strong> {record?.customerName}
-          </p>
-          <p className='mb-4'>
-            <strong>Phone:</strong> {record?.phone}
-          </p>
-          <p className='mb-4'>
-            <strong>Email:</strong> {record?.email || 'N/A'}
-          </p>
-          <p className='mb-4'>
-            <strong>Width:</strong> {record?.width || 'N/A'} cm
-          </p>
-          <p className='mb-4'>
-            <strong>Height:</strong> {record?.height || 'N/A'} cm
-          </p>
-          <p className='mb-4'>
-            <strong>Depth:</strong> {record?.depth || 'N/A'} cm
-          </p>
-          <div className='mb-4'>
-            <strong>Status:</strong>
-            <Select defaultValue={record?.status} className='ml-2'>
-              <Option value='Đang chờ xử lý'>Đang chờ xử lý</Option>
-              <Option value='Đang xử lý'>Đang xử lý</Option>
-              <Option value='Đã hoàn thành'>Đã hoàn thành</Option>
-              <Option value='Đã từ chối'>Đã từ chối</Option>
-            </Select>
+          <p className='mb-2 text-xl font-bold'>{record?.id}</p>
+          <p className='mb-6 text-xl font-bold'>{record?.name}</p>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Customer Name:</strong>
+            <span className=' font-semibold'>
+              {record?.seller?.firstName} {record?.seller?.lastName}
+            </span>
           </div>
-          <p className='mb-4'>
-            <strong>Staff (Người gửi yêu cầu thẩm định):</strong> {record?.staff || 'N/A'}
-          </p>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Email:</strong>
+            <span className=' font-semibold'>{record?.seller?.accountDTO.email}</span>
+          </div>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Phone:</strong>
+            <span className=' font-semibold'>{record?.seller?.accountDTO.phoneNumber}</span>
+          </div>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Width:</strong>
+            <span className=' font-semibold'>{record?.width} cm</span>
+          </div>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Height:</strong>
+            <span className=' font-semibold'>{record?.height} cm</span>
+          </div>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Depth:</strong>
+            <span className=' font-semibold'>{record?.depth} cm</span>
+          </div>
+          <div className='mb-6 flex'>
+            <strong className='w-1/3'>Description:</strong>
+            <span className=' font-semibold'>{record?.description}</span>
+          </div>
+          <div className='mt-4 flex'>
+            <strong className='w-1/3'>Status:</strong>
+            <span className='text-red-600 font-semibold'>{record?.status}</span>
+          </div>
         </div>
-      </div>
-
-      <div className='flex justify-end mt-6'>
-        <Button onClick={onCancel} className='mr-2'>
-          Cancel
-        </Button>
-        <Button type='primary' onClick={onUpdate}>
-          Update
-        </Button>
       </div>
     </Modal>
   )
