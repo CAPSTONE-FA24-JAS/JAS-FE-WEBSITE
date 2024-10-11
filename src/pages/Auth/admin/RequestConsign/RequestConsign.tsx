@@ -27,7 +27,6 @@ export default function RequestConsign() {
   }
 
   const handleUpdate = () => {
-    // Refetch data after update
     refetch()
     setIsModalVisible(false)
   }
@@ -73,7 +72,7 @@ export default function RequestConsign() {
         if (!status) {
           return <Tag color='gray'>Unknown</Tag>
         }
-        let color = status === 'Approved' ? 'green' : status === 'Requested' ? 'blue' : 'gray'
+        let color = status === '1' ? 'green' : status === 'Requested' ? 'gray' : 'blue'
         return <Tag color={color}>{status.toUpperCase()}</Tag>
       }
     },

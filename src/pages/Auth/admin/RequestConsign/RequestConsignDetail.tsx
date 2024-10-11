@@ -4,6 +4,7 @@ import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { useGetFilterByRoleQuery } from '../../../../services/account.services'
 import { useAssignStaffForValuationMutation } from '../../../../services/requestconsign.services'
 import { AssignStaffResponse } from '../../../../types/Consign.type'
+import { AdminGetFilterByRoleChildrenResponse } from '../../../../types/Account.type'
 
 interface ConsignDetailProps {
   isVisible: boolean
@@ -26,7 +27,7 @@ const RequestConsignDetail: React.FC<ConsignDetailProps> = ({
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [assignedStaff, setAssignedStaff] = useState<string>('')
-  const [staffOptions, setStaffOptions] = useState<any[]>([])
+  const [staffOptions, setStaffOptions] = useState<AdminGetFilterByRoleChildrenResponse[]>([])
 
   const roleId = 3
 
@@ -35,7 +36,9 @@ const RequestConsignDetail: React.FC<ConsignDetailProps> = ({
 
   useEffect(() => {
     if (staffData && staffData.data) {
-      setStaffOptions(staffData.data)
+      const staffList = staffData.data
+      const extractedStaff = staffList.map((account: any) => account.staffDTO).filter(Boolean)
+      setStaffOptions(extractedStaff)
     }
   }, [staffData])
 
@@ -60,16 +63,20 @@ const RequestConsignDetail: React.FC<ConsignDetailProps> = ({
 
   const handleUpdate = () => {
     if (assignedStaff) {
-      assignStaffForValuation({ id: record.id, staffId: parseInt(assignedStaff), status: status })
+      assignStaffForValuation({
+        id: record.id,
+        staffId: parseInt(assignedStaff),
+        status: 1
+      })
         .unwrap()
         .then((response: AssignStaffResponse) => {
           if (response.isSuccess) {
             notification.success({
-              message: 'Success',
+              message: 'Assigned Staff Successlly',
               description: response.message
             })
-            refetch()
-            onUpdate()
+            refetch() // Refetch to update the list
+            onUpdate() // Call onUpdate to close modal
           } else {
             notification.error({
               message: 'Error',
@@ -92,6 +99,12 @@ const RequestConsignDetail: React.FC<ConsignDetailProps> = ({
     }
   }
 
+  // Update status when staff is assigned
+  const handleStaffChange = (value: string) => {
+    setAssignedStaff(value)
+    setStatus('1') // Update status to 1 when staff is selected
+  }
+
   return (
     <Modal
       title='Consign Detail'
@@ -106,7 +119,7 @@ const RequestConsignDetail: React.FC<ConsignDetailProps> = ({
         </Button>
       ]}
       width={900}
-      style={{ padding: '24px' }} // Replace bodyStyle with style
+      style={{ padding: '24px' }}
     >
       <div className='grid grid-cols-2 gap-6'>
         <div className='relative'>
@@ -128,34 +141,42 @@ const RequestConsignDetail: React.FC<ConsignDetailProps> = ({
         <div>
           <p className='mb-2 text-xl font-bold'>{record?.id}</p>
           <p className='mb-6 text-xl font-bold'>{record?.name}</p>
-
-          <p className='mb-4'>
-            <strong>Customer Name:</strong> {record?.seller?.firstName} {record?.seller?.lastName}
-          </p>
-          <p className='mb-4'>
-            <strong>Email:</strong> {record?.seller?.email}
-          </p>
-          <p className='mb-4'>
-            <strong>Phone Number:</strong> {record?.seller?.phoneNumber}
-          </p>
-          <p className='mb-4'>
-            <strong>Width:</strong> {record?.width} cm
-          </p>
-          <p className='mb-4'>
-            <strong>Height:</strong> {record?.height} cm
-          </p>
-          <p className='mb-4'>
-            <strong>Description:</strong> {record?.description}
-          </p>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Customer Name:</strong>
+            <span className=' font-semibold'>
+              {record?.seller?.firstName} {record?.seller?.lastName}
+            </span>
+          </div>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Email:</strong>
+            <span className=' font-semibold'>{record?.seller?.accountDTO.email}</span>
+          </div>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Phone:</strong>
+            <span className=' font-semibold'>{record?.seller?.phoneNumber}</span>
+          </div>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Width:</strong>
+            <span className=' font-semibold'>{record?.width} cm</span>
+          </div>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Height:</strong>
+            <span className=' font-semibold'>{record?.height} cm</span>
+          </div>
+          <div className='mb-4 flex'>
+            <strong className='w-1/3'>Depth:</strong>
+            <span className=' font-semibold'>{record?.depth} cm</span>
+          </div>
+          <div className='mb-6 flex'>
+            <strong className='w-1/3'>Description:</strong>
+            <span className=' font-semibold'>{record?.description}</span>
+          </div>
           <Form.Item label='Status' className='mt-4 font-bold'>
-            <Select value={status} onChange={(value) => setStatus(value)}>
-              <Select.Option value='Requested'>Requested</Select.Option>
-              <Select.Option value='Preliminary Valued'>Assigned</Select.Option>
-            </Select>
+            <div className='text-lg font-semibold'>{status === '1' ? 'Assigned' : status}</div>
           </Form.Item>
 
           <Form.Item label='Assign Staff' className='mt-4 font-bold'>
-            <Select value={assignedStaff} onChange={(value) => setAssignedStaff(value)} placeholder='Select staff'>
+            <Select value={assignedStaff} onChange={handleStaffChange} placeholder='Select staff'>
               {staffLoading ? (
                 <Select.Option value='' disabled>
                   Loading...
@@ -165,11 +186,13 @@ const RequestConsignDetail: React.FC<ConsignDetailProps> = ({
                   Error loading staff
                 </Select.Option>
               ) : (
-                staffOptions.map((staff) => (
-                  <Select.Option key={staff.id} value={staff.id}>
-                    {staff.firstName} {staff.lastName}
-                  </Select.Option>
-                ))
+                staffOptions.map((staff) =>
+                  staff ? (
+                    <Select.Option key={staff.id} value={staff.id}>
+                      {staff.firstName} {staff.lastName}
+                    </Select.Option>
+                  ) : null
+                )
               )}
             </Select>
           </Form.Item>

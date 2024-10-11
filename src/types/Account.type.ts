@@ -1,22 +1,32 @@
+export interface Data {
+  user: Account
+  accessToken: string
+  staffDTO?: {
+    id: number
+    firstName: string
+    lastName: string
+  }
+}
 export interface Account {
+  id: number
+  email: string
+  gender: any
+  passwordHash: string
+  roleId: number
+  roleName: string
+  customerDTO: any
+  staffDTO: StaffDto
+}
+export interface StaffDto {
   id: number
   firstName: string
   lastName: string
-  profilePicture: any
-  email: string
+  profilePicture: string
   gender: string
-  address: any
-  passwordHash: string
-  status: boolean
-  phoneNumber: string
-  confirmationToken: string
-  isConfirmed: boolean
-  vnPayAccount: any
-  vnPayBankCode: any
-  vnPayAccountName: any
-  roleId: number
-  roleName: any
+  dateOfBirth: string
+  accountDTO: any
 }
+
 export interface UserLoginRequest {
   email: string
   password: string
@@ -28,10 +38,7 @@ export interface UserLoginResponse {
   data: Data
   errorMessages: any
 }
-export interface Data {
-  account: Account
-  accessToken: string
-}
+
 export interface AdminGetListUser {
   code: number
   message: string
@@ -63,8 +70,20 @@ export interface AdminGetFilterByRole {
   code: number
   message: string
   isSuccess: boolean
-  data: AdminGetFilterByRoleChildrenResponse[]
+  data: AdminGetFilterByRoleData
   errorMessages: any
+}
+
+export interface AdminGetFilterByRoleData {
+  map: any
+  id: number
+  email: string
+  gender: any
+  passwordHash: string
+  roleId: number
+  roleName: string
+  customerDTO: any
+  staffDTO: AdminGetFilterByRoleChildrenResponse
 }
 
 export interface AdminGetFilterByRoleChildrenResponse {
@@ -72,17 +91,7 @@ export interface AdminGetFilterByRoleChildrenResponse {
   firstName: string
   lastName: string
   profilePicture?: string
-  email: string
   gender: string
-  address: any
-  passwordHash: string
-  status: boolean
-  phoneNumber?: string
-  confirmationToken: string
-  isConfirmed: boolean
-  vnPayAccount: any
-  vnPayBankCode: any
-  vnPayAccountName: any
-  roleId: number
-  roleName: string
+  dateOfBirth: string
+  accountDTO: any
 }

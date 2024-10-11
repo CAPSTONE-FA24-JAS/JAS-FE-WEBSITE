@@ -26,24 +26,39 @@ export const valuationApi = createApi({
     getValuationById: build.query<any, { id: number }>({
       query: ({ id }) => `Valuations/getValuationById?valuationId=${id}`
     }),
+
     createPreliminary: build.mutation<CreatePreliminaryRepsonse, CreatePreliminaryRequest>({
-      query: ({ id, status, DesiredPrice }) => ({
-        url: `Valuations/createPreliminaryPrice?id=${id}&status=${status}&DesiredPrice=${DesiredPrice}`,
+      query: ({ id, status, estimatePriceMin, estimatePriceMax }) => ({
+        url: `Valuations/createPreliminaryPrice?id=${id}&status=${status}&EstimatePriceMin=${estimatePriceMin}&EstimatePriceMax=${estimatePriceMax}`,
         method: 'PUT'
       })
     }),
+
     getPreliminaryValuationsByStaff: build.query({
       query: ({ staffId, status = 'Preliminary Valued', pageSize = 10, pageIndex = 1 }) =>
         `/Valuations/getPreliminaryValuationsByStatusOfStaff?staffId=${staffId}&status=${encodeURIComponent(
           status
         )}&pageSize=${pageSize}&pageIndex=${pageIndex}`
     }),
+
     createReceipt: build.mutation<CreateReceiptResponse, { id: number; data: CreateReceiptRequest }>({
       query: ({ id, data }) => ({
         url: `Valuations/CreateReciept?id=${id}`,
         method: 'PUT',
         body: data
       })
+    }),
+
+    updatePreliminaryValuationStatus: build.mutation<void, { id: number; status: number }>({
+      query: ({ id, status }) => ({
+        url: `Valuations/RequestPreliminaryValuation?id=${id}&status=${status}`,
+        method: 'PUT'
+      })
+    }),
+
+    getRequestPreliminaryValuation: build.query<any, { pageSize: number; pageIndex: number }>({
+      query: ({ pageSize, pageIndex }) =>
+        `Valuations/GetRequestPreliminaryValuation?pageSize=${pageSize}&pageIndex=${pageIndex}`
     })
   })
 })
@@ -52,5 +67,7 @@ export const {
   useGetValuationByIdQuery,
   useCreatePreliminaryMutation,
   useGetPreliminaryValuationsByStaffQuery,
-  useCreateReceiptMutation
+  useCreateReceiptMutation,
+  useUpdatePreliminaryValuationStatusMutation,
+  useGetRequestPreliminaryValuationQuery // Export the new query hook
 } = valuationApi

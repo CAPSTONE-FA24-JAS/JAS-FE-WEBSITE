@@ -1,74 +1,47 @@
 import React, { useState } from 'react'
-import { Table, Button, Typography, Tag, Modal, Form, Input, Select } from 'antd'
-import { EyeOutlined, PlusOutlined } from '@ant-design/icons'
+import { Button, Col, Input, Row, Space, Table, Tag, Tooltip } from 'antd'
+import { EyeOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons'
+import ValuationDetailsModal from './RequestPreliminaryDetailModal' // Adjust the import path as needed
+import { useGetRequestPreliminaryValuationQuery } from '../../../../services/valuation.services' // Adjust the import path as needed
 import { useNavigate } from 'react-router-dom'
-import ValuationDetailsModal from './RequestPreliminaryDetailModal'
 
-const { Title } = Typography
-const { Option } = Select
-
-const preliminaryValuationRequests = [
-  {
-    id: 1,
-    valuationName: 'Diamond Ring',
-    customerName: 'Nguyễn Văn A',
-    contact: '0123456789',
-    status: 'Đang chờ xử lý'
-  },
-  {
-    id: 2,
-    valuationName: 'Gold Necklace',
-    customerName: 'Trần Thị B',
-    contact: '0987654321',
-    status: 'Đã hoàn thành'
-  },
-  {
-    id: 3,
-    valuationName: 'Silver Bracelet',
-    customerName: 'Lê Văn C',
-    contact: '0345678901',
-    status: 'Đang xử lý'
-  },
-  {
-    id: 4,
-    valuationName: 'Emerald Pendant',
-    customerName: 'Phạm Thị D',
-    contact: '0765432109',
-    status: 'Đã từ chối'
-  },
-  {
-    id: 5,
-    valuationName: 'Platinum Watch',
-    customerName: 'Đặng Văn E',
-    contact: '0123456780',
-    status: 'Đang chờ xử lý'
-  }
-]
-
-const statusTagColors: { [key: string]: string } = {
-  'Đang chờ xử lý': 'orange',
-  'Đang xử lý': 'blue',
-  'Đã hoàn thành': 'green',
-  'Đã từ chối': 'red'
-}
+const { Search } = Input
 
 const RequestPreliminaryList = () => {
   const navigate = useNavigate()
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [currentRecord, setCurrentRecord] = useState<any>(null)
+  const [searchText, setSearchText] = useState<string>('')
+  const [pageIndex, setPageIndex] = useState<number>(1)
+  const [pageSize, setPageSize] = useState<number>(5)
+
+  const { data, isLoading, error, refetch } = useGetRequestPreliminaryValuationQuery({ pageSize, pageIndex })
 
   const showModal = (record: any) => {
     setCurrentRecord(record)
     setIsModalVisible(true)
-  }
-  const handleUpdate = () => {
-    console.log('Update clicked for record:', currentRecord)
   }
 
   const handleCancel = () => {
     setIsModalVisible(false)
     setCurrentRecord(null)
   }
+
+  const handleUpdate = () => {
+    refetch() // Re-fetch data to update the table
+    setIsModalVisible(false)
+  }
+
+  const handleSearch = (value: string) => {
+    setSearchText(value)
+  }
+
+  const filteredDataSource =
+    data?.data.dataResponse?.filter(
+      (item: any) =>
+        (item.seller.firstName || '').toLowerCase().includes(searchText.toLowerCase()) ||
+        (item.seller.lastName || '').toLowerCase().includes(searchText.toLowerCase())
+    ) || []
 
   const columns = [
     {
@@ -78,48 +51,101 @@ const RequestPreliminaryList = () => {
     },
     {
       title: 'Valuation Name',
-      dataIndex: 'valuationName',
+      dataIndex: 'name',
       key: 'valuationName'
     },
     {
       title: 'Customer Name',
-      dataIndex: 'customerName',
-      key: 'customerName'
+      dataIndex: ['seller', 'firstName'],
+      key: 'customerName',
+      render: (text: any, record: any) => `${record.seller.firstName} ${record.seller.lastName}`
     },
     {
       title: 'Contact',
-      dataIndex: 'contact',
-      key: 'contact'
+      dataIndex: ['seller', 'email'],
+      key: 'contact',
+      render: (text: any, record: any) => record.seller.accountDTO.email
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => <Tag color={statusTagColors[status]}>{status}</Tag>
+      render: (status: string) => {
+        if (!status) {
+          return <Tag color='gray'>Unknown</Tag>
+        }
+        let color = status === '1' ? 'green' : status === 'Assigned' ? 'gray' : 'blue'
+        return <Tag color={color}>{status.toUpperCase()}</Tag>
+      }
     },
     {
       title: 'Actions',
       key: 'actions',
-      render: (record: any) => (
-        <div>
-          <Button type='link' icon={<EyeOutlined />} onClick={() => showModal(record)} />{' '}
-          {/* Eye icon for view details */}
-          <Button
-            type='link'
-            icon={<PlusOutlined />}
-            onClick={() => navigate(`/appraiser/createPreliminary/${record.id}`)} // Navigate to the specific route
-          />
-        </div>
+      render: (text: any, record: any) => (
+        <Space>
+          <Tooltip title='View Detail'>
+            <Button icon={<EyeOutlined />} onClick={() => showModal(record)} />
+          </Tooltip>
+          <Tooltip title='Create Preliminary Valuation'>
+            <Button
+              type='primary'
+              icon={<PlusOutlined />}
+              onClick={() => {
+                navigate(`/appraiser/createPreliminary/${record.id}`)
+              }}
+            />
+          </Tooltip>
+        </Space>
       )
     }
   ]
 
   return (
-    <div className='p-6'>
-      <Title level={3} className='mb-6'>
-        Preliminary Valuation List
-      </Title>
-      <Table dataSource={preliminaryValuationRequests} columns={columns} rowKey='id' />
+    <div className='p-4'>
+      <Row justify='space-between' align='middle' className='mb-4'>
+        <Col>
+          <h2 className='text-2xl font-bold'>Preliminary Valuation List</h2>
+        </Col>
+        <Col>
+          <Row gutter={16} align='middle'>
+            <Col>
+              <Search
+                placeholder='Search by valuation or customer name'
+                allowClear
+                enterButton={<SearchOutlined />}
+                size='small'
+                onSearch={handleSearch}
+                onChange={(e) => handleSearch(e.target.value)}
+                style={{ width: 250, borderColor: '#dcdcdc' }}
+              />
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>Error loading data</p>
+      ) : filteredDataSource && filteredDataSource.length > 0 ? (
+        <Table
+          dataSource={filteredDataSource}
+          columns={columns}
+          rowKey='id'
+          pagination={{
+            total: data?.data?.totalItemRepsone,
+            current: pageIndex,
+            pageSize: pageSize,
+            onChange: (page, pageSize) => {
+              setPageIndex(page)
+              setPageSize(pageSize)
+              refetch()
+            }
+          }}
+        />
+      ) : (
+        <p>No data available</p>
+      )}
 
       <ValuationDetailsModal
         visible={isModalVisible}
