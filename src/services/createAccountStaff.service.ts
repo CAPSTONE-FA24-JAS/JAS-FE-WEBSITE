@@ -2,6 +2,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { CreateNewStaffForm, Data } from '../types/Account.type'
 import baseUrl from '../utils/http'
+import { Respone } from '../types/Respone.type'
 
 export const createNewStaff = createApi({
   reducerPath: 'createNewStaff',
@@ -19,7 +20,7 @@ export const createNewStaff = createApi({
   }),
   refetchOnMountOrArgChange: true,
   endpoints: (build) => ({
-    createNewStaff: build.mutation<void, CreateNewStaffForm>({
+    createNewStaff: build.mutation<Respone<null>, CreateNewStaffForm>({
       query: (body) => ({
         url: 'Account/CreateNewStaff',
         method: 'POST',

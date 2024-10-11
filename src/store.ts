@@ -7,6 +7,7 @@ import { consignApi } from './services/requestconsign.services'
 import { accountApi } from './services/account.services'
 import { valuationApi } from './services/valuation.services'
 import { createNewStaff } from './services/createAccountStaff.service'
+import { auctionApi } from './services/auction.service'
 
 // Tạo cấu hình persist
 export const persistConfig = {
@@ -23,7 +24,8 @@ const rootReducer = combineReducers({
   [consignApi.reducerPath]: consignApi.reducer,
   [accountApi.reducerPath]: accountApi.reducer,
   [valuationApi.reducerPath]: valuationApi.reducer,
-  [createNewStaff.reducerPath]: createNewStaff.reducer
+  [createNewStaff.reducerPath]: createNewStaff.reducer,
+  [auctionApi.reducerPath]: auctionApi.reducer
   // Thêm các reducers khác nếu cần
 })
 
@@ -43,7 +45,8 @@ export const store = configureStore({
       .concat(consignApi.middleware)
       .concat(accountApi.middleware)
       .concat(valuationApi.middleware)
-      .concat(createNewStaff.middleware) // Đảm bảo rằng middleware của `authApi` được thêm đúng
+      .concat(createNewStaff.middleware)
+      .concat(auctionApi.middleware)
 })
 
 // Định nghĩa loại cho RootState và AppDispatch
