@@ -110,3 +110,34 @@ export interface CreateStaffDTO {
   gender: string
   dateOfBirth: string
 }
+////////////////////////////////////////////////////////////////////////////////////
+// lấy dữ liệu từ local thì lấy bên đây theo kiểu này lười sửa ở trên đụng tùm tum k dám sửa =))))))
+interface StaffDTO {
+  id: number
+  firstName: string
+  lastName: string
+  profilePicture: string
+  gender: string
+}
+
+interface UserDTO {
+  customerDTO: null // Assuming customerDTO can be null or an object
+  email: string
+  gender: string | null
+  id: number
+  passwordHash: string
+  phoneNumber: string
+  roleId: number
+  roleName: string
+  staffDTO: StaffDTO | null
+  accountDTO: null
+  dateOfBirth: string
+  firstName: string
+  lastName: string
+  profilePicture: string
+}
+
+export interface AccessTokenResponse {
+  accessToken: string
+  user: UserDTO
+}
