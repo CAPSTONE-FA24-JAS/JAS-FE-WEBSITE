@@ -93,7 +93,7 @@ export default function SiderAdmin() {
 
       <Menu
         defaultSelectedKeys={['overview']}
-        defaultOpenKeys={!collapsed ? ['manageaccount', 'adminconsign', 'manageValuation', 'auctionlist'] : []}
+        defaultOpenKeys={getConditionalItems().map((item) => item?.key as string)}
         selectedKeys={[selectedKey]}
         mode='inline'
         items={getConditionalItems()}

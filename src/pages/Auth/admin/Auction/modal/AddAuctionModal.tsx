@@ -15,6 +15,7 @@ interface AuctionFormData {
 interface AddAuctionModalProps {
   visible: boolean
   onCancel: () => void
+  onAdd: (data: any) => void
 }
 
 const AddAuctionModal: React.FC<AddAuctionModalProps> = ({ visible, onCancel }) => {
