@@ -52,7 +52,7 @@ export default function SiderManager() {
       ]),
       getItem('Manage Invoice', 'managewin', <BarChartOutlined />),
       getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
-        getItem('Auction List', 'auctionlist', <GrView className='text-base' />),
+        getItem('Auction List', 'auctionListSub', <GrView className='text-base' />),
         getItem('Lot List', 'lotList', <GrView className='text-base' />)
       ])
     ]
@@ -63,7 +63,7 @@ export default function SiderManager() {
     .set('managerConsign', '/manager/ConsignList')
     .set('valuation', '/manager/valuationList')
     .set('managewin', '/manager/managewin')
-    .set('auctionlist', '/manager/auctionlist')
+    .set('auctionListSub', '/manager/auctionlist')
     .set('lotList', '/manager/lotList')
 
   return (
@@ -100,7 +100,7 @@ export default function SiderManager() {
 
       <Menu
         defaultSelectedKeys={['overview']}
-        defaultOpenKeys={!collapsed ? ['manageaccount', 'adminconsign', 'manageValuation', 'auctionlist'] : []}
+        defaultOpenKeys={getConditionalItems().map((item) => item?.key as string)}
         selectedKeys={[selectedKey]}
         mode='inline'
         items={getConditionalItems()}
