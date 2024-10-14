@@ -57,9 +57,6 @@ const RequestConsignList = () => {
         (item.seller.lastName || '').toLowerCase().includes(searchText.toLowerCase())
     ) || []
 
-  // Log the filtered data source for debugging
-  console.log('Filtered Data Source:', filteredDataSource)
-
   const columns = [
     {
       title: 'ID',

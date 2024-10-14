@@ -3,6 +3,7 @@ export interface CreatePreliminaryRequest {
   status: number
   estimatePriceMin: number
   estimatePriceMax: number
+  appraiserId: number
 }
 export interface CreatePreliminaryRepsonse {
   code: number

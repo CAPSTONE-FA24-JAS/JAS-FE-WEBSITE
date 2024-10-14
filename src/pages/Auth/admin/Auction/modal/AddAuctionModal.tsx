@@ -2,7 +2,7 @@ import React from 'react'
 import { Modal, Form, Input, DatePicker, Button, message } from 'antd'
 import { useForm, Controller } from 'react-hook-form'
 import dayjs, { Dayjs } from 'dayjs'
-import { useCreateAuctionMutation } from '../../../../../services/auction.service'
+import { useCreateAuctionMutation } from '../../../../../services/auction.services'
 
 interface AuctionFormData {
   startTime: Dayjs
