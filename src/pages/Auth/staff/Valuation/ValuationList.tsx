@@ -13,6 +13,7 @@ import FinalDetail from './FinalValuation/FinalDetail'
 const { Search } = Input
 
 const ValuationTabs = () => {
+  const navigate = useNavigate()
   const [searchText, setSearchText] = useState<string>('')
   const [modalVisible, setModalVisible] = useState<boolean>(false)
   const [finalModalVisible, setFinalModalVisible] = useState<boolean>(false)
@@ -20,43 +21,7 @@ const ValuationTabs = () => {
   const [selectedRecord, setSelectedRecord] = useState<any>(null)
   const [selectedFinalRecord, setSelectedFinalRecord] = useState<any>(null)
   const [preliminaryData, setPreliminaryData] = useState<any[]>([])
-
-  // Fake data for final valuation
-  const finalValuationData = [
-    {
-      id: 1,
-      name: 'Diamond Ring Final Valuation',
-      seller: { firstName: 'Nguyễn', lastName: 'Văn A' },
-      status: 'Completed'
-    },
-    {
-      id: 2,
-      name: 'Gold Necklace Final Valuation',
-      seller: { firstName: 'Trần', lastName: 'Thị B' },
-      status: 'Completed'
-    },
-    {
-      id: 3,
-      name: 'Silver Bracelet Final Valuation',
-      seller: { firstName: 'Lê', lastName: 'Văn C' },
-      status: 'Pending'
-    },
-    {
-      id: 4,
-      name: 'Emerald Pendant Final Valuation',
-      seller: { firstName: 'Phạm', lastName: 'Thị D' },
-      status: 'Rejected'
-    },
-    {
-      id: 5,
-      name: 'Platinum Watch Final Valuation',
-      seller: { firstName: 'Đặng', lastName: 'Văn E' },
-      status: 'Pending'
-    }
-  ]
-
-  const navigate = useNavigate()
-  const staffId = useSelector((state: RootState) => state.authLoginAPI.id)
+  const staffId = useSelector((state: RootState) => state.authLoginAPI.staffId)
 
   const { data, error, isLoading } = useGetPreliminaryValuationsByStaffQuery({
     staffId: staffId || '',
@@ -64,25 +29,24 @@ const ValuationTabs = () => {
     pageIndex: 1
   })
 
+  // Effect to Set Preliminary Data
   useEffect(() => {
-    if (data && data.data) {
-      const fetchedData = Array.isArray(data.data.dataResponse) ? data.data.dataResponse : [data.data.dataResponse]
+    if (data && data.dataResponse) {
+      const fetchedData = Array.isArray(data.dataResponse) ? data.dataResponse : [data.dataResponse]
       setPreliminaryData(fetchedData)
     }
   }, [data, error, isLoading])
 
+  // Filtering Preliminary Data
+  const filteredPreliminaryData =
+    preliminaryData?.filter((item) => {
+      const sellerName = `${item.seller?.firstName || ''} ${item.seller?.lastName || ''}`.toLowerCase()
+      return sellerName.includes(searchText.toLowerCase())
+    }) || []
+
   const handleSearch = (value: string) => {
     setSearchText(value)
   }
-
-  const filteredPreliminaryData = preliminaryData
-    .filter((item) => item.status === 'Preliminary Valued')
-    .filter((item) => item.name.toLowerCase().includes(searchText.toLowerCase()))
-
-  const filteredFinalValuationData = finalValuationData.filter((item) =>
-    item.name.toLowerCase().includes(searchText.toLowerCase())
-  )
-
   const preliminaryColumns = [
     {
       title: 'ID',
@@ -105,8 +69,12 @@ const ValuationTabs = () => {
       dataIndex: 'status',
       key: 'status',
       render: (status: any) => {
-        let color = status === 'Receipted' ? 'blue' : 'green'
-        return <Tag color={color}>{status.toUpperCase()}</Tag>
+        let color = 'green'
+        if (status === 3) color = 'orange'
+        else if (status === 4) color = 'blue'
+        else if (status === 5) color = 'red'
+
+        return <Tag color={color}>{`Status ${status}`}</Tag>
       }
     },
     {
@@ -207,7 +175,7 @@ const ValuationTabs = () => {
       label: 'Final Valuation',
       children: (
         <Table
-          dataSource={filteredFinalValuationData}
+          // dataSource={filteredFinalValuationData}
           columns={finalColumns}
           rowKey='id'
           loading={isLoading}

@@ -2,7 +2,7 @@ import React, { useState, ChangeEvent } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { Image } from 'antd'
 import { CreateNewStaffForm } from '../../../../types/Account.type'
-import { useCreateNewStaffMutation } from '../../../../services/createAccountStaff.service'
+import { useCreateNewStaffMutation } from '../../../../services/createAccountStaff.services'
 
 interface FormData {
   firstName: string
@@ -16,7 +16,7 @@ interface FormData {
   roleId: string
 }
 
-const User: React.FC = () => {
+export default function User() {
   const {
     register,
     handleSubmit,
@@ -233,5 +233,3 @@ const User: React.FC = () => {
     </div>
   )
 }
-
-export default User

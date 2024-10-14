@@ -6,7 +6,7 @@ import { authApi } from './services/auth.services'
 import { consignApi } from './services/requestconsign.services'
 import { accountApi } from './services/account.services'
 import { valuationApi } from './services/valuation.services'
-import { createNewStaff } from './services/createAccountStaff.service'
+import { createNewStaff } from './services/createAccountStaff.services'
 
 // Tạo cấu hình persist
 export const persistConfig = {

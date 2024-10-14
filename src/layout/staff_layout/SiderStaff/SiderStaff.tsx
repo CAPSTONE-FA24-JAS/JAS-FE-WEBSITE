@@ -47,7 +47,8 @@ export default function SiderStaff() {
   const getConditionalItems = (): MenuItem[] => {
     return [
       getItem('My Mision', 'myMission', <RiProductHuntLine className='text-base' />, [
-        getItem('Mission List', 'mymission', <GrView className='text-base' />)
+        getItem('Mission List', 'mymission', <GrView className='text-base' />),
+        getItem('Live Bidding', 'livebidding', <GrView className='text-base' />)
       ]),
 
       getItem('Quản lí sản phẩm', 'manageProduct', <RiProductHuntLine className='text-base' />, [
@@ -74,6 +75,7 @@ export default function SiderStaff() {
     .set('financeProof', '/staff/financeproof')
     .set('auctionlist', '/staff/auctionlist')
     .set('mymission', '/staff/mymission')
+    .set('livebidding', '/staff/livebidding')
   return (
     <>
       <Sider
