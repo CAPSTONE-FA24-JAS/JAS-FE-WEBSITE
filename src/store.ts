@@ -6,7 +6,6 @@ import { authApi } from './services/auth.services'
 import { consignApi } from './services/requestconsign.services'
 import { accountApi } from './services/account.services'
 import { valuationApi } from './services/valuation.services'
-
 import { createNewStaff } from './services/createAccountStaff.services'
 import { auctionApi } from './services/auction.services'
 import { financeProofApi } from './services/financeProof.services'
