@@ -61,7 +61,7 @@ export default function SiderStaff() {
       ]),
       getItem('Finance Proof', 'financeProof', <TbZoomMoney className='text-base' />),
       getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
-        getItem('Auction List', 'auctionlist', <GrView className='text-base' />)
+        getItem('Auction List', 'auctionlistSub', <GrView className='text-base' />)
       ])
     ]
   }
@@ -73,7 +73,7 @@ export default function SiderStaff() {
     .set('authorization', '/staff/authorization')
     .set('valuation', '/staff/valuationList')
     .set('financeProof', '/staff/financeproof')
-    .set('auctionlist', '/staff/auctionlist')
+    .set('auctionlistSub', '/staff/auctionlist')
     .set('mymission', '/staff/mymission')
     .set('livebidding', '/staff/livebidding')
   return (
@@ -112,7 +112,7 @@ export default function SiderStaff() {
 
         <Menu
           defaultSelectedKeys={['dashboard']}
-          defaultOpenKeys={['manageProduct', 'manageValuation', 'auctionlist']}
+          defaultOpenKeys={getConditionalItems().map((item) => item?.key as string)}
           selectedKeys={[selectedKey]}
           mode='inline'
           items={getConditionalItems()}

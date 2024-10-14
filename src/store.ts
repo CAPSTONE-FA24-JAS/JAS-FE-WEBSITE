@@ -6,14 +6,17 @@ import { authApi } from './services/auth.services'
 import { consignApi } from './services/requestconsign.services'
 import { accountApi } from './services/account.services'
 import { valuationApi } from './services/valuation.services'
+
 import { createNewStaff } from './services/createAccountStaff.services'
+import { auctionApi } from './services/auction.services'
+import { financeProofApi } from './services/financeProof.services'
 
 // Tạo cấu hình persist
 export const persistConfig = {
   timeout: 100, // đỡ cái đoạn F5 chờ lâu quá :V thêm preloading sau thì setlaij default
   key: 'root',
   storage: storage,
-  whitelist: ['authLoginAPI']
+  whitelist: ['authLoginAPI', 'selectedKey']
 }
 
 // Tạo rootReducer
@@ -23,11 +26,11 @@ const rootReducer = combineReducers({
   [consignApi.reducerPath]: consignApi.reducer,
   [accountApi.reducerPath]: accountApi.reducer,
   [valuationApi.reducerPath]: valuationApi.reducer,
-  [createNewStaff.reducerPath]: createNewStaff.reducer
-  // Thêm các reducers khác nếu cần
+  [createNewStaff.reducerPath]: createNewStaff.reducer,
+  [auctionApi.reducerPath]: auctionApi.reducer,
+  [financeProofApi.reducerPath]: financeProofApi.reducer
 })
 
-// Tạo persistedReducer
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 // Cấu hình store
@@ -43,10 +46,11 @@ export const store = configureStore({
       .concat(consignApi.middleware)
       .concat(accountApi.middleware)
       .concat(valuationApi.middleware)
-      .concat(createNewStaff.middleware) // Đảm bảo rằng middleware của `authApi` được thêm đúng
+      .concat(createNewStaff.middleware)
+      .concat(auctionApi.middleware)
+      .concat(financeProofApi.middleware)
 })
 
-// Định nghĩa loại cho RootState và AppDispatch
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
 

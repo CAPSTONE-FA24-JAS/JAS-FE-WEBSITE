@@ -1,8 +1,10 @@
 import React, { useState, ChangeEvent } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import { Image } from 'antd'
+import { Image, notification } from 'antd'
 import { CreateNewStaffForm } from '../../../../types/Account.type'
 import { useCreateNewStaffMutation } from '../../../../services/createAccountStaff.services'
+import { Respone } from '../../../../types/Respone.type'
+import { useNavigate } from 'react-router-dom'
 
 interface FormData {
   firstName: string
@@ -37,6 +39,7 @@ export default function User() {
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [showPassword, setShowPassword] = useState<boolean>(false)
+  const navigate = useNavigate()
 
   const [createNewStaff, { isLoading: loading }] = useCreateNewStaffMutation()
 
@@ -55,6 +58,15 @@ export default function User() {
       }
     }
     createNewStaff(formData)
+      .unwrap()
+      .then((res: Respone<null>) => {
+        if (res.isSuccess) {
+          notification.success({ message: 'Create new staff successfully' })
+          navigate(-1)
+        } else {
+          notification.error({ message: 'Create new staff failed' })
+        }
+      })
     console.log('Form submitted:', formData)
   }
 
@@ -210,6 +222,8 @@ export default function User() {
               className='block w-full px-3 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'
             >
               <option value='3'>Staff</option>
+              <option value='4'>Appraiser</option>
+              <option value='6'>Shipper</option>
             </select>
           </div>
         </div>

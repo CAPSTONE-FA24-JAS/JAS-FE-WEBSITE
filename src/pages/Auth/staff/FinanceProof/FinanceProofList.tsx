@@ -1,105 +1,20 @@
 import { Table, TableProps, Tag } from 'antd'
 import { useState } from 'react'
+import { useGetFinanceProofsQuery } from '../../../../services/financeProof.services'
+import { FinanceProof } from '../../../../types/FinanceProof.type'
 import FinancialProofModal from './modal/FinanceProofModal'
 
-export interface FinanceProof {
-  id: number
-  name: string
-  createDate: string
-  expiredDate: string
-  contact: string
-  status: number
-}
-
 const FinanceProofList = () => {
-  const [modalVisible, setModalVisible] = useState<boolean>(false)
   const [searchText, setSearchText] = useState<string>('')
-  const [selectedProof, setSelectedProof] = useState<FinanceProof | null>(null)
+  const { data: financeProofResponse, isLoading } = useGetFinanceProofsQuery()
+  const [selectedProofId, setSelectedProofId] = useState<number | null>(null)
+  const [modalVisible, setModalVisible] = useState(false)
 
-  const financeProofData: FinanceProof[] = [
-    {
-      id: 1,
-      name: 'John Doe',
-      createDate: '2023-09-01',
-      expiredDate: '2024-09-01',
-      contact: 'johndoe@example.com',
-      status: 1
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      createDate: '2023-08-15',
-      expiredDate: '2024-08-15',
-      contact: 'janesmith@example.com',
-      status: 2
-    },
-    {
-      id: 3,
-      name: 'Michael Johnson',
-      createDate: '2023-07-10',
-      expiredDate: '2024-07-10',
-      contact: 'michaelj@example.com',
-      status: 3
-    },
-    {
-      id: 4,
-      name: 'Emily Davis',
-      createDate: '2023-06-05',
-      expiredDate: '2024-06-05',
-      contact: 'emilydavis@example.com',
-      status: 1
-    },
-    {
-      id: 5,
-      name: 'Robert Brown',
-      createDate: '2023-05-20',
-      expiredDate: '2024-05-20',
-      contact: 'robertbrown@example.com',
-      status: 2
-    },
-    {
-      id: 6,
-      name: 'Sarah Wilson',
-      createDate: '2023-04-18',
-      expiredDate: '2024-04-18',
-      contact: 'sarahwilson@example.com',
-      status: 1
-    },
-    {
-      id: 7,
-      name: 'William Taylor',
-      createDate: '2023-03-12',
-      expiredDate: '2024-03-12',
-      contact: 'willtaylor@example.com',
-      status: 2
-    },
-    {
-      id: 8,
-      name: 'Sophia Martinez',
-      createDate: '2023-02-08',
-      expiredDate: '2024-02-08',
-      contact: 'sophiam@example.com',
-      status: 1
-    },
-    {
-      id: 9,
-      name: 'David Lee',
-      createDate: '2023-01-22',
-      expiredDate: '2024-01-22',
-      contact: 'davidlee@example.com',
-      status: 1
-    },
-    {
-      id: 10,
-      name: 'Olivia Anderson',
-      createDate: '2022-12-05',
-      expiredDate: '2023-12-05',
-      contact: 'oliviaa@example.com',
-      status: 2
-    }
-  ]
+  const financeProofData = financeProofResponse?.data || []
 
-  const filteredData = financeProofData.filter((item) => item.name.toLowerCase().includes(searchText.toLowerCase()))
+  const filteredData = financeProofData.filter((item) =>
+    item.customerName.toLowerCase().includes(searchText.toLowerCase())
+  )
 
   const columns: TableProps<FinanceProof>['columns'] = [
     {
@@ -108,58 +23,59 @@ const FinanceProofList = () => {
       key: 'id'
     },
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name'
+      title: 'Customer Name',
+      dataIndex: 'customerName',
+      key: 'customerName'
     },
     {
-      title: 'Create Date',
-      dataIndex: 'createDate',
-      key: 'createDate'
+      title: 'Price Limit',
+      dataIndex: 'priceLimit',
+      key: 'priceLimit'
     },
     {
-      title: 'Expired Date',
-      dataIndex: 'expiredDate',
-      key: 'expiredDate'
+      title: 'Start Date',
+      dataIndex: 'startDate',
+      key: 'startDate'
     },
     {
-      title: 'Contact',
-      dataIndex: 'contact',
-      key: 'contact'
+      title: 'Expire Date',
+      dataIndex: 'expireDate',
+      key: 'expireDate'
+    },
+    {
+      title: 'Reason',
+      dataIndex: 'reason',
+      key: 'reason'
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: number) => {
-        let color = ''
-        let text = ''
+      render: (status: string) => {
+        let color = 'red'
         switch (status) {
-          case 1:
+          case 'Approve':
             color = 'green'
-            text = 'Active'
             break
-          case 2:
+          case 'Reject':
             color = 'red'
-            text = 'Inactive'
             break
-          case 3:
+          case 'Pending':
             color = 'orange'
-            text = 'Pending'
             break
         }
-        return <Tag color={color}>{text}</Tag>
+        return <Tag color={color}>{status}</Tag>
       }
     },
     {
       title: 'Actions',
       key: 'actions',
       render: (_, record: FinanceProof) =>
-        record.status === 3 ? (
+        record.status === 'Pending' ? (
           <div className='flex space-x-2'>
             <button
               onClick={() => {
-                setSelectedProof(record)
+                setSelectedProofId(record.id)
                 setModalVisible(true)
               }}
               className='px-3 py-1 text-sm text-white bg-blue-500 rounded-lg'
@@ -167,9 +83,7 @@ const FinanceProofList = () => {
               Check
             </button>
           </div>
-        ) : (
-          ''
-        )
+        ) : null
     }
   ]
 
@@ -188,10 +102,21 @@ const FinanceProofList = () => {
         columns={columns}
         dataSource={filteredData}
         pagination={{ pageSize: 5 }}
-        loading={false}
+        loading={isLoading}
         style={{ minHeight: '65vh' }}
       />
-      <FinancialProofModal visible={modalVisible} onClose={() => setModalVisible(false)} financeProof={selectedProof} />
+
+      {selectedProofId && (
+        <FinancialProofModal
+          visible={modalVisible}
+          setModalVisible={setModalVisible}
+          onClose={() => {
+            setSelectedProofId(null)
+            setModalVisible(false)
+          }}
+          id={selectedProofId}
+        />
+      )}
     </div>
   )
 }

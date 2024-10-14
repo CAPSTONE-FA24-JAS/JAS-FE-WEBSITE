@@ -2,200 +2,34 @@ import { Button, Table, TableProps } from 'antd'
 import { useState } from 'react'
 import AddAuctionModal from './modal/AddAuctionModal'
 import { Link } from 'react-router-dom'
-
-interface Auction {
-  id: number
-  name: string
-  createDate: string
-  expiredDate: string
-  quantity: number
-  status: number
-}
+import { useGetAuctionsQuery } from '../../../../services/auction.services'
+import { Auction } from '../../../../types/Auction.type'
 
 const AuctionList = () => {
   const [searchText, setSearchText] = useState<string>('')
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
 
-  const auctionData: Auction[] = [
-    {
-      id: 1,
-      name: 'Antique Vase Auction',
-      createDate: '2024-09-01',
-      expiredDate: '2024-09-10',
-      quantity: 5,
-      status: 1
-    },
-    {
-      id: 2,
-      name: 'Vintage Car Auction',
-      createDate: '2024-09-05',
-      expiredDate: '2024-09-15',
-      quantity: 10,
-      status: 2
-    },
-    {
-      id: 3,
-      name: 'Jewelry Auction',
-      createDate: '2024-09-07',
-      expiredDate: '2024-09-17',
-      quantity: 8,
-      status: 1
-    },
-    {
-      id: 4,
-      name: 'Art Auction',
-      createDate: '2024-09-09',
-      expiredDate: '2024-09-19',
-      quantity: 20,
-      status: 3
-    },
-    {
-      id: 5,
-      name: 'Rare Books Auction',
-      createDate: '2024-09-12',
-      expiredDate: '2024-09-22',
-      quantity: 3,
-      status: 2
-    },
-    {
-      id: 6,
-      name: 'Luxury Watches Auction',
-      createDate: '2024-09-14',
-      expiredDate: '2024-09-24',
-      quantity: 15,
-      status: 1
-    },
-    {
-      id: 7,
-      name: 'Modern Art Auction',
-      createDate: '2024-09-16',
-      expiredDate: '2024-09-26',
-      quantity: 12,
-      status: 3
-    },
-    {
-      id: 8,
-      name: 'Collectible Stamps Auction',
-      createDate: '2024-09-18',
-      expiredDate: '2024-09-28',
-      quantity: 25,
-      status: 1
-    },
-    {
-      id: 9,
-      name: 'Classic Furniture Auction',
-      createDate: '2024-09-20',
-      expiredDate: '2024-09-30',
-      quantity: 6,
-      status: 2
-    },
-    {
-      id: 10,
-      name: 'Antique Coins Auction',
-      createDate: '2024-09-22',
-      expiredDate: '2024-10-02',
-      quantity: 30,
-      status: 3
-    },
-    {
-      id: 11,
-      name: 'Rare Wines Auction',
-      createDate: '2024-09-24',
-      expiredDate: '2024-10-04',
-      quantity: 50,
-      status: 1
-    },
-    {
-      id: 12,
-      name: 'Sports Memorabilia Auction',
-      createDate: '2024-09-26',
-      expiredDate: '2024-10-06',
-      quantity: 40,
-      status: 3
-    },
-    {
-      id: 13,
-      name: 'Fine Jewelry Auction',
-      createDate: '2024-09-28',
-      expiredDate: '2024-10-08',
-      quantity: 10,
-      status: 2
-    },
-    {
-      id: 14,
-      name: 'Luxury Handbags Auction',
-      createDate: '2024-09-30',
-      expiredDate: '2024-10-10',
-      quantity: 7,
-      status: 1
-    },
-    {
-      id: 15,
-      name: 'Vintage Camera Auction',
-      createDate: '2024-10-01',
-      expiredDate: '2024-10-11',
-      quantity: 15,
-      status: 2
-    },
-    {
-      id: 16,
-      name: 'Musical Instruments Auction',
-      createDate: '2024-10-03',
-      expiredDate: '2024-10-13',
-      quantity: 5,
-      status: 1
-    },
-    {
-      id: 17,
-      name: 'Luxury Real Estate Auction',
-      createDate: '2024-10-05',
-      expiredDate: '2024-10-15',
-      quantity: 1,
-      status: 3
-    },
-    {
-      id: 18,
-      name: 'Historical Documents Auction',
-      createDate: '2024-10-07',
-      expiredDate: '2024-10-17',
-      quantity: 20,
-      status: 1
-    },
-    {
-      id: 19,
-      name: 'Luxury Cars Auction',
-      createDate: '2024-10-09',
-      expiredDate: '2024-10-19',
-      quantity: 3,
-      status: 2
-    },
-    {
-      id: 20,
-      name: 'Collectible Toys Auction',
-      createDate: '2024-10-11',
-      expiredDate: '2024-10-21',
-      quantity: 25,
-      status: 1
-    }
-  ]
+  const { data, error, isLoading } = useGetAuctionsQuery()
 
   const columns: TableProps<Auction>['columns'] = [
     {
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
-      align: 'center'
+      align: 'center',
+      sorter: (a, b) => a.id - b.id,
+      defaultSortOrder: 'ascend'
     },
     {
       title: 'Name',
-      dataIndex: 'name',
+      dataIndex: 'description',
       key: 'name',
       render: (text) => <Link to={'/admin/lotlist'}>{text}</Link>
     },
     {
-      title: 'Quantity Lot',
-      dataIndex: 'quantity',
-      key: 'quantity',
+      title: 'Location',
+      dataIndex: 'location',
+      key: 'location',
       align: 'center'
     },
 
@@ -203,14 +37,20 @@ const AuctionList = () => {
       title: 'Auction Time',
       children: [
         {
-          title: 'Create Date',
-          dataIndex: 'createDate',
+          title: 'Start Date',
+          dataIndex: 'startTime',
           key: 'createDate'
         },
         {
-          title: 'Expired Date',
-          dataIndex: 'expiredDate',
+          title: 'End Date',
+          dataIndex: 'endTime',
           key: 'expiredDate'
+        },
+        {
+          title: 'Actual End Date',
+          dataIndex: 'actualEndTime',
+          key: 'actualEndTime',
+          render: (text) => (text ? text : 'N/A')
         }
       ]
     },
@@ -220,7 +60,7 @@ const AuctionList = () => {
       key: 'status'
     }
   ]
-  const auctionFiltered = auctionData.filter((item) => item.name.toLowerCase().includes(searchText.toLowerCase()))
+  const auctionFiltered = data?.data.filter((item) => item.description.toLowerCase().includes(searchText.toLowerCase()))
 
   const handleAddAuction = () => {
     setIsModalVisible(true)
