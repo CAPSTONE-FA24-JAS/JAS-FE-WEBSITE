@@ -26,6 +26,7 @@ interface AuthLoginAPIState {
   id: string | null
   roleId: RoleType
   staffId: number | null // Track staffId for Staff roles
+  appraiserId: number | null
 }
 
 // Initialize the default state for authentication
@@ -34,7 +35,8 @@ const initialState: AuthLoginAPIState = {
   isAuthenticated: false,
   id: null,
   roleId: RoleType.GUEST,
-  staffId: null // Initialize staffId as null
+  staffId: null,
+  appraiserId: null
 }
 
 // Create a slice for the AuthLoginAPI

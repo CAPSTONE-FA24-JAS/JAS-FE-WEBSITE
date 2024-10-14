@@ -2,7 +2,7 @@ import { Button, Table, TableProps } from 'antd'
 import { useState } from 'react'
 import AddAuctionModal from './modal/AddAuctionModal'
 import { Link } from 'react-router-dom'
-import { useGetAuctionsQuery } from '../../../../services/auction.service'
+import { useGetAuctionsQuery } from '../../../../services/auction.services'
 import { Auction } from '../../../../types/Auction.type'
 
 const AuctionList = () => {

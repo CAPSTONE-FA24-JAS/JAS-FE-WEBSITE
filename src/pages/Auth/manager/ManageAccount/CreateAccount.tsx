@@ -2,7 +2,7 @@ import React, { useState, ChangeEvent } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { Image, notification } from 'antd'
 import { CreateNewStaffForm } from '../../../../types/Account.type'
-import { useCreateNewStaffMutation } from '../../../../services/createAccountStaff.service'
+import { useCreateNewStaffMutation } from '../../../../services/createAccountStaff.services'
 import { Respone } from '../../../../types/Respone.type'
 import { useNavigate } from 'react-router-dom'
 
@@ -18,7 +18,7 @@ interface FormData {
   roleId: string
 }
 
-const User: React.FC = () => {
+export default function User() {
   const {
     register,
     handleSubmit,
@@ -247,5 +247,3 @@ const User: React.FC = () => {
     </div>
   )
 }
-
-export default User

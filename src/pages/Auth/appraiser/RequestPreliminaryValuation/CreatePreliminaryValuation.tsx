@@ -2,6 +2,8 @@ import { Button, Col, Input, InputNumber, notification, Row, Typography } from '
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useCreatePreliminaryMutation, useGetValuationByIdQuery } from '../../../../services/valuation.services'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../../../store'
 
 const { Title } = Typography
 
@@ -22,6 +24,8 @@ const CreatePreliminaryValuationAppraiser = () => {
 
   const { data, isLoading } = useGetValuationByIdQuery({ id: Number(id) })
   const [createPreliminary, { isLoading: isCreating }] = useCreatePreliminaryMutation()
+  const staffId = useSelector((state: RootState) => state.authLoginAPI.staffId)
+  console.log('Staff ID:', staffId)
 
   useEffect(() => {
     if (data && data.data) {
@@ -54,11 +58,24 @@ const CreatePreliminaryValuationAppraiser = () => {
   }
 
   const handleCreatePreliminary = async () => {
+    const appraiserId = staffId
+
+    console.log('Appraiser ID:', appraiserId)
+
+    if (!appraiserId) {
+      notification.error({
+        message: 'Error',
+        description: 'Appraiser not found. Please check the data.'
+      })
+      return
+    }
+
     console.log('Submitting preliminary valuation with the following data:', {
       id: Number(id),
       status: 3,
       estimatePriceMin: formValues.estimatePriceMin,
-      estimatePriceMax: formValues.estimatePriceMax
+      estimatePriceMax: formValues.estimatePriceMax,
+      appraiserId
     })
 
     try {
@@ -66,7 +83,8 @@ const CreatePreliminaryValuationAppraiser = () => {
         id: Number(id),
         status: 3,
         estimatePriceMin: formValues.estimatePriceMin,
-        estimatePriceMax: formValues.estimatePriceMax
+        estimatePriceMax: formValues.estimatePriceMax,
+        appraiserId
       }).unwrap()
 
       console.log('API response:', response)

@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import {
   useGetFinanceProofByIdQuery,
   useUpdateFinanceProofMutation
-} from '../../../../../services/financeProof.service'
+} from '../../../../../services/financeProof.services'
 
 interface FinancialProofModalProps {
   visible: boolean
