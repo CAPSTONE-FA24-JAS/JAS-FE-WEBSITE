@@ -7,7 +7,7 @@ import { consignApi } from './services/requestconsign.services'
 import { accountApi } from './services/account.services'
 import { valuationApi } from './services/valuation.services'
 import { createNewStaff } from './services/createAccountStaff.service'
-import { auctionApi } from './services/auction.service'
+import { auctionApi } from './services/auction.services'
 import { financeProofApi } from './services/financeProof.service'
 
 // Tạo cấu hình persist

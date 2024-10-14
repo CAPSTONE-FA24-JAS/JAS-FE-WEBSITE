@@ -4,14 +4,6 @@ import baseUrl from '../utils/http'
 import { Data } from '../types/Account.type'
 import { Respone } from '../types/Respone.type'
 
-export interface CreateAuctionPayload {
-  startTime: string
-  endTime: string
-  description: string
-  location: string
-  notes: string
-}
-
 export const auctionApi = createApi({
   reducerPath: 'auctionApi',
   tagTypes: ['Auction'],
@@ -45,11 +37,12 @@ export const auctionApi = createApi({
     getAuctionById: builder.query<Respone<Auction>, number>({
       query: (id) => `Auction/ViewAutionById?Id=${id}`
     }),
-    createAuction: builder.mutation<Respone<Auction>, CreateAuctionPayload>({
+    createAuction: builder.mutation<Respone<Auction>, FormData>({
       query: (newAuction) => ({
         url: 'Auction/CreateAution',
         method: 'POST',
-        body: newAuction
+        body: newAuction,
+        formData: true
       }),
       invalidatesTags: (_result, error, _body) => (error ? [] : [{ type: 'Auction', id: 'LIST' }])
     }),
