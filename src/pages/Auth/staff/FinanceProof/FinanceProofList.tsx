@@ -1,6 +1,6 @@
 import { Table, TableProps, Tag } from 'antd'
 import { useState } from 'react'
-import { useGetFinanceProofsQuery } from '../../../../services/financeProof.service'
+import { useGetFinanceProofsQuery } from '../../../../services/financeProof.services'
 import { FinanceProof } from '../../../../types/FinanceProof.type'
 import FinancialProofModal from './modal/FinanceProofModal'
 

@@ -6,9 +6,9 @@ import { authApi } from './services/auth.services'
 import { consignApi } from './services/requestconsign.services'
 import { accountApi } from './services/account.services'
 import { valuationApi } from './services/valuation.services'
-import { createNewStaff } from './services/createAccountStaff.service'
+import { createNewStaff } from './services/createAccountStaff.services'
 import { auctionApi } from './services/auction.services'
-import { financeProofApi } from './services/financeProof.service'
+import { financeProofApi } from './services/financeProof.services'
 
 // Tạo cấu hình persist
 export const persistConfig = {
@@ -28,10 +28,8 @@ const rootReducer = combineReducers({
   [createNewStaff.reducerPath]: createNewStaff.reducer,
   [auctionApi.reducerPath]: auctionApi.reducer,
   [financeProofApi.reducerPath]: financeProofApi.reducer
-  // Thêm các reducers khác nếu cần
 })
 
-// Tạo persistedReducer
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 // Cấu hình store
@@ -52,7 +50,6 @@ export const store = configureStore({
       .concat(financeProofApi.middleware)
 })
 
-// Định nghĩa loại cho RootState và AppDispatch
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
 

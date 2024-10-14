@@ -28,17 +28,22 @@ export const valuationApi = createApi({
     }),
 
     createPreliminary: build.mutation<CreatePreliminaryRepsonse, CreatePreliminaryRequest>({
-      query: ({ id, status, estimatePriceMin, estimatePriceMax }) => ({
-        url: `Valuations/createPreliminaryPrice?id=${id}&status=${status}&EstimatePriceMin=${estimatePriceMin}&EstimatePriceMax=${estimatePriceMax}`,
+      query: ({ id, status, estimatePriceMin, estimatePriceMax, appraiserId }) => ({
+        url: `Valuations/createPreliminaryPrice?id=${id}&status=${status}&EstimatePriceMin=${estimatePriceMin}&EstimatePriceMax=${estimatePriceMax}&&appraiserId=${appraiserId}`,
         method: 'PUT'
       })
     }),
 
     getPreliminaryValuationsByStaff: build.query({
-      query: ({ staffId, status = 'Preliminary Valued', pageSize = 10, pageIndex = 1 }) =>
-        `/Valuations/getPreliminaryValuationsByStatusOfStaff?staffId=${staffId}&status=${encodeURIComponent(
-          status
-        )}&pageSize=${pageSize}&pageIndex=${pageIndex}`
+      query: ({ staffId, pageSize, pageIndex }) => {
+        const statuses = [3, 4, 5]
+        const statusQuery = statuses.map((status) => `status=${status}`).join('&') // Format the status as multiple parameters
+        return `/Valuations/getPreliminaryValuationsByStatusOfStaff?staffId=${staffId}&${statusQuery}&pageSize=${pageSize}&pageIndex=${pageIndex}`
+      },
+      transformResponse: (response: any) => ({
+        dataResponse: response.data.dataResponse,
+        totalItemRepsone: response.data.totalItemRepsone
+      })
     }),
 
     createReceipt: build.mutation<CreateReceiptResponse, { id: number; data: CreateReceiptRequest }>({
