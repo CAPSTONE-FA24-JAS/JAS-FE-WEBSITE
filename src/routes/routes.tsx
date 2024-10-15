@@ -27,7 +27,7 @@ import AdminLayout from '../layout/manager_layout/AdminLayout'
 import Overview from '../pages/Auth/manager/Overview'
 import ManageAccount from '../pages/Auth/manager/ManageAccount/AccountList'
 import CreateAccount from '../pages/Auth/manager/ManageAccount/CreateAccount'
-import LiveBidding from '../pages/Auth/staff/Mission/LiveBidding/LiveBidding'
+import Index from '../pages/Auth/staff/Mission/LiveBidding'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -75,7 +75,7 @@ const staffCRoutes: RouteProps[] = [
   { path: '/staff/auctionlist', component: AuctionList, layout: StaffLayout },
   { path: '/staff/authorization', component: CreateAuthorization, layout: StaffLayout },
   { path: '/staff/mymission', component: MyMissionList, layout: StaffLayout },
-  { path: '/staff/livebidding', component: LiveBidding, layout: StaffLayout }
+  { path: '/staff/livebidding', component: Index, layout: StaffLayout }
 ]
 
 export { publicRoutes, managerRoutes, staffCRoutes, appraiserRoutes, adminRoutes }
