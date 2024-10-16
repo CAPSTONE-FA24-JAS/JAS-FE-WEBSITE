@@ -1,4 +1,4 @@
-import { EyeOutlined, FileTextOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons'
+import { EyeOutlined, FileTextOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Col, Input, Row, Table, Tabs, Tag, Tooltip } from 'antd'
 import { useEffect, useState } from 'react'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
@@ -7,13 +7,11 @@ import { useGetPreliminaryValuationsByStaffQuery } from '../../../../services/va
 import { RootState } from '../../../../store'
 import CreateReceipt from './PreliminaryValuation/CreateReceipt'
 import PreliminaryValuationDetail from './PreliminaryValuation/PreliminaryDetail'
-import { useNavigate } from 'react-router-dom'
 import FinalDetail from './FinalValuation/FinalDetail'
 
 const { Search } = Input
 
 const ValuationTabs = () => {
-  const navigate = useNavigate()
   const [searchText, setSearchText] = useState<string>('')
   const [modalVisible, setModalVisible] = useState<boolean>(false)
   const [finalModalVisible, setFinalModalVisible] = useState<boolean>(false)
@@ -80,7 +78,7 @@ const ValuationTabs = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: any, record: any) => (
+      render: (_text: any, record: any) => (
         <div>
           <Tooltip title='View Details'>
             <Button
@@ -138,7 +136,7 @@ const ValuationTabs = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: any, record: any) => (
+      render: (_text: any, record: any) => (
         <div>
           <Tooltip title='View Final Details'>
             <Button

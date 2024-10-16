@@ -8,7 +8,7 @@ export interface FinanceProof {
   reason: string | null
   startDate: string
   expireDate: string
-  status: 'Pending' | 'Approved' | 'Rejected'
+  status: 'Pending' | 'Approved' | 'Reject' | 'Processing' | 'Cancel'
 }
 
 export interface UpdateFinanceProof {

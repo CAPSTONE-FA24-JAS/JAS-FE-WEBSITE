@@ -8,6 +8,7 @@ import { HiOutlineViewGridAdd } from 'react-icons/hi'
 import { MdInventory, MdOutlineCategory, MdOutlineMenu } from 'react-icons/md'
 import { cn } from '../../../utils/cn'
 import { BarChartOutlined } from '@ant-design/icons'
+import { TbZoomMoney } from 'react-icons/tb'
 
 export default function SiderManager() {
   type MenuItem = Required<MenuProps>['items'][number]
@@ -54,7 +55,8 @@ export default function SiderManager() {
       getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
         getItem('Auction List', 'auctionListSub', <GrView className='text-base' />),
         getItem('Lot List', 'lotList', <GrView className='text-base' />)
-      ])
+      ]),
+      getItem('Finance Proof', 'financeProof', <TbZoomMoney className='text-base' />)
     ]
   }
 
@@ -65,6 +67,7 @@ export default function SiderManager() {
     .set('managewin', '/manager/managewin')
     .set('auctionListSub', '/manager/auctionlist')
     .set('lotList', '/manager/lotList')
+    .set('financeProof', '/manager/financeProofManager')
 
   return (
     <Sider
