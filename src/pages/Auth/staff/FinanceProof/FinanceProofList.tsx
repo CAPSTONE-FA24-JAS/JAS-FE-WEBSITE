@@ -104,6 +104,7 @@ const FinanceProofList = () => {
         pagination={{ pageSize: 5 }}
         loading={isLoading}
         style={{ minHeight: '65vh' }}
+        rowKey={(record) => record.id.toString()}
       />
 
       {selectedProofId && (

@@ -106,6 +106,7 @@ const AuctionList = () => {
         pagination={{ pageSize: 5 }}
         loading={isLoading}
         style={{ minHeight: '65vh' }}
+        rowKey={(record) => record.id.toString()}
       />
       <AddAuctionModal visible={isModalVisible} onCancel={handleModalCancel} />
     </div>
