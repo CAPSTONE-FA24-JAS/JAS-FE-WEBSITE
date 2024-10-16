@@ -3,6 +3,7 @@ import { Table, Button, Input, Space, Tag } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import type { TableProps } from 'antd'
 import AddLotModal from './modal/AddLotModal'
+import { useParams } from 'react-router-dom'
 
 export interface Lot {
   id: number
@@ -20,6 +21,9 @@ const LotList = () => {
   const [searchText, setSearchText] = useState('')
   const [modalVisible, setModalVisible] = useState(false)
   const [editingLot, setEditingLot] = useState<Lot | null>(null) // nào làm với api thì nhét redux vào đây giờ dùng state tạm để UI
+
+  let { id } = useParams()
+  console.log('id:', id)
 
   const lotData: Lot[] = [
     {

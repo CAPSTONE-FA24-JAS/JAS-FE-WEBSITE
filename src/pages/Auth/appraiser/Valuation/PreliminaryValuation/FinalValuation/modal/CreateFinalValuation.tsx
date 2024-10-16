@@ -140,15 +140,15 @@ export default function CreateFinalValuation() {
   }
 
   return (
-    <div className='max-w-6xl mx-auto p-4'>
-      <h2 className='text-2xl font-bold mb-6'>Final Valuation Form</h2>
+    <div className='max-w-6xl p-4 mx-auto'>
+      <h2 className='mb-6 text-2xl font-bold'>Final Valuation Form</h2>
       <form onSubmit={handleSubmit}>
         <div className='grid grid-cols-2 gap-4'>
           {Object.keys(formData).map((key) => {
             if (key === 'totalReplacementCost' || key === 'image') return null
             return (
               <div key={key}>
-                <label className='block font-medium mb-1'>
+                <label className='block mb-1 font-medium'>
                   {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
                 </label>
                 <input
@@ -156,7 +156,7 @@ export default function CreateFinalValuation() {
                   name={key}
                   // value={formData[key as keyof FormData]}
                   onChange={handleFormChange}
-                  className='w-full border border-gray-300 p-2 rounded'
+                  className='w-full p-2 border border-gray-300 rounded'
                   placeholder={`Enter ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}`}
                 />
               </div>
@@ -165,21 +165,21 @@ export default function CreateFinalValuation() {
         </div>
 
         <div className='mt-8'>
-          <div className='mt-8 mb-4 flex justify-between items-center'>
-            <h3 className='text-xl font-semibold mb-0'>Gemstone Details</h3>
-            <button type='button' onClick={handleAddGemstone} className='bg-gray-300 text-black px-4 py-2 rounded'>
+          <div className='flex items-center justify-between mt-8 mb-4'>
+            <h3 className='mb-0 text-xl font-semibold'>Gemstone Details</h3>
+            <button type='button' onClick={handleAddGemstone} className='px-4 py-2 text-black bg-gray-300 rounded'>
               Add Gemstone Details
             </button>
           </div>
 
           {gemstoneDataArray.map((gemstoneData, index) => (
-            <div key={index} className='border p-4 mb-4 rounded'>
-              <div className='flex justify-between items-center'>
+            <div key={index} className='p-4 mb-4 border rounded'>
+              <div className='flex items-center justify-between'>
                 <h4 className='text-lg font-semibold'>Gemstone {index + 1}</h4>
                 <button
                   type='button'
                   onClick={() => toggleGemstoneVisibility(index)}
-                  className='text-black px-2 py-1 flex items-center justify-center relative'
+                  className='relative flex items-center justify-center px-2 py-1 text-black'
                   style={{ width: '40px', height: '40px' }}
                 >
                   <span
@@ -216,21 +216,21 @@ export default function CreateFinalValuation() {
         {/* Total Estimated Retail Replacement Cost Field */}
         <div className='grid grid-cols-2 gap-4 mt-8'>
           <div>
-            <label className='block font-medium mb-1 text-red-600'>Total Estimated Retail Replacement Cost</label>
+            <label className='block mb-1 font-medium text-red-600'>Total Estimated Retail Replacement Cost</label>
             <input
               type='number'
               name='totalReplacementCost'
               value={formData.totalReplacementCost}
               onChange={handleFormChange}
               min={0} // Set minimum value to 0
-              className='w-full border border-gray-300 p-2 rounded'
+              className='w-full p-2 border border-gray-300 rounded'
               placeholder='Enter total estimated retail replacement cost'
             />
           </div>
         </div>
         <div className='grid grid-cols-2 gap-4 mt-8'>
           <div>
-            <label className='block font-medium mb-1'>Upload Image</label>
+            <label className='block mb-1 font-medium'>Upload Image</label>
             <Upload
               accept='image/*'
               listType='picture-card'

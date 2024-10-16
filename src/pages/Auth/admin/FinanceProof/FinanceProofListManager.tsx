@@ -2,9 +2,9 @@ import { Table, TableProps, Tag } from 'antd'
 import { useState } from 'react'
 import { useGetFinanceProofsQuery } from '../../../../services/financeProof.services'
 import { FinanceProof } from '../../../../types/FinanceProof.type'
-import FinancialProofModal from './modal/FinanceProofModal'
+import FinancialProofModal from '../../admin/FinanceProof/modal/FinanceProofModal'
 
-const FinanceProofList = () => {
+const FinanceProofListManager = () => {
   const [searchText, setSearchText] = useState<string>('')
   const { data: financeProofResponse, isLoading } = useGetFinanceProofsQuery()
   const [selectedProofId, setSelectedProofId] = useState<number | null>(null)
@@ -47,6 +47,7 @@ const FinanceProofList = () => {
       dataIndex: 'reason',
       key: 'reason'
     },
+    { title: 'Staff ID', dataIndex: 'staffId', render: (staffId: number) => <span>{staffId || 'N/A'}</span> },
     {
       title: 'Status',
       dataIndex: 'status',
@@ -121,4 +122,4 @@ const FinanceProofList = () => {
   )
 }
 
-export default FinanceProofList
+export default FinanceProofListManager

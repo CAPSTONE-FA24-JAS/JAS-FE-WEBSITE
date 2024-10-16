@@ -5,12 +5,17 @@ import { Link } from 'react-router-dom'
 import { useGetAuctionsQuery } from '../../../../services/auction.services'
 import { Auction } from '../../../../types/Auction.type'
 import { Input } from 'antd'
+import { RootState } from '../../../../store'
+import { useSelector } from 'react-redux'
+import { RoleType } from '../../../../slice/authLoginAPISlice'
 
 const AuctionList = () => {
   const [searchText, setSearchText] = useState<string>('')
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
 
   const { data, error, isLoading } = useGetAuctionsQuery()
+
+  const roleId = useSelector((state: RootState) => state.authLoginAPI.roleId)
 
   const columns: TableProps<Auction>['columns'] = [
     {
@@ -31,7 +36,21 @@ const AuctionList = () => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text) => <Link to={'/admin/lotlist'}>{text}</Link>
+      render: (text, record: Auction) => {
+        let linkPath = ''
+        switch (roleId) {
+          case RoleType.MANAGER:
+            linkPath = `/manager/lotlist/${record.id}`
+            break
+          case RoleType.STAFFC:
+            linkPath = `/staff/lotlist/${record.id}`
+            break
+          default:
+            linkPath = '#'
+            break
+        }
+        return <Link to={linkPath}>{text}</Link>
+      }
     },
     {
       title: 'Description',

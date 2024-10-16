@@ -1,12 +1,10 @@
 import { Button, Divider, Input, Modal, Skeleton, Space, message } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
 import {
   useGetFinanceProofByIdQuery,
   useUpdateFinanceProofMutation
 } from '../../../../../services/financeProof.services'
-import { RootState } from '../../../../../store'
 
 interface FinancialProofModalProps {
   visible: boolean
@@ -18,36 +16,24 @@ interface FinancialProofModalProps {
 const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onClose, id, setModalVisible }) => {
   const { data: financeProof, isLoading } = useGetFinanceProofByIdQuery(id)
   const [updateFinanceProof, { isLoading: isUpdating }] = useUpdateFinanceProofMutation()
-  const [isSetLimitBidModalVisible, setIsSetLimitBidModalVisible] = useState(false)
   const [reasonReject, setReasonReject] = useState<boolean>(false)
-  const [limitBid, setLimitBid] = useState<string>('')
   const [note, setNote] = useState<string>('')
-  const staffId = useSelector((state: RootState) => state.authLoginAPI.staffId) ?? 0
-
-  const showSetLimitBidModal = () => {
-    setModalVisible(false)
-    setIsSetLimitBidModalVisible(true)
-  }
 
   const handleSetLimitBidOk = async () => {
-    setIsSetLimitBidModalVisible(false)
+    setModalVisible(false)
     try {
       await updateFinanceProof({
         id,
-        status: 1,
-        priceLimit: Number(limitBid),
+        status: 2,
+        priceLimit: financeProof?.data.priceLimit ?? 0,
         reason: '',
-        staffId
+        staffId: financeProof?.data.staffId ?? 0
       }).unwrap()
       message.success('Limit bid set successfully')
     } catch (error) {
       console.error('Error updating finance proof:', error)
       message.error('Failed to set limit bid. Please try again.')
     }
-  }
-
-  const handleSetLimitBidCancel = () => {
-    setIsSetLimitBidModalVisible(false)
   }
 
   const handleReject = () => {
@@ -60,10 +46,10 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
     try {
       await updateFinanceProof({
         id,
-        status: 4,
-        priceLimit: 0,
+        status: 3,
+        priceLimit: financeProof?.data.priceLimit ?? 0,
         reason: note,
-        staffId
+        staffId: financeProof?.data.staffId ?? 0
       }).unwrap()
       message.success('Finance proof rejected successfully')
     } catch (error) {
@@ -83,12 +69,12 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
         open={visible}
         onCancel={onClose}
         footer={
-          financeProof && financeProof?.data.status == 'Pending'
+          financeProof?.data.status == 'Approved' || financeProof?.data.status == 'Reject'
             ? [
                 <Button key='reject' type='primary' danger onClick={handleReject}>
                   Reject
                 </Button>,
-                <Button key='setLimitBid' type='primary' onClick={showSetLimitBidModal}>
+                <Button loading={isUpdating} key='setLimitBid' type='primary' onClick={handleSetLimitBidOk}>
                   Set Limit Bid
                 </Button>
               ]
@@ -102,36 +88,14 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
             <p>Customer Name: {financeProof.data.customerName}</p>
             <p>Create Date: {financeProof.data.startDate}</p>
             <p>Expired Date: {financeProof.data.expireDate}</p>
-            {financeProof && financeProof.data.priceLimit ? (
-              <Input placeholder='Limit Bid' value={financeProof.data.priceLimit} disabled prefix='$' />
-            ) : null}
-
+            <Input placeholder='Limit Bid' value={financeProof.data.priceLimit} disabled prefix='$' />
+            <p>Reason: {financeProof.data?.reason}</p>
             <Divider />
-
             <embed src={financeProof.data.file} width='300' height='200' />
           </div>
         ) : (
           <p>No data available</p>
         )}
-      </Modal>
-
-      <Modal
-        title='Set Limit Bid'
-        open={isSetLimitBidModalVisible}
-        onOk={handleSetLimitBidOk}
-        onCancel={handleSetLimitBidCancel}
-        footer={[
-          <Button key='cancel' onClick={handleSetLimitBidCancel}>
-            Cancel
-          </Button>,
-          <Button key='update' type='primary' onClick={handleSetLimitBidOk} loading={isUpdating}>
-            Update
-          </Button>
-        ]}
-      >
-        <Space direction='vertical' style={{ width: '100%' }}>
-          <Input placeholder='Limit Bid' value={limitBid} onChange={(e) => setLimitBid(e.target.value)} prefix='$' />
-        </Space>
       </Modal>
 
       <Modal
