@@ -9,6 +9,8 @@ import { valuationApi } from './services/valuation.services'
 import { createNewStaff } from './services/createAccountStaff.services'
 import { auctionApi } from './services/auction.services'
 import { financeProofApi } from './services/financeProof.services'
+import { lotApi } from './services/lot.services'
+import { jewelryApi } from './services/jewelry.services'
 
 // Tạo cấu hình persist
 export const persistConfig = {
@@ -27,7 +29,9 @@ const rootReducer = combineReducers({
   [valuationApi.reducerPath]: valuationApi.reducer,
   [createNewStaff.reducerPath]: createNewStaff.reducer,
   [auctionApi.reducerPath]: auctionApi.reducer,
-  [financeProofApi.reducerPath]: financeProofApi.reducer
+  [financeProofApi.reducerPath]: financeProofApi.reducer,
+  [lotApi.reducerPath]: lotApi.reducer,
+  [jewelryApi.reducerPath]: jewelryApi.reducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -48,6 +52,8 @@ export const store = configureStore({
       .concat(createNewStaff.middleware)
       .concat(auctionApi.middleware)
       .concat(financeProofApi.middleware)
+      .concat(lotApi.middleware)
+      .concat(jewelryApi.middleware)
 })
 
 export type RootState = ReturnType<typeof store.getState>
