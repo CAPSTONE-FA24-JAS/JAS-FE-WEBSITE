@@ -31,6 +31,23 @@ import Lots from '../pages/clientPages/Lots'
 import PastAuction from '../pages/clientPages/PastAuction'
 import { RoleType } from '../slice/authLoginAPISlice'
 
+import CreateAuthorization from '../pages/Auth/staff/Valuation/AuthorizationLetter'
+import RequestPreliminaryList from '../pages/Auth/appraiser/RequestPreliminaryValuation/RequestPreliminaryValuation'
+import AppraiserLayout from '../layout/appraiser_layout/AppraiserLayout'
+import MyMissionList from '../pages/Auth/staff/Mission/MyMission'
+import CreatePreliminaryValuationAppraiser from '../pages/Auth/appraiser/RequestPreliminaryValuation/CreatePreliminaryValuation'
+import PreliminaryValuationList from '../pages/Auth/appraiser/Valuation/PreliminaryValuation/PreliminaryValuationList'
+import CreateFinalValuation from '../pages/Auth/appraiser/Valuation/PreliminaryValuation/FinalValuation/modal/CreateFinalValuation'
+import FinalValuationList from '../pages/Auth/appraiser/Valuation/PreliminaryValuation/FinalValuation/FinalValuationList'
+import ManagerLayout from '../layout/admin_layout/ManagerLayout'
+import AdminLayout from '../layout/manager_layout/AdminLayout'
+import Overview from '../pages/Auth/manager/Overview'
+import ManageAccount from '../pages/Auth/manager/ManageAccount/AccountList'
+import CreateAccount from '../pages/Auth/manager/ManageAccount/CreateAccount'
+import Index from '../pages/Auth/staff/Mission/LiveBidding'
+import RequestFinalValuation from '../pages/Auth/admin/RequestFinalValuation/RequestFinalValuation'
+
+
 interface LayoutProps {
   children: React.ReactNode
   requiredRole?: RoleType
@@ -53,8 +70,13 @@ const managerRoutes: RouteProps[] = [
   { path: '/manager/ConsignList', component: RequestConsign, layout: ManagerLayout },
   { path: '/manager/managewin', component: ManageWinList, layout: ManagerLayout },
   { path: '/manager/auctionlist', component: AuctionList, layout: ManagerLayout },
+
+  { path: '/manager/requestfinal', component: RequestFinalValuation, layout: ManagerLayout },
+  { path: '/manager/lotlist', component: LotList, layout: ManagerLayout }
+
   { path: '/manager/lotlist/:id', component: LotList, layout: ManagerLayout },
   { path: '/manager/financeProofManager', component: FinanceProofListManager, layout: ManagerLayout }
+
 ]
 const appraiserRoutes: RouteProps[] = [
   { path: '/appraiser/requestConsign', component: RequestPreliminaryList, layout: AppraiserLayout },

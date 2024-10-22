@@ -1,35 +1,14 @@
-import React, { useState } from 'react'
-import { Upload, Button, Image } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
-import Gemstone from './Gemstone'
+import React, { ChangeEvent, useEffect, useState } from 'react'
+import { Button, Steps, Upload, Image, message } from 'antd'
+import BasicInfoStep from './StepCreateFinal/BasicInfo'
+import FinalStepsStep from './StepCreateFinal/FinalInfo'
+// import GemstoneDetails from './StepCreateFinal/Gemstone'
+import { useCreateFinalValuationMutation } from '../../../../../../../services/createfinalvaluation.services'
+import { useParams } from 'react-router-dom'
+// import { GemstoneData, GemstoneFormData } from '../../../../../../../types/Gemstone.type'
+// import { ValuationGemstoneData } from '../../../../../../../types/Gemstones.type'
 
-interface FormData {
-  customerName: string
-  jewelryName: string
-  category: string
-  metal: string
-  weight: string
-  condition: string
-  measurements: string
-  size: string
-  totalReplacementCost: string // New field
-  image: File | null // Field for uploaded image
-}
-
-interface GemstoneData {
-  type: 'Diamond' | 'Sapphire'
-  shape: string
-  cut: string
-  quantity: string
-  totalCaratColor: string
-  color: string
-  dimensions: string
-  settingType: string
-  clarity: string
-  enhancementType: string
-  carat: string
-  isVisible: boolean
-}
+const { Step } = Steps
 
 const getBase64 = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -40,104 +19,177 @@ const getBase64 = (file: File): Promise<string> =>
   })
 
 export default function CreateFinalValuation() {
-  const [formData, setFormData] = useState<FormData>({
-    customerName: '',
-    jewelryName: '',
-    category: '',
-    metal: '',
-    weight: '',
-    condition: '',
-    measurements: '',
-    size: '',
-    totalReplacementCost: '', // Initialize new field
-    image: null // Initialize image field
+  const { id } = useParams<{ id: string }>()
+
+  const [selectedImages, setSelectedImages] = useState<File[]>([])
+  const [formData, setFormData] = useState({
+    name: '',
+    categoryId: '',
+    artistId: '',
+    forGender: '',
+    videoLink: '',
+    keyCharacteristicDetails: [
+      {
+        keyCharacteristicId: 0,
+        description: ''
+      }
+    ]
+  })
+  const [formDataPrice, setFormDataPrice] = useState({
+    estimatePriceMin: 0,
+    estimatePriceMax: 0,
+    specificPrice: 0,
+    imageJewelries: []
   })
 
-  const [gemstoneDataArray, setGemstoneDataArray] = useState<GemstoneData[]>([
-    {
-      type: 'Diamond',
-      shape: '',
-      cut: '',
-      quantity: '',
-      totalCaratColor: '',
-      color: '',
-      dimensions: '',
-      settingType: '',
-      clarity: '',
-      enhancementType: '',
-      carat: '',
-      isVisible: false
+  // const [gemstoneDataArray, setGemstoneDataArray] = useState<GemstoneData[]>([
+  //   {
+  //     type: 'Diamond',
+  //     shape: '',
+  //     cut: '',
+  //     quantity: 1,
+  //     color: '',
+  //     dimension: '',
+  //     carat: '',
+  //     certificate: '',
+  //     fluorescence: '',
+  //     settingType: '',
+  //     lengthWidthRatio: '',
+  //     clarity: '',
+  //     enhancementType: '',
+  //     documentDiamonds: '',
+  //     documentShaphies: '',
+  //     isVisible: false,
+  //     secondGemstone: {
+  //       secondColor: '',
+  //       secondCut: '',
+  //       secondQuantity: 1,
+  //       secondClarity: '',
+  //       secondSettingType: '',
+  //       secondDimensions: '',
+  //       secondShape: '',
+  //       secondCertificate: '',
+  //       secondFluorescence: ''
+  //     }
+  //   }
+  // ])
+  // console.log('valuationid:', valuationId)
+  const [currentStep, setCurrentStep] = useState(0)
+
+  const [createFinalValuation, { data }] = useCreateFinalValuationMutation()
+
+  const handleFormChangeFinal = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    const numberValue = Number(value)
+    setFormDataPrice((prevData) => ({
+      ...prevData,
+      [name]: numberValue
+    }))
+  }
+
+  const handleFormChangeBasic = (name: string, value: any) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }))
+  }
+
+  // const handleGemstoneChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  //   const newGemstoneDataArray = [...gemstoneDataArray]
+  //   newGemstoneDataArray[index] = {
+  //     ...newGemstoneDataArray[index],
+  //     [e.target.name]: e.target.value
+  //   }
+  //   setGemstoneDataArray(newGemstoneDataArray)
+  // }
+
+  // const handleAddGemstone = () => {
+  //   setGemstoneDataArray([
+  //     ...gemstoneDataArray,
+  //     {
+  //       type: 'Diamond',
+  //       shape: '',
+  //       cut: '',
+  //       quantity: 1,
+  //       color: '',
+  //       dimension: '',
+  //       carat: '',
+  //       settingType: '',
+  //       certificate: '',
+  //       fluorescence: '',
+  //       lengthWidthRatio: '',
+  //       clarity: '',
+  //       enhancementType: '',
+  //       documentDiamonds: '',
+  //       documentShaphies: '',
+  //       isVisible: false,
+  //       secondGemstone: {
+  //         secondColor: '',
+  //         secondCut: '',
+  //         secondQuantity: 1,
+  //         secondClarity: '',
+  //         secondSettingType: '',
+  //         secondDimensions: '',
+  //         secondShape: '',
+  //         secondCertificate: '',
+  //         secondFluorescence: ''
+  //       }
+  //     }
+  //   ])
+  // }
+
+  const handleImageChange = (files: File[]) => {
+    setSelectedImages(files)
+  }
+
+  useEffect(() => {
+    if (data) {
+      message.success('Final valuation created successfully!')
+      console.log('API response:', data)
     }
-  ])
+  }, [data])
 
-  const [previewOpen, setPreviewOpen] = useState(false)
-  const [previewImage, setPreviewImage] = useState('')
-
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
+  const next = () => {
+    console.log('Form Data at Basic Info Step:', formData)
+    console.log('Form Data at Price Info Step:', formDataPrice)
+    setCurrentStep(currentStep + 1)
   }
 
-  const handleGemstoneChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const newGemstoneDataArray = [...gemstoneDataArray]
-    newGemstoneDataArray[index] = {
-      ...newGemstoneDataArray[index],
-      [e.target.name]: e.target.value
-    }
-    setGemstoneDataArray(newGemstoneDataArray)
+  const prev = () => {
+    setCurrentStep(currentStep - 1)
   }
 
-  const handleGemstoneTypeChange = (type: 'Diamond' | 'Sapphire', index: number) => {
-    const newGemstoneDataArray = [...gemstoneDataArray]
-    newGemstoneDataArray[index].type = type
-    setGemstoneDataArray(newGemstoneDataArray)
-  }
 
-  const handleAddGemstone = () => {
-    setGemstoneDataArray([
-      ...gemstoneDataArray,
-      {
-        type: 'Diamond',
-        shape: '',
-        cut: '',
-        quantity: '',
-        totalCaratColor: '',
-        color: '',
-        dimensions: '',
-        settingType: '',
-        clarity: '',
-        enhancementType: '',
-        carat: '',
-        isVisible: false
+  const handleSubmit = async () => {
+    try {
+      const imageJewelries = await Promise.all(selectedImages.map((file) => getBase64(file)))
+
+      // Prepare key characteristic details for the payload
+      const KeyCharacteristicDetails = formData.keyCharacteristicDetails.map((detail) => ({
+        id: null, // Assuming this will be generated by the server
+        description: detail.description || null,
+        keyCharacteristicId: detail.keyCharacteristicId || null,
+        jewelryId: null // Assuming this will be set on the server side
+      }))
+
+      const payload = {
+        Name: formData.name || null,
+        VideoLink: formData.videoLink || null,
+        ArtistId: formData.artistId ? parseInt(formData.artistId) : null,
+        CategoryId: formData.categoryId ? parseInt(formData.categoryId) : null,
+        ForGender: formData.forGender || null,
+        ValuationId: parseInt(id!),
+        KeyCharacteristicDetails,
+        EstimatePriceMin: formDataPrice.estimatePriceMin || null,
+        EstimatePriceMax: formDataPrice.estimatePriceMax || null,
+        SpecificPrice: formDataPrice.specificPrice || null,
+        ImageJewelries: imageJewelries.map((image, index) => ({
+          imageLink: image, // Assuming base64 image links are accepted
+          title: `Image of jewelry ${index + 1}`,
+          thumbnailImage: image,
+          jewelryId: null // Assuming this will be set on the server side
+        }))
       }
-    ])
-  }
-
-  const toggleGemstoneVisibility = (index: number) => {
-    const newGemstoneDataArray = [...gemstoneDataArray]
-    newGemstoneDataArray[index].isVisible = !newGemstoneDataArray[index].isVisible
-    setGemstoneDataArray(newGemstoneDataArray)
-  }
-
-  const handleImageChange = async (info: any) => {
-    if (info.file.status === 'done') {
-      const base64 = await getBase64(info.file.originFileObj as File)
-      setFormData({ ...formData, image: info.file.originFileObj }) // Store the image file
-      setPreviewImage(base64) // Set the preview image
-      setPreviewOpen(true) // Open preview
-    }
-  }
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    console.log('Form Data:', formData)
-    if (formData.image) {
-      console.log('Uploaded Image:', formData.image)
-    }
-    console.log('Gemstone Data:', gemstoneDataArray)
-  }
 
   return (
     <div className='max-w-6xl p-4 mx-auto'>
@@ -200,18 +252,43 @@ export default function CreateFinalValuation() {
                 </button>
               </div>
 
-              {gemstoneData.isVisible && (
-                <Gemstone
-                  gemstoneType={gemstoneData.type}
-                  setGemstoneType={(type) => handleGemstoneTypeChange(type, index)}
-                  showGemstoneDetails={gemstoneData.isVisible}
-                  handleGemstoneChange={(e) => handleGemstoneChange(e, index)}
-                  gemstoneData={gemstoneData}
-                />
-              )}
-            </div>
-          ))}
-        </div>
+
+      const response = await createFinalValuation(payload).unwrap()
+      console.log('API response:', response)
+    } catch (error) {
+      console.error('API request failed:', error)
+      message.error('Failed to create final valuation')
+    }
+  }
+
+
+  const steps = [
+    {
+      title: 'Basic Information',
+      content: <BasicInfoStep formData={formData} handleFormChange={handleFormChangeBasic} />
+    },
+    {
+      title: 'Gemstone Details'
+      // content: (
+      //   // <GemstoneDetails
+      //   //   gemstoneDataArray={gemstoneDataArray}
+      //   //   // handleAddGemstone={handleAddGemstone}
+      //   //   handleGemstoneChange={handleGemstoneChange}
+      //   //   setGemstoneDataArray={setGemstoneDataArray}
+      //   // />
+      // )
+    },
+    {
+      title: 'Final Steps',
+      content: (
+        <FinalStepsStep
+          formDataPrice={formDataPrice}
+          handleImageChange={handleImageChange}
+          handleFormChange={handleFormChangeFinal}
+        />
+      )
+    }
+  ]
 
         {/* Total Estimated Retail Replacement Cost Field */}
         <div className='grid grid-cols-2 gap-4 mt-8'>
@@ -242,24 +319,33 @@ export default function CreateFinalValuation() {
           </div>
         </div>
 
-        {/* Preview Modal for Uploaded Image */}
-        <Image.PreviewGroup>
-          <Image
-            preview={previewOpen}
-            src={previewImage}
-            onPreviewClose={() => setPreviewOpen(false)}
-            width={200}
-            style={{ display: previewOpen ? 'block' : 'none' }} // Show image only when preview is open
-          />
-        </Image.PreviewGroup>
-        <div className='mt-8'>
-          <Button type='primary' htmlType='submit'>
+
+  return (
+    <div className='max-w-6xl mx-auto p-4'>
+      <h2 className='text-2xl font-bold mb-6'>Final Valuation Form</h2>
+      <Steps className='mb-6' current={currentStep}>
+        {steps.map((step) => (
+          <Step key={step.title} title={step.title} />
+        ))}
+      </Steps>
+      <div className='steps-content mb-6'>{steps[currentStep].content}</div>
+      <div className='steps-action'>
+        {currentStep > 0 && (
+          <Button style={{ margin: '0 8px' }} onClick={prev}>
+            Previous
+          </Button>
+        )}
+        {currentStep < steps.length - 1 && (
+          <Button type='primary' onClick={next}>
+            Next
+          </Button>
+        )}
+        {currentStep === steps.length - 1 && (
+          <Button type='primary' onClick={handleSubmit}>
             Submit
           </Button>
-        </div>
-      </form>
-
-      {/* Upload Image Field using Ant Design Upload component */}
+        )}
+      </div>
     </div>
   )
 }

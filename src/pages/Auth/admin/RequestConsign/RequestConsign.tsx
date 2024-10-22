@@ -72,7 +72,7 @@ export default function RequestConsign() {
         if (!status) {
           return <Tag color='gray'>Unknown</Tag>
         }
-        let color = status === '1' ? 'green' : status === 'Requested' ? 'gray' : 'blue'
+        let color = status === 'Assigned' ? 'green' : status === 'Requested' ? 'gray' : 'blue'
         return <Tag color={color}>{status.toUpperCase()}</Tag>
       }
     },

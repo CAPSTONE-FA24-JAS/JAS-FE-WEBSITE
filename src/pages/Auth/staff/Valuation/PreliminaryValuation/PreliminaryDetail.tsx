@@ -1,5 +1,5 @@
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
-import { Button, Form, Modal, Select } from 'antd'
+import { Button, Modal } from 'antd'
 import React, { useState } from 'react'
 
 interface PreliminaryValuationDetailProps {
@@ -8,18 +8,13 @@ interface PreliminaryValuationDetailProps {
   onUpdate: () => void
   record: any
   status: string
-  setStatus: (status: string) => void
-  tab: string
 }
 
 const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
   isVisible,
   onCancel,
   onUpdate,
-  record,
-  status,
-  setStatus,
-  tab
+  record
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const images = record?.imageValuations?.map((img: any) => img.imageLink) || [
@@ -32,6 +27,21 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
 
   const prevImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length)
+  }
+  const handleReceiptLinkClick = () => {
+    // Check if valuationDocuments is an array and contains at least one document
+    if (record?.valuationDocuments?.length > 0) {
+      // Assuming you want to open the first document's link
+      const receiptLink = record.valuationDocuments[0]?.documentLink
+
+      if (receiptLink) {
+        window.open(receiptLink, '_blank')
+      } else {
+        console.error('No document link found.')
+      }
+    } else {
+      console.error('No valuation documents found.')
+    }
   }
 
   return (
@@ -89,21 +99,23 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
             <strong>Description:</strong> {record?.description}
           </p>
           <p className='mb-4'>
-            <strong>Preliminary Price:</strong>{' '}
-            <span className='font-bold text-red-800'> {record?.desiredPrice} VND</span>
+            <strong>Estimate Price:</strong>{' '}
+            <span className='font-bold text-red-800'>
+              {' '}
+              {record?.estimatePriceMin} - {record?.estimatePriceMax} VND
+            </span>
           </p>
 
-          <Form.Item label='Status' className='mt-4 font-bold'>
-            <Select value={status} onChange={(value) => setStatus(value)}>
-              <Select.Option value='Approve'>Approve</Select.Option>
-              <Select.Option value='Reject'>Reject</Select.Option>
-              <Select.Option value='Pending'>Pending</Select.Option>
-            </Select>
-          </Form.Item>
+          {/* Display status as a paragraph */}
+          <p className='mt-4 font-bold'>
+            <strong>Status:</strong> {record?.status}
+          </p>
         </div>
       </div>
       <div className='mt-6'>
-        <p className='italic text-blue-500'>Receipt Link</p>
+        <p className='italic text-blue-500 cursor-pointer' onClick={handleReceiptLinkClick}>
+          Receipt Link
+        </p>
       </div>
       {/* Note Section */}
       <div className='mt-6'>

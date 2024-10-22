@@ -1,19 +1,47 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Button, Modal, Select } from 'antd'
+import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 const { Option } = Select
 
 interface ValuationDetailsModalProps {
-  visible: boolean
+  isVisible: boolean
   onCancel: () => void
   record: any
   onUpdate: () => void // Added onUpdate prop
 }
 
-const PreliminaryDetailsModal: React.FC<ValuationDetailsModalProps> = ({ visible, onUpdate, onCancel, record }) => {
+const PreliminaryDetailsModal: React.FC<ValuationDetailsModalProps> = ({ isVisible, onUpdate, onCancel, record }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const images = record?.imageValuations?.map((img: any) => img.imageLink) || [
+    'https://via.placeholder.com/150?text=No+Image'
+  ]
+
+  const nextImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length)
+  }
+
+  const prevImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length)
+  }
+  const handleReceiptLinkClick = () => {
+    // Check if valuationDocuments is an array and contains at least one document
+    if (record?.valuationDocuments?.length > 0) {
+      // Assuming you want to open the first document's link
+      const receiptLink = record.valuationDocuments[0]?.documentLink
+
+      if (receiptLink) {
+        window.open(receiptLink, '_blank')
+      } else {
+        console.error('No document link found.')
+      }
+    } else {
+      console.error('No valuation documents found.')
+    }
+  }
   return (
     <Modal
       title='Valuation Details'
-      visible={visible}
+      open={isVisible}
       onCancel={onCancel}
       footer={[
         <Button key='cancel' onClick={onCancel}>
@@ -27,56 +55,61 @@ const PreliminaryDetailsModal: React.FC<ValuationDetailsModalProps> = ({ visible
       style={{ padding: '24px' }}
     >
       <div className='grid grid-cols-2 gap-6'>
-        <div className='flex items-center justify-center'>
-          <img
-            src='https://via.placeholder.com/300?text=Valuation+Image'
-            alt='Valuation Item'
-            className='max-w-full rounded-lg'
-          />
+        <div className='relative'>
+          <div className='flex items-center justify-center mb-4'>
+            <img src={images[currentImageIndex]} alt='product' className='max-w-full rounded-lg' />
+          </div>
+          <div className='absolute inset-y-0 left-0 flex items-center justify-center pl-3'>
+            <Button icon={<LeftOutlined />} onClick={prevImage} className='bg-gray-300 hover:bg-gray-400' />
+          </div>
+          <div className='absolute inset-y-0 right-0 flex items-center justify-center pr-3'>
+            <Button icon={<RightOutlined />} onClick={nextImage} className='bg-gray-300 hover:bg-gray-400' />
+          </div>
         </div>
 
         <div>
+          <p className='mb-2 text-xl font-bold'>{record?.id}</p>
+          <p className='mb-6 text-xl font-bold'>{record?.name}</p>
+
           <p className='mb-4'>
-            <strong>{record?.id}</strong>
+            <strong>Customer Name:</strong> {record?.seller?.firstName} {record?.seller?.lastName}
           </p>
           <p className='mb-4'>
-            <strong>{record?.valuationName}</strong>
+            <strong>Email:</strong> {record?.seller?.email}
           </p>
           <p className='mb-4'>
-            <strong>Customer Name:</strong> {record?.customerName}
+            <strong>Phone:</strong> {record?.seller?.phoneNumber}
           </p>
           <p className='mb-4'>
-            <strong>Contact:</strong> {record?.contact || 'N/A'}
+            <strong>Height:</strong> {record?.height} cm
           </p>
           <p className='mb-4'>
-            <strong>Phone:</strong> {record?.phone}
+            <strong>Width:</strong> {record?.width} cm
           </p>
           <p className='mb-4'>
-            <strong>Email:</strong> {record?.email || 'N/A'}
+            <strong>Depth:</strong> {record?.depth} cm
+          </p>
+          <p className='mb-6'>
+            <strong>Description:</strong> {record?.description}
           </p>
           <p className='mb-4'>
-            <strong>Width:</strong> {record?.width || 'N/A'} cm
+            <strong>Estimate Price:</strong>{' '}
+            <span className='font-bold text-red-800'>
+              {' '}
+              {record?.estimatePriceMin} - {record?.estimatePriceMax} VND
+            </span>
           </p>
-          <p className='mb-4'>
-            <strong>Height:</strong> {record?.height || 'N/A'} cm
+
+          {/* Display status as a paragraph */}
+          <p className='mt-4 font-bold'>
+            <strong>Status:</strong> {record?.status}
           </p>
-          <p className='mb-4'>
-            <strong>Preliminary Price:</strong>{' '}
-            <span className='font-bold text-red-800'> {record?.desiredPrice} VND</span>
-          </p>
-          <div className='mb-4'>
-            <strong>Status:</strong>
-            <Select defaultValue={record?.status} className='ml-2'>
-              <Option value='Đang chờ xử lý'>Đang chờ xử lý</Option>
-              <Option value='Đang xử lý'>Đang xử lý</Option>
-              <Option value='Đã hoàn thành'>Đã hoàn thành</Option>
-              <Option value='Đã từ chối'>Đã từ chối</Option>
-            </Select>
-          </div>
         </div>
       </div>
       <div className='mt-6'>
-        <p className='italic text-blue-500'>Receipt Link</p>
+        <p className='italic text-blue-500 cursor-pointer' onClick={handleReceiptLinkClick}>
+          Receipt Link
+        </p>
       </div>
       {/* Note Section */}
       <div className='mt-6'>
