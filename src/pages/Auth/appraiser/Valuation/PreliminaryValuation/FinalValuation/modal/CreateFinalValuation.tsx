@@ -159,6 +159,7 @@ export default function CreateFinalValuation() {
     setCurrentStep(currentStep - 1)
   }
 
+
   const handleSubmit = async () => {
     try {
       const imageJewelries = await Promise.all(selectedImages.map((file) => getBase64(file)))
@@ -190,7 +191,67 @@ export default function CreateFinalValuation() {
         }))
       }
 
-      // console.log('Payload being sent:', JSON.stringify(payload, null, 2))
+  return (
+    <div className='max-w-6xl p-4 mx-auto'>
+      <h2 className='mb-6 text-2xl font-bold'>Final Valuation Form</h2>
+      <form onSubmit={handleSubmit}>
+        <div className='grid grid-cols-2 gap-4'>
+          {Object.keys(formData).map((key) => {
+            if (key === 'totalReplacementCost' || key === 'image') return null
+            return (
+              <div key={key}>
+                <label className='block mb-1 font-medium'>
+                  {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
+                </label>
+                <input
+                  type={key === 'weight' ? 'number' : 'text'}
+                  name={key}
+                  // value={formData[key as keyof FormData]}
+                  onChange={handleFormChange}
+                  className='w-full p-2 border border-gray-300 rounded'
+                  placeholder={`Enter ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}`}
+                />
+              </div>
+            )
+          })}
+        </div>
+
+        <div className='mt-8'>
+          <div className='flex items-center justify-between mt-8 mb-4'>
+            <h3 className='mb-0 text-xl font-semibold'>Gemstone Details</h3>
+            <button type='button' onClick={handleAddGemstone} className='px-4 py-2 text-black bg-gray-300 rounded'>
+              Add Gemstone Details
+            </button>
+          </div>
+
+          {gemstoneDataArray.map((gemstoneData, index) => (
+            <div key={index} className='p-4 mb-4 border rounded'>
+              <div className='flex items-center justify-between'>
+                <h4 className='text-lg font-semibold'>Gemstone {index + 1}</h4>
+                <button
+                  type='button'
+                  onClick={() => toggleGemstoneVisibility(index)}
+                  className='relative flex items-center justify-center px-2 py-1 text-black'
+                  style={{ width: '40px', height: '40px' }}
+                >
+                  <span
+                    className={`block border-l-2 border-b-2 ${
+                      gemstoneData.isVisible ? 'transform rotate-45' : 'transform -rotate-45'
+                    } transition-transform duration-300`}
+                    style={{
+                      width: '10px',
+                      height: '10px',
+                      borderColor: 'black',
+                      position: 'absolute',
+                      left: '50%',
+                      top: '50%',
+                      marginLeft: '-5px',
+                      marginTop: '-5px'
+                    }}
+                  />
+                </button>
+              </div>
+
 
       const response = await createFinalValuation(payload).unwrap()
       console.log('API response:', response)
@@ -199,6 +260,7 @@ export default function CreateFinalValuation() {
       message.error('Failed to create final valuation')
     }
   }
+
 
   const steps = [
     {
@@ -227,6 +289,36 @@ export default function CreateFinalValuation() {
       )
     }
   ]
+
+        {/* Total Estimated Retail Replacement Cost Field */}
+        <div className='grid grid-cols-2 gap-4 mt-8'>
+          <div>
+            <label className='block mb-1 font-medium text-red-600'>Total Estimated Retail Replacement Cost</label>
+            <input
+              type='number'
+              name='totalReplacementCost'
+              value={formData.totalReplacementCost}
+              onChange={handleFormChange}
+              min={0} // Set minimum value to 0
+              className='w-full p-2 border border-gray-300 rounded'
+              placeholder='Enter total estimated retail replacement cost'
+            />
+          </div>
+        </div>
+        <div className='grid grid-cols-2 gap-4 mt-8'>
+          <div>
+            <label className='block mb-1 font-medium'>Upload Image</label>
+            <Upload
+              accept='image/*'
+              listType='picture-card'
+              onChange={handleImageChange}
+              showUploadList={false} // Hides the default upload list
+            >
+              <Button icon={<PlusOutlined />}></Button>
+            </Upload>
+          </div>
+        </div>
+
 
   return (
     <div className='max-w-6xl mx-auto p-4'>

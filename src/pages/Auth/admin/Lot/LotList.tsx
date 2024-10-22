@@ -1,86 +1,60 @@
-import { useState } from 'react'
-import { Table, Button, Input, Space, Tag } from 'antd'
+import React, { useState } from 'react'
+import { Table, Button, Input, Space, Tag, notification } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import type { TableProps } from 'antd'
 import AddLotModal from './modal/AddLotModal'
+import { useParams } from 'react-router-dom'
+import {
+  useCreateLotFixedPriceMutation,
+  useGetLotsByAuctionIdQuery,
+  useCreateLotSecretAuctionMutation,
+  useCreateLotPublicAuctionMutation,
+  useCreateLotAuctionPriceGraduallyReducedMutation
+} from '../../../../services/lot.services'
+import { CreateLot, Lot } from '../../../../types/Lot.type'
+import { useGetAuctionByIdQuery } from '../../../../services/auction.services'
 
-export interface Lot {
-  id: number
-  product: string
-  title: string
-  auctionName: string
-  number: number
-  winner: string
-  biddingAmount: number
-  commission: number
-  status: string
-}
-
-const LotList = () => {
+const LotList: React.FC = () => {
   const [searchText, setSearchText] = useState('')
   const [modalVisible, setModalVisible] = useState(false)
-  const [editingLot, setEditingLot] = useState<Lot | null>(null) // nào làm với api thì nhét redux vào đây giờ dùng state tạm để UI
+  const [editingLot, setEditingLot] = useState<Lot | null>(null)
 
-  const lotData: Lot[] = [
-    {
-      id: 1,
-      product: 'Gold Necklace',
-      title: '18k Gold Diamond Necklace',
-      auctionName: 'Luxury Jewelry Auction',
-      number: 101,
-      winner: 'Alice Johnson',
-      biddingAmount: 5000,
-      commission: 250,
-      status: 'Completed'
-    },
-    {
-      id: 2,
-      product: 'Silver Bracelet',
-      title: 'Sterling Silver Charm Bracelet',
-      auctionName: 'Fine Jewelry Auction',
-      number: 102,
-      winner: 'Bob Smith',
-      biddingAmount: 1200,
-      commission: 60,
-      status: 'Pending'
-    },
-    {
-      id: 3,
-      product: 'Diamond Ring',
-      title: '2 Carat Solitaire Diamond Ring',
-      auctionName: 'Exclusive Diamond Auction',
-      number: 103,
-      winner: 'Catherine Lee',
-      biddingAmount: 15000,
-      commission: 750,
-      status: 'Shipped'
-    },
-    {
-      id: 4,
-      product: 'Pearl Earrings',
-      title: 'Classic Pearl Drop Earrings',
-      auctionName: 'Luxury Jewelry Auction',
-      number: 104,
-      winner: 'Daniel Green',
-      biddingAmount: 800,
-      commission: 40,
-      status: 'In Progress'
-    }
-  ]
+  const { id } = useParams<{ id: string }>()
+  const auctionId = parseInt(id || '0', 10)
+
+  const { data: lotsData, isLoading, isError } = useGetLotsByAuctionIdQuery(auctionId)
+  const { data: auctionData } = useGetAuctionByIdQuery(auctionId)
+  const [createFixed] = useCreateLotFixedPriceMutation()
+  const [createSerect] = useCreateLotSecretAuctionMutation()
+  const [createPublic] = useCreateLotPublicAuctionMutation()
+  const [createPriceGraduallyReduced] = useCreateLotAuctionPriceGraduallyReducedMutation()
 
   const columns: TableProps<Lot>['columns'] = [
-    { title: 'Product', dataIndex: 'product', key: 'product' },
-    { title: 'Title', dataIndex: 'title', key: 'title' },
-    { title: 'Auction Name', dataIndex: 'auctionName', key: 'auctionName' },
-    { title: 'Number', dataIndex: 'number', key: 'number' },
-    { title: 'Winner', dataIndex: 'winner', key: 'winner' },
+    { title: 'Start Price', dataIndex: 'startPrice', key: 'startPrice', render: (value) => `${value}` },
     {
-      title: 'Bidding Amount',
-      dataIndex: 'biddingAmount',
-      key: 'biddingAmount',
-      render: (value) => `$${value.toFixed(2)}`
+      title: 'Final Price Sold',
+      dataIndex: 'finalPriceSold',
+      key: 'finalPriceSold',
+      render: (value) => `$${value}`
     },
-    { title: 'Commission', dataIndex: 'commission', key: 'commission', render: (value) => `$${value.toFixed(2)}` },
+
+    {
+      title: 'Bid Increment',
+      dataIndex: 'bidIncrement',
+      key: 'bidIncrement',
+      render: (value) => `$${value}`
+    },
+    { title: 'Deposit', dataIndex: 'deposit', key: 'deposit', render: (value) => `$${value}` },
+    { title: 'Buy Now Price', dataIndex: 'buyNowPrice', key: 'buyNowPrice', render: (value) => `$${value}` },
+
+    { title: 'Actual End Time', dataIndex: 'actualEndTime', key: 'actualEndTime' },
+    {
+      title: 'Financial Proof',
+      dataIndex: 'haveFinancialProof',
+      key: 'haveFinancialProof',
+      render: (value) => (value ? 'Yes' : 'No')
+    },
+    { title: 'Lot Type', dataIndex: 'lotType', key: 'lotType' },
     {
       title: 'Status',
       dataIndex: 'status',
@@ -106,7 +80,7 @@ const LotList = () => {
           default:
             color = 'default'
         }
-        return <Tag color={color}></Tag> // Remove template string
+        return <Tag color={color}>{status}</Tag>
       }
     },
     {
@@ -140,29 +114,134 @@ const LotList = () => {
     setEditingLot(null)
   }
 
-  const handleModalSubmit = (values: Partial<Lot>) => {
+  const handleModalSubmit = async (values: Partial<CreateLot>) => {
     if (editingLot) {
       // Handle edit logic
       console.log('Editing lot:', { ...editingLot, ...values })
     } else {
-      // Handle add logic
-      console.log('Adding new lot:', values)
+      try {
+        console.log('Adding new lot:', values)
+        console.log('Lot Type:', values.lotTypeValue)
+
+        switch (Number(values.lotTypeValue)) {
+          case 1:
+            console.log('Fixed Price Auction')
+            await createFixed({
+              title: values.title,
+              deposit: values.deposit,
+              buyNowPrice: values.buyNowPrice,
+              startTime: values.startTime,
+              endTime: values.endTime,
+              isExtend: values.isExtend ? false : values.isExtend,
+              haveFinancialProof: values.haveFinancialProof ? false : values.haveFinancialProof,
+              staffId: values.staffId,
+              jewelryId: values.jewelryId,
+              auctionId: values.auctionId
+            }).unwrap() // Thêm .unwrap() để handle error
+            notification.success({
+              message: 'Success',
+              description: 'Fixed Price Lot created successfully!'
+            })
+            break
+          case 2:
+            console.log('Sercet Auction')
+            await createSerect({
+              title: values.title,
+              startPrice: values.startPrice,
+              finalPriceSold: values.finalPriceSold,
+              deposit: values.deposit,
+              startTime: values.startTime,
+              endTime: values.endTime,
+              isExtend: values.isExtend ? false : values.isExtend,
+              haveFinancialProof: values.haveFinancialProof ? false : values.haveFinancialProof,
+              staffId: values.staffId,
+              jewelryId: values.jewelryId,
+              auctionId: values.auctionId
+            }).unwrap()
+            notification.success({
+              message: 'Success',
+              description: 'Secret Auction Lot created successfully!'
+            })
+            break
+          case 3:
+            console.log('Public Auction')
+            await createPublic({
+              title: values.title,
+              startPrice: values.startPrice,
+              finalPriceSold: values.finalPriceSold,
+              bidIncrement: values.bidIncrement,
+              deposit: values.deposit,
+              startTime: values.startTime,
+              endTime: values.endTime,
+              isExtend: values.isExtend ? false : values.isExtend,
+              haveFinancialProof: values.haveFinancialProof ? false : values.haveFinancialProof,
+              staffId: values.staffId,
+              jewelryId: values.jewelryId,
+              auctionId: values.auctionId
+            }).unwrap()
+            notification.success({
+              message: 'Success',
+              description: 'Public Auction Lot created successfully!'
+            })
+            break
+
+          case 4:
+            console.log('Reverse Auction')
+            await createPriceGraduallyReduced({
+              title: values.title,
+              startPrice: values.startPrice,
+              finalPriceSold: values.finalPriceSold,
+              bidIncrement: values.bidIncrement,
+              deposit: values.deposit,
+              startTime: values.startTime,
+              endTime: values.endTime,
+              isExtend: values.isExtend ? false : values.isExtend,
+              haveFinancialProof: values.haveFinancialProof ? false : values.haveFinancialProof,
+              staffId: values.staffId,
+              jewelryId: values.jewelryId,
+              auctionId: values.auctionId
+            }).unwrap()
+            notification.success({
+              message: 'Success',
+              description: 'Reverse Auction Lot created successfully!'
+            })
+            break
+          default:
+            notification.warning({
+              message: 'Warning',
+              description: 'Invalid lot type selected'
+            })
+            break
+        }
+        setModalVisible(false)
+        setEditingLot(null)
+      } catch (error: any) {
+        notification.error({
+          message: 'Error',
+          description: error.data?.message || 'Failed to create lot. Please try again.'
+        })
+      }
     }
     setModalVisible(false)
     setEditingLot(null)
   }
 
-  const filteredLots = lotData.filter(
-    (lot) =>
-      lot.product.toLowerCase().includes(searchText.toLowerCase()) ||
-      lot.title.toLowerCase().includes(searchText.toLowerCase())
-  )
+  const filteredLots =
+    lotsData?.data.filter(
+      (lot) =>
+        lot.lotType.toLowerCase().includes(searchText.toLowerCase()) ||
+        lot.id.toString().includes(searchText.toLowerCase())
+    ) || []
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
 
   return (
     <>
       <div className='p-5 rounded-lg bg-slate-50'>
         <div className='flex items-center justify-between mb-4'>
-          <h2 className='text-xl font-semibold'>Lots List</h2>
+          <h2 className='text-xl font-semibold'>{auctionData?.data.name} - Lots List</h2>
           <Space>
             <Input.Search
               placeholder='Search lots'
@@ -176,12 +255,15 @@ const LotList = () => {
         </div>
         <Table columns={columns} dataSource={filteredLots} rowKey='id' pagination={{ pageSize: 5 }} />
       </div>
-      <AddLotModal
-        visible={modalVisible}
-        onCancel={handleModalCancel}
-        onSubmit={handleModalSubmit}
-        initialValues={editingLot || undefined}
-      />
+      {auctionData && (
+        <AddLotModal
+          auctionData={auctionData.data}
+          visible={modalVisible}
+          onCancel={handleModalCancel}
+          onSubmit={handleModalSubmit}
+          initialValues={editingLot || ({} as Lot)}
+        />
+      )}
     </>
   )
 }

@@ -31,25 +31,25 @@ export const financeProofApi = createApi({
             ]
           : [{ type: 'FinanceProof', id: 'LIST' }]
     }),
+    getFinanceProofByStatus: builder.query<Respone<FinanceProof[]>, number>({
+      query: (status) => `BidLimit/ViewBidLimtByStatus?statusValue=${status}`,
+
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(({ id }) => ({ type: 'FinanceProof' as const, id })),
+              { type: 'FinanceProof', id: 'LIST' }
+            ]
+          : [{ type: 'FinanceProof', id: 'LIST' }]
+    }),
 
     getFinanceProofById: builder.query<Respone<FinanceProof>, number>({
-      query: (id) => `BidLimit/ViewAllBidLimitById?Id=${id}`,
+      query: (id) => `BidLimit/ViewBidLimitById?Id=${id}`,
       providesTags: (result, error, id) => [{ type: 'FinanceProof', id }]
     }),
 
-    updateFinanceProof: builder.mutation<Respone<FinanceProof>, Omit<UpdateFinanceProof, 'staffId'>>({
+    updateFinanceProof: builder.mutation<Respone<FinanceProof>, UpdateFinanceProof>({
       query: (body) => {
-        const user = localStorage.getItem('userLogin')
-        if (user) {
-          const userData = JSON.parse(user) as AccessTokenResponse
-          const staffId = userData ? userData.user.staffDTO?.id : 100
-          console.log('staffId', staffId)
-          return {
-            url: `BidLimit/UpdateStatusBidLimit`,
-            method: 'PUT',
-            body: { ...body, staffId }
-          }
-        }
         return {
           url: `BidLimit/UpdateStatusBidLimit`,
           method: 'PUT',
@@ -61,4 +61,9 @@ export const financeProofApi = createApi({
   })
 })
 
-export const { useGetFinanceProofsQuery, useGetFinanceProofByIdQuery, useUpdateFinanceProofMutation } = financeProofApi
+export const {
+  useGetFinanceProofsQuery,
+  useGetFinanceProofByStatusQuery,
+  useGetFinanceProofByIdQuery,
+  useUpdateFinanceProofMutation
+} = financeProofApi
