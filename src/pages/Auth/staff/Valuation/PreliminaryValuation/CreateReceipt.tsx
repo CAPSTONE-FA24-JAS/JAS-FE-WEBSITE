@@ -42,6 +42,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
     const requestData = {
       id: record?.id,
       actualStatusOfJewelry,
+      status: 5, // Set status to 5 explicitly
       deliveryDate
     }
 
@@ -53,12 +54,12 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
       console.log('Documents:', documents)
 
       // Filter documents to get the most recent one
-      const filteredDocuments = documents.filter((document: any) => document.valuationDocumentTypeId === 2)
+      const filteredDocuments = documents.filter((document: any) => document.valuationDocumentType === 'Reciept')
       filteredDocuments.sort(
         (a: any, b: any) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime()
       )
       const mostRecentDocument = filteredDocuments[0]
-      const fileDocumentUrl = mostRecentDocument?.fileDocument
+      const fileDocumentUrl = mostRecentDocument?.documentLink
 
       if (fileDocumentUrl) {
         // Open the URL in a new tab

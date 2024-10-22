@@ -44,6 +44,7 @@ export interface CreateReceiptRequest {
   id: number
   actualStatusOfJewelry: string
   deliveryDate: string
+  status: number
 }
 export interface CreateReceiptResponse {
   id: number
@@ -56,4 +57,10 @@ export interface ValuationDocument {
   valuationDocumentTypeId: number
   creationDate: string
   createdBy: number
+}
+export interface RequestFinalValuation {
+  startingPrice: number
+  bidForm: number
+  time_Bidding: string
+  jewelryId: number
 }

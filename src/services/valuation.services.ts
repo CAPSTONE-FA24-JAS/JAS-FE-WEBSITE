@@ -3,7 +3,8 @@ import {
   CreatePreliminaryRepsonse,
   CreatePreliminaryRequest,
   CreateReceiptRequest,
-  CreateReceiptResponse
+  CreateReceiptResponse,
+  RequestFinalValuation
 } from '../types/Valuation.type'
 import baseUrl from '../utils/http'
 
@@ -23,13 +24,14 @@ export const valuationApi = createApi({
   }),
   refetchOnMountOrArgChange: true,
   endpoints: (build) => ({
+    // Existing endpoints
     getValuationById: build.query<any, { id: number }>({
       query: ({ id }) => `Valuations/getValuationById?valuationId=${id}`
     }),
 
     createPreliminary: build.mutation<CreatePreliminaryRepsonse, CreatePreliminaryRequest>({
       query: ({ id, status, estimatePriceMin, estimatePriceMax, appraiserId }) => ({
-        url: `Valuations/createPreliminaryPrice?id=${id}&status=${status}&EstimatePriceMin=${estimatePriceMin}&EstimatePriceMax=${estimatePriceMax}&&appraiserId=${appraiserId}`,
+        url: `Valuations/createPreliminaryPrice?id=${id}&status=${status}&EstimatePriceMin=${estimatePriceMin}&EstimatePriceMax=${estimatePriceMax}&appraiserId=${appraiserId}`,
         method: 'PUT'
       })
     }),
@@ -37,8 +39,20 @@ export const valuationApi = createApi({
     getPreliminaryValuationsByStaff: build.query({
       query: ({ staffId, pageSize, pageIndex }) => {
         const statuses = [3, 4, 5]
-        const statusQuery = statuses.map((status) => `status=${status}`).join('&') // Format the status as multiple parameters
-        return `/Valuations/getPreliminaryValuationsByStatusOfStaff?staffId=${staffId}&${statusQuery}&pageSize=${pageSize}&pageIndex=${pageIndex}`
+        const statusQuery = statuses.map((status) => `status=${status}`).join('&')
+        return `/Valuations/getPreliminaryValuationsOfStaff?staffId=${staffId}&${statusQuery}&pageSize=${pageSize}&pageIndex=${pageIndex}`
+      },
+      transformResponse: (response: any) => ({
+        dataResponse: response.data.dataResponse,
+        totalItemRepsone: response.data.totalItemRepsone
+      })
+    }),
+
+    getPreliminaryValuationsByAppraiser: build.query({
+      query: ({ staffId, pageSize, pageIndex }) => {
+        const statuses = [3, 4, 5]
+        const statusQuery = statuses.map((status) => `status=${status}`).join('&')
+        return `/Valuations/getPreliminaryValuationsOfAppraiser?appraiserId=${staffId}&${statusQuery}&pageSize=${pageSize}&pageIndex=${pageIndex}`
       },
       transformResponse: (response: any) => ({
         dataResponse: response.data.dataResponse,
@@ -64,6 +78,39 @@ export const valuationApi = createApi({
     getRequestPreliminaryValuation: build.query<any, { pageSize: number; pageIndex: number }>({
       query: ({ pageSize, pageIndex }) =>
         `Valuations/GetRequestPreliminaryValuation?pageSize=${pageSize}&pageIndex=${pageIndex}`
+    }),
+
+    getFinalValuationsOfStaff: build.query<any, { staffId: number; pageSize: number; pageIndex: number }>({
+      query: ({ staffId, pageSize, pageIndex }) =>
+        `Valuations/getFinalValuationsOfStaff?staffId=${staffId}&pageSize=${pageSize}&pageIndex=${pageIndex}`,
+      transformResponse: (response: any) => ({
+        dataResponse: response.data.dataResponse,
+        totalItemResponse: response.data.totalItemResponse
+      })
+    }),
+
+    requestFinalValuationForManager: build.mutation<void, RequestFinalValuation>({
+      query: (data) => ({
+        url: `Jewelrys/RequestFinalValuationForManager`,
+        method: 'PUT',
+        body: data
+      })
+    }),
+
+    getValuations: build.query<any, void>({
+      query: () => `Valuations/getValuations`,
+      transformResponse: (response: any) => ({
+        dataResponse: response.data.dataResponse,
+        totalItemResponse: response.data.totalItemResponse
+      })
+    }),
+
+    // New endpoint for updating jewelry status by manager
+    updateJewelryStatusByManager: build.mutation<void, { jewelryId: number; status: number }>({
+      query: ({ jewelryId, status }) => ({
+        url: `Jewelrys/UpdateStatusByManager?jewelryId=${jewelryId}&status=${status}`,
+        method: 'PUT'
+      })
     })
   })
 })
@@ -74,5 +121,10 @@ export const {
   useGetPreliminaryValuationsByStaffQuery,
   useCreateReceiptMutation,
   useUpdatePreliminaryValuationStatusMutation,
-  useGetRequestPreliminaryValuationQuery // Export the new query hook
+  useGetRequestPreliminaryValuationQuery,
+  useGetPreliminaryValuationsByAppraiserQuery,
+  useGetFinalValuationsOfStaffQuery,
+  useRequestFinalValuationForManagerMutation,
+  useGetValuationsQuery,
+  useUpdateJewelryStatusByManagerMutation
 } = valuationApi

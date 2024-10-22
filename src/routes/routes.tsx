@@ -28,6 +28,7 @@ import Overview from '../pages/Auth/manager/Overview'
 import ManageAccount from '../pages/Auth/manager/ManageAccount/AccountList'
 import CreateAccount from '../pages/Auth/manager/ManageAccount/CreateAccount'
 import Index from '../pages/Auth/staff/Mission/LiveBidding'
+import RequestFinalValuation from '../pages/Auth/admin/RequestFinalValuation/RequestFinalValuation'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -51,6 +52,7 @@ const managerRoutes: RouteProps[] = [
   { path: '/manager/ConsignList', component: RequestConsign, layout: ManagerLayout },
   { path: '/manager/managewin', component: ManageWinList, layout: ManagerLayout },
   { path: '/manager/auctionlist', component: AuctionList, layout: ManagerLayout },
+  { path: '/manager/requestfinal', component: RequestFinalValuation, layout: ManagerLayout },
   { path: '/manager/lotlist', component: LotList, layout: ManagerLayout }
 ]
 const appraiserRoutes: RouteProps[] = [

@@ -99,10 +99,9 @@ const RequestConsignDetail: React.FC<ConsignDetailProps> = ({
     }
   }
 
-  // Update status when staff is assigned
   const handleStaffChange = (value: string) => {
     setAssignedStaff(value)
-    setStatus('1') // Update status to 1 when staff is selected
+    setStatus('1')
   }
 
   return (
@@ -143,37 +142,38 @@ const RequestConsignDetail: React.FC<ConsignDetailProps> = ({
           <p className='mb-6 text-xl font-bold'>{record?.name}</p>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Customer Name:</strong>
-            <span className='font-semibold '>
+            <span>
               {record?.seller?.firstName} {record?.seller?.lastName}
             </span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Email:</strong>
-            <span className='font-semibold '>{record?.seller?.accountDTO.email}</span>
+            <span>{record?.seller?.accountDTO.email}</span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Phone:</strong>
-            <span className='font-semibold '>{record?.seller?.phoneNumber}</span>
+            <span>{record?.seller?.accountDTO.phoneNumber}</span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Width:</strong>
-            <span className='font-semibold '>{record?.width} cm</span>
+            <span>{record?.width} cm</span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Height:</strong>
-            <span className='font-semibold '>{record?.height} cm</span>
+            <span>{record?.height} cm</span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Depth:</strong>
-            <span className='font-semibold '>{record?.depth} cm</span>
+            <span>{record?.depth} cm</span>
           </div>
           <div className='flex mb-6'>
             <strong className='w-1/3'>Description:</strong>
-            <span className='font-semibold '>{record?.description}</span>
+            <span>{record?.description}</span>
           </div>
-          <Form.Item label='Status' className='mt-4 font-bold'>
-            <div className='text-lg font-semibold'>{status === '1' ? 'Assigned' : status}</div>
-          </Form.Item>
+          <div className='flex mb-6'>
+            <strong className='w-1/3'>Status:</strong>
+            <span className='text-red-600 font-semibold'>{status === '1' ? 'Assigned' : status}</span>
+          </div>
 
           <Form.Item label='Assign Staff' className='mt-4 font-bold'>
             <Select value={assignedStaff} onChange={handleStaffChange} placeholder='Select staff'>
