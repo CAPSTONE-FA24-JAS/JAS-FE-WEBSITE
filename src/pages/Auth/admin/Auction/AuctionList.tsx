@@ -1,9 +1,10 @@
-import { Button, Table, TableProps } from 'antd'
+import { Button, Image, Table, TableProps } from 'antd'
 import { useState } from 'react'
 import AddAuctionModal from './modal/AddAuctionModal'
 import { Link } from 'react-router-dom'
 import { useGetAuctionsQuery } from '../../../../services/auction.services'
 import { Auction } from '../../../../types/Auction.type'
+import { Input } from 'antd'
 
 const AuctionList = () => {
   const [searchText, setSearchText] = useState<string>('')
@@ -21,18 +22,24 @@ const AuctionList = () => {
       defaultSortOrder: 'ascend'
     },
     {
+      title: 'Image',
+      dataIndex: 'imageLink',
+      key: 'imageLink',
+      render: (text) => <Image src={text} alt='Auction' width={100} />
+    },
+    {
       title: 'Name',
-      dataIndex: 'description',
+      dataIndex: 'name',
       key: 'name',
       render: (text) => <Link to={'/admin/lotlist'}>{text}</Link>
     },
     {
-      title: 'Location',
-      dataIndex: 'location',
+      title: 'Description',
+      dataIndex: 'description',
       key: 'location',
-      align: 'center'
+      align: 'center',
+      render: (text) => <Input.TextArea value={text} autoSize={{ minRows: 3 }} readOnly />
     },
-
     {
       title: 'Auction Time',
       children: [
@@ -55,6 +62,13 @@ const AuctionList = () => {
       ]
     },
     {
+      title: 'Total Lot',
+      dataIndex: 'totalLot',
+      key: 'totalLot',
+      align: 'center'
+    },
+
+    {
       title: 'Status',
       dataIndex: 'status',
       key: 'status'
@@ -67,12 +81,6 @@ const AuctionList = () => {
   }
 
   const handleModalCancel = () => {
-    setIsModalVisible(false)
-  }
-
-  const handleAddAuctionSubmit = (data: any) => {
-    console.log('New auction data:', data)
-    // Here you would typically add the new auction to your data source
     setIsModalVisible(false)
   }
 
@@ -96,10 +104,11 @@ const AuctionList = () => {
         columns={columns}
         dataSource={auctionFiltered}
         pagination={{ pageSize: 5 }}
-        loading={false}
+        loading={isLoading}
         style={{ minHeight: '65vh' }}
+        rowKey={(record) => record.id.toString()}
       />
-      <AddAuctionModal visible={isModalVisible} onCancel={handleModalCancel} onAdd={handleAddAuctionSubmit} />
+      <AddAuctionModal visible={isModalVisible} onCancel={handleModalCancel} />
     </div>
   )
 }

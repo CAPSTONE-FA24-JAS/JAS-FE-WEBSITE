@@ -48,7 +48,7 @@ export default function SiderManager() {
     return [
       getItem('View request Consign', 'managerConsign', <MdInventory className='text-base' />),
       getItem('Valuation Manage', 'manageValuation', <MdOutlineCategory className='text-base' />, [
-        getItem('Valuation List', 'valuationList', <GrView className='text-base' />)
+        getItem('Valuation List', 'requestvaluation', <GrView className='text-base' />)
       ]),
       getItem('Manage Invoice', 'managewin', <BarChartOutlined />),
       getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
@@ -61,7 +61,7 @@ export default function SiderManager() {
   const navUrl = new Map<string, string>()
   navUrl
     .set('managerConsign', '/manager/ConsignList')
-    .set('valuation', '/manager/valuationList')
+    .set('requestvaluation', '/manager/requestfinal')
     .set('managewin', '/manager/managewin')
     .set('auctionListSub', '/manager/auctionlist')
     .set('lotList', '/manager/lotList')

@@ -1,10 +1,19 @@
 export interface Auction {
   id: number
+  name: string
   startTime: string
   endTime: string
-  actualEndTime: string | null
+  actualEndTime: string
   description: string
-  location: string
-  notes: string
-  status: 'Past' | 'Active' | 'Future'
+  imageLink: string
+  status: 'NotStarted' | 'Living' | 'Past'
+  totalLot: number
+}
+
+export interface CreateAuctionPayload {
+  Name: string
+  StartTime: string
+  EndTime: string
+  Description: string
+  FileImage: File | Blob
 }

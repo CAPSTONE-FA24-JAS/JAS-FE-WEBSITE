@@ -6,10 +6,11 @@ import { authApi } from './services/auth.services'
 import { consignApi } from './services/requestconsign.services'
 import { accountApi } from './services/account.services'
 import { valuationApi } from './services/valuation.services'
-
 import { createNewStaff } from './services/createAccountStaff.services'
 import { auctionApi } from './services/auction.services'
 import { financeProofApi } from './services/financeProof.services'
+import { bidType } from './services/bidtype.services'
+import { createFinal } from './services/createfinalvaluation.services'
 
 // Tạo cấu hình persist
 export const persistConfig = {
@@ -28,7 +29,9 @@ const rootReducer = combineReducers({
   [valuationApi.reducerPath]: valuationApi.reducer,
   [createNewStaff.reducerPath]: createNewStaff.reducer,
   [auctionApi.reducerPath]: auctionApi.reducer,
-  [financeProofApi.reducerPath]: financeProofApi.reducer
+  [financeProofApi.reducerPath]: financeProofApi.reducer,
+  [bidType.reducerPath]: bidType.reducer,
+  [createFinal.reducerPath]: createFinal.reducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -49,6 +52,8 @@ export const store = configureStore({
       .concat(createNewStaff.middleware)
       .concat(auctionApi.middleware)
       .concat(financeProofApi.middleware)
+      .concat(bidType.middleware)
+      .concat(createFinal.middleware)
 })
 
 export type RootState = ReturnType<typeof store.getState>
