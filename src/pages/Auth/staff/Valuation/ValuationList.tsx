@@ -1,26 +1,20 @@
-
-import { Col, Input, Row, Tabs } from 'antd'
-import { SearchOutlined } from '@ant-design/icons'
+import { EyeOutlined, FileTextOutlined, SearchOutlined } from '@ant-design/icons'
+import { Button, Col, Input, Row, Tabs, Tag, Tooltip } from 'antd'
+import { useState } from 'react'
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
 import PreliminaryValuationTab from './PreliminaryValuation/PreliminaryValuationTab'
 import FinalValuationTab from './FinalValuation/FinalValuationTab'
-import { useState } from 'react'
-
-import { EyeOutlined, FileTextOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Col, Input, Row, Table, Tabs, Tag, Tooltip } from 'antd'
-import { useEffect, useState } from 'react'
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
-import { useSelector } from 'react-redux'
-import { useGetPreliminaryValuationsByStaffQuery } from '../../../../services/valuation.services'
-import { RootState } from '../../../../store'
-import CreateReceipt from './PreliminaryValuation/CreateReceipt'
-import PreliminaryValuationDetail from './PreliminaryValuation/PreliminaryDetail'
-import FinalDetail from './FinalValuation/FinalDetail'
-
 
 const { Search } = Input
 
 const ValuationTabs = () => {
   const [searchText, setSearchText] = useState<string>('')
+  const [selectedRecord, setSelectedRecord] = useState<any>(null)
+  const [selectedRecord1, setSelectedRecord1] = useState<any>(null)
+  const [selectedFinalRecord, setSelectedFinalRecord] = useState<any>(null)
+  const [_, setConfirmationVisible] = useState<boolean>(false)
+  const [modalVisible, setModalVisible] = useState<boolean>(false)
+  const [finalModalVisible, setFinalModalVisible] = useState<boolean>(false)
 
   const handleSearch = (value: string) => {
     setSearchText(value)
@@ -67,7 +61,7 @@ const ValuationTabs = () => {
               icon={<EyeOutlined />}
               className='bg-blue-500 hover:bg-blue-600'
               onClick={() => {
-                setSelectedRecord(record)
+                setSelectedRecord1(record)
                 setModalVisible(true)
               }}
             />
@@ -134,7 +128,6 @@ const ValuationTabs = () => {
       )
     }
   ]
-
 
   const tabItems = [
     {
