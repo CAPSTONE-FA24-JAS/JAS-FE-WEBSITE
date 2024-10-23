@@ -64,7 +64,7 @@ const appraiserRoutes: RouteProps[] = [
   { path: '/appraiser/createPreliminary/:id', component: CreatePreliminaryValuationAppraiser, layout: AppraiserLayout },
   { path: '/appraiser/preliminaryList', component: PreliminaryValuationList, layout: AppraiserLayout },
   { path: '/appraiser/createPreliminary/:id', component: CreatePreliminaryValuationAppraiser, layout: AppraiserLayout },
-  // { path: '/appraiser/createFinal/:id', component: CreateFinalValuation, layout: AppraiserLayout },
+  { path: '/appraiser/createFinal/:id', component: CreateFinalValuation, layout: AppraiserLayout },
   { path: '/appraiser/finalList', component: FinalValuationList, layout: AppraiserLayout }
 ]
 const adminRoutes: RouteProps[] = [

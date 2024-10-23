@@ -1,178 +1,299 @@
-// import React, { useState } from 'react'
-// import { GemstoneData, SecondGemstoneData } from '../../../../../../../../types/Gemstone.type'
+import React, { ChangeEvent, useEffect, useState } from 'react'
+import { Image, message } from 'antd'
+import {
+  MainDiamond,
+  MainShaphy,
+  SecondaryDiamond,
+  SecondaryShaphy
+} from '../../../../../../../../types/Gemstones.type'
 
-// interface GemstoneDetailsProps {
-//   gemstoneDataArray: GemstoneData[]
-//   setGemstoneDataArray: React.Dispatch<React.SetStateAction<GemstoneData[]>>
-//   handleAddGemstone: () => void
-//   handleGemstoneChange: (e: React.ChangeEvent<HTMLInputElement>, index: number) => void
-// }
+interface ImageFiles {
+  [gemstoneType: string]: {
+    [key in 'documentDiamonds' | 'imageDiamonds']?: {
+      [index: number]: File[]
+    }
+  }
+}
 
-// const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
-//   gemstoneDataArray,
-//   setGemstoneDataArray,
-//   handleAddGemstone,
-//   handleGemstoneChange
-// }) => {
-//   const [secondGemstoneVisible, setSecondGemstoneVisible] = useState<boolean[]>([])
-//   const [isCollapsed, setIsCollapsed] = useState<boolean[]>(Array(gemstoneDataArray.length).fill(false))
+interface GemstoneDetailsProps {
+  formData: {
+    mainDiamonds: MainDiamond[]
+    secondaryDiamonds: SecondaryDiamond[]
+    mainShaphies: MainShaphy[]
+    secondaryShaphies: SecondaryShaphy[]
+  }
+  gemstoneDataArray: {
+    type: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies'
+    details: (MainDiamond | SecondaryDiamond | MainShaphy | SecondaryShaphy)[]
+  }[]
+  handleAddGemstone: (type: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies') => void
+  handleGemstoneChange: (
+    type: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies',
+    index: number,
+    field: string,
+    value: string
+  ) => void
+  setGemstoneDataArray: React.Dispatch<React.SetStateAction<any>>
+  handleImageChangeGemstone: (
+    files: File[],
+    key: 'documentDiamonds' | 'imageDiamonds',
+    index: number,
+    gemstoneType: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies'
+  ) => void
+}
 
-//   const handleAddSecondGemstone = (index: number) => {
-//     const updatedVisibility = [...secondGemstoneVisible]
-//     updatedVisibility[index] = true
-//     setSecondGemstoneVisible(updatedVisibility)
-//   }
+interface ImageFilesUpload {
+  [key: string]: {
+    [key: string]: {
+      [key: number]: File[]
+    }
+  }
+}
 
-//   const toggleCollapse = (index: number) => {
-//     const updatedCollapse = [...isCollapsed]
-//     updatedCollapse[index] = !updatedCollapse[index]
-//     setIsCollapsed(updatedCollapse)
-//   }
+const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
+  formData,
+  handleGemstoneChange,
+  handleImageChangeGemstone,
+  handleAddGemstone
+}) => {
+  const [imageFiles, setImageFiles] = useState<ImageFilesUpload>({
+    mainDiamonds: { imageDiamonds: {}, documentDiamonds: {} },
+    secondaryDiamonds: { imageDiamonds: {}, documentDiamonds: {} },
+    mainShaphies: { imageDiamonds: {}, documentDiamonds: {} },
+    secondaryShaphies: { imageDiamonds: {}, documentDiamonds: {} }
+  })
 
-//   const renderDiamondFields = (data: GemstoneData, index: number, prefix: string) => (
-//     <div className='grid grid-cols-2 gap-4'>
-//       {[
-//         { label: 'Name', key: `${prefix}name`, placeholder: 'Enter name' },
-//         { label: 'Color', key: `${prefix}color`, placeholder: 'Enter color (e.g., H-I)' },
-//         { label: 'Cut', key: `${prefix}cut`, placeholder: 'Enter cut type' },
-//         { label: 'Quantity', key: `${prefix}quantity`, placeholder: 'Enter quantity' },
-//         { label: 'Clarity', key: `${prefix}clarity`, placeholder: 'Enter clarity (e.g., I1)' },
-//         { label: 'Setting Type', key: `${prefix}settingType`, placeholder: 'Enter setting type' },
-//         { label: 'Dimensions', key: `${prefix}dimensions`, placeholder: 'Enter dimensions' },
-//         { label: 'Shape', key: `${prefix}shape`, placeholder: 'Enter shape' },
-//         { label: 'Certificate', key: `${prefix}certificate`, placeholder: 'Enter certificate' },
-//         { label: 'Fluorescence', key: `${prefix}fluorescence`, placeholder: 'Enter fluorescence' },
-//         { label: 'Length/Width Ratio', key: `${prefix}lengthWidthRatio`, placeholder: 'Enter ratio' },
-//         { label: 'Document Diamonds', key: `${prefix}documentDiamonds`, placeholder: 'Enter enhancement type' }
-//       ].map(({ label, key, placeholder }) => (
-//         <div key={key}>
-//           <label className='block font-medium mb-1'>{label}</label>
-//           <input
-//             type='text'
-//             name={key}
-//             value={String(data[key as keyof GemstoneData] || '')}
-//             onChange={(e) => handleGemstoneChange(e, index)}
-//             className='w-full border border-gray-300 p-2 rounded'
-//             placeholder={placeholder}
-//           />
-//         </div>
-//       ))}
-//     </div>
-//   )
+  const [documentFiles, setDocumentFiles] = useState<{ [key: string]: { [key: number]: File[] } }>({})
 
-//   const renderSapphireFields = (data: GemstoneData, index: number, prefix: string) => (
-//     <div className='grid grid-cols-2 gap-4'>
-//       {[
-//         { label: 'Name', key: `${prefix}name`, placeholder: 'Enter name' },
-//         { label: 'Color', key: `${prefix}color`, placeholder: 'Enter color (e.g., Blue)' },
-//         { label: 'Carat', key: `${prefix}carat`, placeholder: 'Enter carat' },
-//         { label: 'Quantity', key: `${prefix}quantity`, placeholder: 'Enter quantity' },
-//         { label: 'Dimensions', key: `${prefix}dimensions`, placeholder: 'Enter dimensions (e.g., 7)' },
-//         { label: 'Setting Type', key: `${prefix}settingType`, placeholder: 'Enter setting type' },
-//         { label: 'Enhancement Type', key: `${prefix}enhancementType`, placeholder: 'Enter enhancement type' },
-//         { label: 'Document Sapphires', key: `${prefix}documentSapphires`, placeholder: 'Enter enhancement type' }
-//       ].map(({ label, key, placeholder }) => (
-//         <div key={key}>
-//           <label className='block font-medium mb-1'>{label}</label>
-//           <input
-//             type='text'
-//             name={key}
-//             value={String(data[key as keyof GemstoneData] || '')}
-//             onChange={(e) => handleGemstoneChange(e, index)}
-//             className='w-full border border-gray-300 p-2 rounded'
-//             placeholder={placeholder}
-//           />
-//         </div>
-//       ))}
-//     </div>
-//   )
+  useEffect(() => {
+    console.log('Main Diamonds Data:', formData.mainDiamonds)
+  }, [formData.mainDiamonds])
+  useEffect(() => {
+    console.log('Updated imageFiles:', imageFiles)
+  }, [imageFiles])
 
-//   return (
-//     <div className='mt-8'>
-//       <div className='mt-8 mb-4 flex justify-between items-center'>
-//         <h3 className='text-xl font-semibold mb-0'>Gemstone Details</h3>
-//         <button type='button' onClick={handleAddGemstone} className='bg-gray-300 text-black px-4 py-2 rounded'>
-//           Add Gemstone Details
-//         </button>
-//       </div>
+  const diamondFields = [
+    { label: 'Name', key: 'name', placeholder: 'Enter name' },
+    { label: 'Color', key: 'color', placeholder: 'Enter color' },
+    { label: 'Cut', key: 'cut', placeholder: 'Enter cut type' },
+    { label: 'Quantity', key: 'quantity', placeholder: 'Enter quantity' },
+    { label: 'Clarity', key: 'clarity', placeholder: 'Enter clarity' },
+    { label: 'Dimensions', key: 'dimension', placeholder: 'Enter dimensions' },
+    { label: 'Setting Type', key: 'settingType', placeholder: 'Enter setting type' },
+    { label: 'Shape', key: 'shape', placeholder: 'Enter shape' },
+    { label: 'Certificate', key: 'certificate', placeholder: 'Enter certificate' },
+    { label: 'Fluorescence', key: 'fluorescence', placeholder: 'Enter fluorescence' },
+    { label: 'Length/Width Ratio', key: 'lengthWidthRatio', placeholder: 'Enter length/width ratio' }
+  ]
 
-//       {gemstoneDataArray.map((gemstoneData, index) => (
-//         <div key={index} className='border p-4 mb-4 rounded'>
-//           <h4 className='text-lg font-semibold flex justify-between items-center'>
-//             <span>Main Gemstone {index + 1}</span>
-//             <button
-//               type='button'
-//               onClick={() => toggleCollapse(index)}
-//               className='text-sm text-gray-500 flex items-center mr-2'
-//             >
-//               <span className={`transition-transform duration-500 ${isCollapsed[index] ? 'rotate-180' : ''}`}>
-//                 {isCollapsed[index] ? '\u25B2' : '\u25BC'}
-//               </span>
-//             </button>
-//           </h4>
+  const shaphyFields = [
+    { label: 'Name', key: 'name', placeholder: 'Enter name' },
+    { label: 'Color', key: 'color', placeholder: 'Enter color' },
+    { label: 'Carat', key: 'carat', placeholder: 'Enter carat' },
+    { label: 'Quantity', key: 'quantity', placeholder: 'Enter quantity' },
+    { label: 'Enhancement Type', key: 'enhancementType', placeholder: 'Enter enhancement type' },
+    { label: 'Setting Type', key: 'settingType', placeholder: 'Enter setting type' },
+    { label: 'Dimensions', key: 'dimension', placeholder: 'Enter dimensions' }
+  ]
 
-//           {!isCollapsed[index] && (
-//             <>
-//               <div className='mb-4'>
-//                 <label className='block font-medium mb-1'>Gemstone Type</label>
-//                 <div className='flex justify-center'>
-//                   {['Diamond', 'Sapphire'].map((type) => (
-//                     <label className='mr-0' key={type}>
-//                       <input
-//                         type='radio'
-//                         name={`gemstoneType${index}`}
-//                         value={type}
-//                         checked={gemstoneData.type === type}
-//                         onChange={() => {
-//                           const newGemstoneDataArray = [...gemstoneDataArray]
-//                           newGemstoneDataArray[index].type = type as 'Diamond' | 'Sapphire'
-//                           setGemstoneDataArray(newGemstoneDataArray)
-//                         }}
-//                         className='hidden'
-//                       />
-//                       <span
-//                         className={`inline-block px-4 py-2 rounded transition-colors duration-300 ${
-//                           gemstoneData.type === type ? 'bg-black text-white' : 'bg-gray-300 text-black'
-//                         } hover:bg-gray-500 hover:text-white cursor-pointer font-bold`}
-//                       >
-//                         {type}
-//                       </span>
-//                     </label>
-//                   ))}
-//                 </div>
-//               </div>
+  const handleFileChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    index: number,
+    type: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies',
+    key: 'documentDiamonds' | 'imageDiamonds'
+  ) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files)
+      console.log(`Files selected for ${type} at index ${index}:`, filesArray)
+      const isImage = key === 'imageDiamonds'
 
-//               {/* Diamond Fields */}
-//               {gemstoneData.type === 'Diamond' && renderDiamondFields(gemstoneData, index, '')}
+      setImageFiles((prev) => {
+        const updatedFiles = { ...prev }
+        updatedFiles[type] = updatedFiles[type] || { imageDiamonds: {}, documentDiamonds: {} }
+        updatedFiles[type][key] = updatedFiles[type][key] || {}
+        updatedFiles[type][key][index] = [...(updatedFiles[type][key][index] || []), ...filesArray].slice(0, 5)
+        console.log('Updated Image Files:', updatedFiles)
+        return updatedFiles
+      })
 
-//               {/* Sapphire Fields */}
-//               {gemstoneData.type === 'Sapphire' && renderSapphireFields(gemstoneData, index, '')}
+      // Call the handler function for image change
+      if (isImage) {
+        handleImageChangeGemstone(filesArray, 'imageDiamonds', index, type)
+      } else {
+        setDocumentFiles((prev) => {
+          const updatedDocs = { ...prev }
 
-//               {!secondGemstoneVisible[index] && (
-//                 <button
-//                   type='button'
-//                   onClick={() => handleAddSecondGemstone(index)}
-//                   className='mt-4 bg-gray-300 text-black px-4 py-2 rounded'
-//                 >
-//                   Add Second Gemstone
-//                 </button>
-//               )}
+          if (!updatedDocs[type]) {
+            updatedDocs[type] = {}
+          }
 
-//               {secondGemstoneVisible[index] && (
-//                 <>
-//                   <h4 className='text-lg font-semibold mt-6'>Second Gemstone</h4>
-//                   {/* Second Diamond Fields */}
-//                   {gemstoneData.type === 'Diamond' && renderDiamondFields(gemstoneData, index, 'second')}
-//                   {/* Second Sapphire Fields */}
-//                   {gemstoneData.type === 'Sapphire' && renderSapphireFields(gemstoneData, index, 'second')}
-//                 </>
-//               )}
-//             </>
-//           )}
-//         </div>
-//       ))}
-//     </div>
-//   )
-// }
+          if (!updatedDocs[type][index]) {
+            updatedDocs[type][index] = []
+          }
 
-// export default GemstoneDetails
+          updatedDocs[type][index] = [...(prev[type]?.[index] || []), ...filesArray].slice(0, 5)
+          return updatedDocs
+        })
+        handleImageChangeGemstone(filesArray, 'documentDiamonds', index, type)
+      }
+    }
+  }
+
+  const renderImageUploadSection = (
+    index: number,
+    type: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies',
+    imageFiles: { [key: string]: { [key: string]: { [key: number]: File[] } } },
+    key: 'imageDiamonds'
+  ) => {
+    const images = imageFiles[type]?.[key]?.[index] || []
+    console.log('Images to render:', images)
+
+    return (
+      <div>
+        <label className='block font-extrabold mb-2'>Upload Images</label>
+        <div className='grid grid-cols-4 gap-4 items-center'>
+          {images.length > 0 && (
+            <div className='mb-4 col-span-4'>
+              <div className='grid grid-cols-4 gap-4'>
+                {images.map((file, fileIndex) => (
+                  <Image
+                    key={fileIndex}
+                    src={URL.createObjectURL(file)} // Create a URL for the uploaded image
+                    alt={`Uploaded image ${fileIndex + 1}`}
+                    className='object-cover rounded-lg h-30 w-20 mb-2'
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          <button
+            type='button'
+            className='p-2 text-sm font-bold text-gray-600 rounded-lg hover:text-blue-600 bg-slate-400'
+            onClick={() => document.getElementById(`${type}-${key}-upload-${index}`)?.click()}
+          >
+            Upload Images
+          </button>
+          <input
+            type='file'
+            id={`${type}-${key}-upload-${index}`}
+            accept='image/*'
+            multiple
+            style={{ display: 'none' }}
+            onChange={(e) => handleFileChange(e, index, type, key)}
+          />
+        </div>
+      </div>
+    )
+  }
+
+  const renderDocumentUploadSection = (
+    index: number,
+    type: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies',
+    documentFiles: { [key: string]: { [key: number]: File[] } },
+    key: 'documentDiamonds'
+  ) => {
+    const documents = documentFiles[type]?.[index] || []
+
+    return (
+      <div>
+        <label className='block font-extrabold mb-2'>Upload Documents</label>
+        <div className='grid grid-cols-4 gap-4 items-center'>
+          {documents.length > 0 && (
+            <div className='mb-4 col-span-4'>
+              {documents.map((file, fileIndex) => (
+                <div key={fileIndex} className='text-gray-700'>
+                  {file.name}
+                </div>
+              ))}
+            </div>
+          )}
+          <button
+            type='button'
+            className='p-2 text-sm font-bold text-gray-600 rounded-lg hover:text-blue-600 bg-slate-400'
+            onClick={() => document.getElementById(`${type}-${key}-doc-upload-${index}`)?.click()}
+          >
+            Upload Documents
+          </button>
+          <input
+            type='file'
+            id={`${type}-${key}-doc-upload-${index}`}
+            accept='.pdf,.doc,.docx'
+            multiple
+            style={{ display: 'none' }}
+            onChange={(e) => handleFileChange(e, index, type, key)}
+          />
+        </div>
+      </div>
+    )
+  }
+
+  const renderGemstoneFields = (
+    data: (MainDiamond | SecondaryDiamond | MainShaphy | SecondaryShaphy)[],
+    type: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies'
+  ) => {
+    const isDiamondType = type === 'mainDiamonds' || type === 'secondaryDiamonds'
+    const fields = isDiamondType ? diamondFields : shaphyFields
+
+    return data.map((detail, index) => {
+      return (
+        <div key={index} className='border p-4 mb-4 rounded'>
+          <h4 className='text-lg font-semibold'>{`${type} ${index + 1}`}</h4>
+          <div className='grid grid-cols-2 gap-4'>
+            {fields.map(({ label, key, placeholder }) => (
+              <div key={key}>
+                <label className='block font-medium mb-1'>{label}</label>
+                <input
+                  type='text'
+                  value={(detail as any)[key] || ''}
+                  placeholder={placeholder}
+                  onChange={(e) => {
+                    handleGemstoneChange(type, index, key as keyof typeof detail, e.target.value)
+                  }}
+                  className='border rounded p-2 w-full'
+                />
+              </div>
+            ))}
+          </div>
+
+          {renderImageUploadSection(index, type, imageFiles, 'imageDiamonds')}
+
+          {renderDocumentUploadSection(index, type, documentFiles, 'documentDiamonds')}
+        </div>
+      )
+    })
+  }
+
+  const renderGemstoneSection = (
+    gemstoneType: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies',
+    label: string
+  ) => (
+    <div className='mb-6'>
+      <h4 className='text-xl font-semibold mb-4'>{label}</h4>
+      {renderGemstoneFields(
+        gemstoneType === 'mainDiamonds'
+          ? formData.mainDiamonds
+          : gemstoneType === 'secondaryDiamonds'
+          ? formData.secondaryDiamonds
+          : gemstoneType === 'mainShaphies'
+          ? formData.mainShaphies
+          : formData.secondaryShaphies,
+        gemstoneType
+      )}
+      <button onClick={() => handleAddGemstone(gemstoneType)} className='bg-blue-500 text-white p-2 rounded mt-4'>
+        {`Add ${label}`}
+      </button>
+    </div>
+  )
+
+  return (
+    <div className='p-4'>
+      {renderGemstoneSection('mainDiamonds', 'Main Diamonds')}
+      {renderGemstoneSection('secondaryDiamonds', 'Secondary Diamonds')}
+      {renderGemstoneSection('mainShaphies', 'Main Sapphires')}
+      {renderGemstoneSection('secondaryShaphies', 'Secondary Sapphires')}
+    </div>
+  )
+}
+
+export default GemstoneDetails

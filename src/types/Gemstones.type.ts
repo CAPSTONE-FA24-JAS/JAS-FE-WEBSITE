@@ -13,10 +13,15 @@ export interface ValuationGemstoneData {
   specificPrice: number
   videoLink: string
   forGender: string
-  artistId: string
-  categoryId: string
+  valuationId: string
+  artistId: number
+  categoryId: number
   imageJewelries: ImageJewelry[]
   keyCharacteristicDetails: KeyCharacteristicDetail[]
+  mainDiamonds: MainDiamond[]
+  secondaryDiamonds: SecondaryDiamond[]
+  mainShaphies: MainShaphy[]
+  secondaryShaphies: SecondaryShaphy[]
 }
 
 export interface ImageJewelry {
@@ -28,12 +33,15 @@ export interface ImageJewelry {
 
 export interface KeyCharacteristicDetail {
   id: number
-  description: string
   jewelryId: number
+  description: string
   keyCharacteristicId: number
-  keyCharacteristic: string
+  keyCharacteristic: KeyCharacteristic[]
 }
-
+export interface KeyCharacteristic {
+  id: number
+  name: string
+}
 export interface MainDiamond {
   id: number
   name: string
@@ -49,8 +57,8 @@ export interface MainDiamond {
   lengthWidthRatio: string
   type: string
   jewelryId: number
-  documentDiamonds: DocumentDiamond[]
-  imageDiamonds: ImageDiamond[]
+  documentDiamonds?: string[]
+  imageDiamonds?: string[]
 }
 
 export interface DocumentDiamond {
@@ -79,8 +87,8 @@ export interface SecondaryDiamond {
   lengthWidthRatio: string
   type: string
   jewelryId: number
-  documentDiamonds: DocumentDiamond2[]
-  imageDiamonds: ImageDiamond2[]
+  documentDiamonds: string[]
+  imageDiamonds: string[]
 }
 
 export interface DocumentDiamond2 {
@@ -104,8 +112,8 @@ export interface MainShaphy {
   settingType: string
   dimension: string
   jewelryId: number
-  documentShaphies: DocumentShaphy[]
-  imageShaphies: ImageShaphy[]
+  documentShaphies: string[]
+  imageShaphies: string[]
 }
 
 export interface DocumentShaphy {
@@ -129,8 +137,8 @@ export interface SecondaryShaphy {
   settingType: string
   dimension: string
   jewelryId: number
-  documentShaphies: DocumentShaphy2[]
-  imageShaphies: ImageShaphy2[]
+  documentShaphies: string[]
+  imageShaphies: string[]
 }
 
 export interface DocumentShaphy2 {
