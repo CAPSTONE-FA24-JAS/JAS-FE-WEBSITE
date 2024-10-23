@@ -75,39 +75,39 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, reco
         <div>
           <p className='mb-2 text-xl font-bold'>{record?.id}</p>
           <p className='mb-6 text-xl font-bold'>{record?.name}</p>
-          <div className='mb-4 flex'>
+          <div className='flex mb-4'>
             <strong className='w-1/3'>Customer Name:</strong>
-            <span className=' font-semibold'>
+            <span className='font-semibold '>
               {record?.seller?.firstName} {record?.seller?.lastName}
             </span>
           </div>
-          <div className='mb-4 flex'>
+          <div className='flex mb-4'>
             <strong className='w-1/3'>Email:</strong>
-            <span className=' font-semibold'>{record?.seller?.accountDTO.email}</span>
+            <span className='font-semibold '>{record?.seller?.accountDTO.email}</span>
           </div>
-          <div className='mb-4 flex'>
+          <div className='flex mb-4'>
             <strong className='w-1/3'>Phone:</strong>
-            <span className=' font-semibold'>{record?.seller?.phoneNumber}</span>
+            <span className='font-semibold '>{record?.seller?.phoneNumber}</span>
           </div>
-          <div className='mb-4 flex'>
+          <div className='flex mb-4'>
             <strong className='w-1/3'>Width:</strong>
-            <span className=' font-semibold'>{record?.width} cm</span>
+            <span className='font-semibold '>{record?.width} cm</span>
           </div>
-          <div className='mb-4 flex'>
+          <div className='flex mb-4'>
             <strong className='w-1/3'>Height:</strong>
-            <span className=' font-semibold'>{record?.height} cm</span>
+            <span className='font-semibold '>{record?.height} cm</span>
           </div>
-          <div className='mb-4 flex'>
+          <div className='flex mb-4'>
             <strong className='w-1/3'>Depth:</strong>
-            <span className=' font-semibold'>{record?.depth} cm</span>
+            <span className='font-semibold '>{record?.depth} cm</span>
           </div>
-          <div className='mb-6 flex'>
+          <div className='flex mb-6'>
             <strong className='w-1/3'>Description:</strong>
-            <span className=' font-semibold'>{record?.description}</span>
+            <span className='font-semibold '>{record?.description}</span>
           </div>
-          <div className='mt-4 flex'>
+          <div className='flex mt-4'>
             <strong className='w-1/3'>Status:</strong>
-            <span className='text-red-600 font-semibold'>{record?.status}</span>
+            <span className='font-semibold text-red-600'>{record?.status}</span>
           </div>
         </div>
       </div>

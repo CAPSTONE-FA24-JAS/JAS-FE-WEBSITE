@@ -343,7 +343,8 @@ const AddLotModal: React.FC<AddLotModalProps> = ({ auctionData, visible, onCance
           <Select onChange={handleJewelryChange}>
             {data?.data.dataResponse.map((jewelry) => (
               <Option key={jewelry.id} value={jewelry.id}>
-                {jewelry.id} - <Image width={30} src={jewelry.imageJewelries[0].imageLink} /> - {jewelry.name}
+                {jewelry.id} - <Image width={30} src={jewelry.imageJewelries[0]?.imageLink || 'default-image-url'} />-{' '}
+                {jewelry.name}
               </Option>
             ))}
           </Select>

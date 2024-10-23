@@ -321,14 +321,14 @@ export default function CreateFinalValuation() {
 
 
   return (
-    <div className='max-w-6xl mx-auto p-4'>
-      <h2 className='text-2xl font-bold mb-6'>Final Valuation Form</h2>
+    <div className='max-w-6xl p-4 mx-auto'>
+      <h2 className='mb-6 text-2xl font-bold'>Final Valuation Form</h2>
       <Steps className='mb-6' current={currentStep}>
         {steps.map((step) => (
           <Step key={step.title} title={step.title} />
         ))}
       </Steps>
-      <div className='steps-content mb-6'>{steps[currentStep].content}</div>
+      <div className='mb-6 steps-content'>{steps[currentStep].content}</div>
       <div className='steps-action'>
         {currentStep > 0 && (
           <Button style={{ margin: '0 8px' }} onClick={prev}>
