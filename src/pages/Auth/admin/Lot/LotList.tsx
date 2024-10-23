@@ -14,7 +14,7 @@ import {
 import { CreateLot, Lot } from '../../../../types/Lot.type'
 import { useGetAuctionByIdQuery } from '../../../../services/auction.services'
 
-const LotList: React.FC = () => {
+const LotList = () => {
   const [searchText, setSearchText] = useState('')
   const [modalVisible, setModalVisible] = useState(false)
   const [editingLot, setEditingLot] = useState<Lot | null>(null)

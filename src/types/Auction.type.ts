@@ -6,7 +6,7 @@ export interface Auction {
   actualEndTime: string
   description: string
   imageLink: string
-  status: 'NotStarted' | 'Living' | 'Past'
+  status: 'Waiting' | 'UpComing' | 'Live' | 'Past' | 'Cancelled'
   totalLot: number
 }
 

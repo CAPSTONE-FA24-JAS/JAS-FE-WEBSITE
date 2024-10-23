@@ -16,7 +16,6 @@ import { createFinal } from './services/createfinalvaluation.services'
 import { lotApi } from './services/lot.services'
 import { jewelryApi } from './services/jewelry.services'
 
-
 // Tạo cấu hình persist
 export const persistConfig = {
   timeout: 100, // đỡ cái đoạn F5 chờ lâu quá :V thêm preloading sau thì setlaij default
@@ -37,11 +36,10 @@ const rootReducer = combineReducers({
   [financeProofApi.reducerPath]: financeProofApi.reducer,
 
   [bidType.reducerPath]: bidType.reducer,
-  [createFinal.reducerPath]: createFinal.reducer
+  [createFinal.reducerPath]: createFinal.reducer,
 
   [lotApi.reducerPath]: lotApi.reducer,
   [jewelryApi.reducerPath]: jewelryApi.reducer
-
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -68,7 +66,6 @@ export const store = configureStore({
 
       .concat(lotApi.middleware)
       .concat(jewelryApi.middleware)
-
 })
 
 export type RootState = ReturnType<typeof store.getState>

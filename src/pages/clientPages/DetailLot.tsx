@@ -1,5 +1,3 @@
-import React from 'react'
-
 const lotDetail = {
   imageUrls: [
     'https://hoangphucphoto.com/wp-content/uploads/2023/10/anh-ts-thumb.jpg'
@@ -54,30 +52,30 @@ export default function LotDetail() {
               key={index}
               src={url}
               alt={`Lot ${lotDetail.idlots}`}
-              className='w-full h-64 object-cover mb-4 rounded-md'
+              className='object-cover w-full h-64 mb-4 rounded-md'
             />
           ))}
         </div>
 
         {/* Right Column: Details */}
         <div className='flex-1'>
-          <h2 className='text-2xl font-semibold mb-4'>{lotDetail.name}</h2>
-          <p className='text-lg font-semibold mb-2'>Estimate: {lotDetail.estimate}</p>
-          <p className='text-lg font-semibold mb-4'>Status: {lotDetail.status}</p>
-          <p className='text-base mb-4'>{lotDetail.auctionInfo}</p>
+          <h2 className='mb-4 text-2xl font-semibold'>{lotDetail.name}</h2>
+          <p className='mb-2 text-lg font-semibold'>Estimate: {lotDetail.estimate}</p>
+          <p className='mb-4 text-lg font-semibold'>Status: {lotDetail.status}</p>
+          <p className='mb-4 text-base'>{lotDetail.auctionInfo}</p>
 
-          <h3 className='text-xl font-semibold mb-2'>Details</h3>
-          <p className='text-base mb-4'>
+          <h3 className='mb-2 text-xl font-semibold'>Details</h3>
+          <p className='mb-4 text-base'>
             <span className='font-semibold'>Artist:</span> {lotDetail.artist}
           </p>
-          <p className='text-base mb-4'>
+          <p className='mb-4 text-base'>
             <span className='font-semibold'>Category:</span> {lotDetail.category}
           </p>
-          <p className='text-base mb-4'>
+          <p className='mb-4 text-base'>
             <span className='font-semibold'>Description:</span> {lotDetail.description}
           </p>
           <div className='mb-4'>
-            <h4 className='text-lg font-semibold mb-2'>Summary of Key Characteristics:</h4>
+            <h4 className='mb-2 text-lg font-semibold'>Summary of Key Characteristics:</h4>
             <ul className='list-disc list-inside'>
               {lotDetail.details.map((detail, index) => (
                 <li key={index} className='text-base'>
@@ -86,28 +84,28 @@ export default function LotDetail() {
               ))}
             </ul>
           </div>
-          <p className='text-base mb-4'>
+          <p className='mb-4 text-base'>
             <span className='font-semibold'>Condition:</span> {lotDetail.condition}
           </p>
-          <p className='text-base mb-4'>
+          <p className='mb-4 text-base'>
             <span className='font-semibold'>Global Shipping:</span> {lotDetail.globalShipping}
           </p>
-          <p className='text-base mb-4'>
+          <p className='mb-4 text-base'>
             <span className='font-semibold'>Post-Auction Support:</span> {lotDetail.postAuctionSupport}
           </p>
-          <p className='text-base mb-4'>
+          <p className='mb-4 text-base'>
             <span className='font-semibold'>Property Sold As-Is:</span> {lotDetail.propertySoldAsIs}
           </p>
-          <p className='text-base mb-4'>
+          <p className='mb-4 text-base'>
             <span className='font-semibold'>Bidding Guidelines:</span> {lotDetail.biddingGuidelines}
           </p>
-          <p className='text-base mb-4'>
+          <p className='mb-4 text-base'>
             <span className='font-semibold'>Buyer's Premium and Sales Tax:</span> {lotDetail.buyersPremium}
           </p>
-          <p className='text-base mb-4'>
+          <p className='mb-4 text-base'>
             <span className='font-semibold'>Conditions of Sale:</span> {lotDetail.conditionsOfSale}
           </p>
-          <p className='text-base mb-4'>
+          <p className='mb-4 text-base'>
             <span className='font-semibold'>Contact Us:</span> {lotDetail.contact}
           </p>
         </div>
