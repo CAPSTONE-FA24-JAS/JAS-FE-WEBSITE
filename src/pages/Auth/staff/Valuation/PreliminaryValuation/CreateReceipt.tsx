@@ -2,7 +2,7 @@ import { Modal, Typography, Input, Row, Col } from 'antd'
 import React, { useState } from 'react'
 import { useCreateReceiptMutation } from '../../../../../services/valuation.services'
 import { dateToString } from '../../../../../utils/convertTypeDayjs'
-import dayjs, { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 const { Title, Text } = Typography
 
 interface Seller {

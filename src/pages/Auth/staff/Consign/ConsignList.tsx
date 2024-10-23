@@ -1,4 +1,4 @@
-import { PlusOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons'
+import { EyeOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Col, Input, Row, Space, Table, Tag, Tooltip } from 'antd'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'

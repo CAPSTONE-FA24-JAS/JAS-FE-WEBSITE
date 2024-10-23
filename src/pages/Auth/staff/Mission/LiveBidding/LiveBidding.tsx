@@ -1,12 +1,12 @@
 import React from 'react'
-import { Bid } from '.'
 import { CaretRightOutlined, PauseOutlined } from '@ant-design/icons'
+import { Message } from '../../../../../hooks/useBidding'
 
-const LiveBidding: React.FC<{ bids: Bid[] }> = ({ bids }) => (
+const LiveBidding: React.FC<{ bids: Message[] }> = ({ bids }) => (
   <div className='p-4 bg-white rounded-lg shadow-md h-[80vh] overflow-auto'>
     <div className='p-4 text-white bg-red-600 rounded-t-lg'>
       <h2 className='mb-2 text-2xl font-bold'>TOP BID</h2>
-      <p className='text-4xl font-bold'>${bids[0].amount.toLocaleString()}</p>
+      <p className='text-4xl font-bold'>${bids[0].currentPrice}</p>
     </div>
     <div className='flex justify-between py-1'>
       <p className='mt-2 text-sm'>PADDLE 5678 (CONNECTED)</p>
@@ -29,9 +29,9 @@ const LiveBidding: React.FC<{ bids: Bid[] }> = ({ bids }) => (
     <div className='mt-4'>
       {bids.map((bid, index) => (
         <div key={index} className='flex justify-between mb-1 text-sm'>
-          <span>{bid.time}</span>
-          <span>{bid.name}</span>
-          <span>${bid.amount.toLocaleString()}</span>
+          <span>{bid.bidTime}</span>
+          <span>{bid.customerId}</span>
+          <span>${bid.currentPrice}</span>
         </div>
       ))}
     </div>

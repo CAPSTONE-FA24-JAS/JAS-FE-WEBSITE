@@ -1,16 +1,27 @@
-import { Button, Image, Table, TableProps } from 'antd'
+import { Button, Image, Table, TableProps, Tag } from 'antd'
 import { useState } from 'react'
 import AddAuctionModal from './modal/AddAuctionModal'
 import { Link } from 'react-router-dom'
-import { useGetAuctionsQuery } from '../../../../services/auction.services'
+import { useApproveAuctionMutation, useGetAuctionsQuery } from '../../../../services/auction.services'
 import { Auction } from '../../../../types/Auction.type'
 import { Input } from 'antd'
+import { RootState } from '../../../../store'
+import { useSelector } from 'react-redux'
+import { RoleType } from '../../../../slice/authLoginAPISlice'
 
 const AuctionList = () => {
   const [searchText, setSearchText] = useState<string>('')
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
 
   const { data, error, isLoading } = useGetAuctionsQuery()
+  const [approveAuction] = useApproveAuctionMutation()
+
+  const roleId = useSelector((state: RootState) => state.authLoginAPI.roleId)
+
+  const handleApprove = (id: number) => () => {
+    console.log('Approve', id)
+    approveAuction(id)
+  }
 
   const columns: TableProps<Auction>['columns'] = [
     {
@@ -25,13 +36,29 @@ const AuctionList = () => {
       title: 'Image',
       dataIndex: 'imageLink',
       key: 'imageLink',
-      render: (text) => <Image src={text} alt='Auction' width={100} />
+      render: (text) => (
+        <Image src={text ? text : 'https://www.w3schools.com/w3images/lights.jpg'} alt='Auction' width={100} />
+      )
     },
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text) => <Link to={'/admin/lotlist'}>{text}</Link>
+      render: (text, record: Auction) => {
+        let linkPath = ''
+        switch (roleId) {
+          case RoleType.MANAGER:
+            linkPath = `/manager/lotlist/${record.id}`
+            break
+          case RoleType.STAFFC:
+            linkPath = `/staff/lotlist/${record.id}`
+            break
+          default:
+            linkPath = '#'
+            break
+        }
+        return <Link to={linkPath}>{text}</Link>
+      }
     },
     {
       title: 'Description',
@@ -67,11 +94,51 @@ const AuctionList = () => {
       key: 'totalLot',
       align: 'center'
     },
-
     {
       title: 'Status',
-      dataIndex: 'status',
-      key: 'status'
+      key: 'status',
+      align: 'center',
+      render: (_, record) => {
+        let color = ''
+        let tagText = ''
+
+        switch (record.status) {
+          case 'Waiting':
+            color = 'gold'
+            tagText = 'Waiting'
+            break
+          case 'UpComing':
+            color = 'blue'
+            tagText = 'UpComing'
+            break
+          case 'Live':
+            color = 'green'
+            tagText = 'Live'
+            break
+          case 'Past':
+            color = 'volcano'
+            tagText = 'Past'
+            break
+          case 'Cancelled':
+            color = 'red'
+            tagText = 'Cancelled'
+            break
+          default:
+            break
+        }
+
+        return (
+          <div className='flex items-center gap-2'>
+            {record.status === 'Waiting' ? (
+              <Button onClick={handleApprove(record.id)} type='primary'>
+                Approve
+              </Button>
+            ) : (
+              <Tag color={color}>{tagText}</Tag>
+            )}
+          </div>
+        )
+      }
     }
   ]
   const auctionFiltered = data?.data.filter((item) => item.description.toLowerCase().includes(searchText.toLowerCase()))
@@ -95,9 +162,11 @@ const AuctionList = () => {
             placeholder='Search'
             className='w-2/4 px-3 py-[6px] mb-4 text-sm text-gray-600 placeholder-gray-400 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400'
           />
-          <Button className='px-3 py-2' type='primary' onClick={handleAddAuction}>
-            Add Auction
-          </Button>
+          {roleId === RoleType.MANAGER && (
+            <Button className='px-3 py-2' type='primary' onClick={handleAddAuction}>
+              Add Auction
+            </Button>
+          )}
         </div>
       </div>
       <Table

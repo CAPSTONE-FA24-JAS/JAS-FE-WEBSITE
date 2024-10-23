@@ -92,7 +92,6 @@ export default function SiderStaff() {
         width={256}
       >
         <div className='border-r-[1px] border-gray-200'>
-          {/* Thay thế phần img bằng text JAS Auctions */}
           <div
             className={cn('mx-auto text-center mb-6 mt-6 pb-6', {
               hidden: collapsed
@@ -111,7 +110,7 @@ export default function SiderStaff() {
         </div>
 
         <Menu
-          defaultSelectedKeys={['dashboard']}
+          defaultSelectedKeys={['mymission']}
           defaultOpenKeys={getConditionalItems().map((item) => item?.key as string)}
           selectedKeys={[selectedKey]}
           mode='inline'
@@ -124,7 +123,7 @@ export default function SiderStaff() {
             }
           }}
           className='text-base'
-        ></Menu>
+        />
       </Sider>
     </>
   )

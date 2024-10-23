@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Input, Row, Col, Typography, Button } from 'antd'
 
 const { Title, Text } = Typography
@@ -38,7 +38,7 @@ export default function CreateAuthorization() {
         Cộng hòa xã hội chủ nghĩa Việt Nam
       </Title>
 
-      <Title level={5} className=' font-semibold text-center'>
+      <Title level={5} className='font-semibold text-center '>
         Độc lập - Tự do - Hạnh phúc
       </Title>
 
@@ -46,7 +46,7 @@ export default function CreateAuthorization() {
         <Title level={3} className='text-lg font-extrabold text-center'>
           GIẤY ỦY QUYỀN
         </Title>
-        <Text className='text-center italic'>
+        <Text className='italic text-center'>
           - Căn cứ Bộ Luât Dân sự nước Cộng hoà xã hội chủ nghĩa Việt Nam.
           <br />- Căn cứ vào các văn bản hiến pháp hiện hành.
         </Text>
@@ -302,8 +302,8 @@ export default function CreateAuthorization() {
         />
 
         <div className='flex justify-between mt-10'>
-          <Text className='uppercase font-bold ml-20 text-xl'>Bên ủy quyền</Text>
-          <Text className='uppercase font-bold mr-20 text-xl'>Bên được ủy quyền</Text>
+          <Text className='ml-20 text-xl font-bold uppercase'>Bên ủy quyền</Text>
+          <Text className='mr-20 text-xl font-bold uppercase'>Bên được ủy quyền</Text>
         </div>
 
         <div className='flex justify-between'>

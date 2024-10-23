@@ -70,7 +70,7 @@ export interface AdminGetFilterByRole {
   code: number
   message: string
   isSuccess: boolean
-  data: AdminGetFilterByRoleData
+  data: AdminGetFilterByRoleData[]
   errorMessages: any
 }
 
