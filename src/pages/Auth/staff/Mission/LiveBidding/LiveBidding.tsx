@@ -30,7 +30,9 @@ const LiveBidding: React.FC<{ bids: Message[] }> = ({ bids }) => (
       {bids.map((bid, index) => (
         <div key={index} className='flex justify-between mb-1 text-sm'>
           <span>{bid.bidTime}</span>
-          <span>{bid.customerId}</span>
+          <span>
+            {bid.customerId}: {bid.firstName} {bid.lastName}
+          </span>
           <span>${bid.currentPrice}</span>
         </div>
       ))}

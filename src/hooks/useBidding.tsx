@@ -8,6 +8,8 @@ export interface Message {
   customerId: string
   currentPrice: number
   bidTime: string
+  firstName: string
+  lastName: string
 }
 
 interface UseBiddingResult {
@@ -37,17 +39,22 @@ export function useBidding(): UseBiddingResult {
     })
 
     // Xử lý sự kiện khi có người đặt giá
-    connection.on('SendBiddingPrice', (customerId: string, price: number, bidTime: string) => {
-      console.log(`New bid from ${customerId}: ${price} at ${bidTime}`)
-      setMessages((prev) => [
-        ...prev,
-        {
-          customerId,
-          currentPrice: price,
-          bidTime
-        }
-      ])
-    })
+    connection.on(
+      'SendBiddingPriceForStaff',
+      (customerId: string, price: number, bidTime: string, firstName: string, lastName: string) => {
+        console.log(`New bid from ${customerId}: ${price} at ${bidTime} by ${firstName} ${lastName}`)
+        setMessages((prev) => [
+          ...prev,
+          {
+            customerId,
+            currentPrice: price,
+            bidTime,
+            firstName,
+            lastName
+          }
+        ])
+      }
+    )
 
     // Xử lý sự kiện cập nhật giá cao nhất
     connection.on('SendTopPrice', (price: number, bidTime: string) => {
@@ -63,73 +70,70 @@ export function useBidding(): UseBiddingResult {
 
     //get all history bid
 
-    connection.on('SendHistoryBiddingOfLot', (bids: Message[]) => {
+    connection.on('sendhistorybiddingoflotofstaff', (bids: Message[]) => {
       console.log(`All bids`, bids)
       setMessages(bids)
     })
   }, [])
 
-  const joinLiveBidding = useCallback(
-    async (accountId: string | number, lotId: string | number) => {
-      try {
-        if (connectionRef.current) {
-          await connectionRef.current.stop()
-        }
+  const joinLiveBidding = useCallback(async (accountId: string | number, lotId: string | number) => {
+    try {
+      if (connectionRef.current) {
+        await connectionRef.current.stop()
+      }
 
-        const connection = new HubConnectionBuilder()
-          .withUrl(`${API_BASE_URL}/auctionning`)
-          .withAutomaticReconnect()
-          .configureLogging(LogLevel.Information)
-          .build()
+      const connection = new HubConnectionBuilder()
+        .withUrl(`${API_BASE_URL}/auctionning`)
+        .withAutomaticReconnect()
+        .configureLogging(LogLevel.Information)
+        .build()
 
-        setupSignalRHandlers(connection)
+      setupSignalRHandlers(connection)
 
-        // Xử lý các sự kiện kết nối
-        connection.onclose(() => {
-          setIsConnected(false)
-          setError('Connection closed')
-        })
+      // Xử lý các sự kiện kết nối
+      connection.onclose(() => {
+        setIsConnected(false)
+        setError('Connection closed')
+      })
 
-        connection.onreconnecting(() => {
-          setIsConnected(false)
-          setError('Attempting to reconnect...')
-        })
+      connection.onreconnecting(() => {
+        setIsConnected(false)
+        setError('Attempting to reconnect...')
+      })
 
-        connection.onreconnected(() => {
-          setIsConnected(true)
-          setError(null)
-        })
-
-        await connection.start()
-        console.log('SignalR Connection established')
-
-        const connectionId = connection.connectionId
-        if (!connectionId) {
-          throw new Error('Failed to get connection ID')
-        }
-
-        // Gọi API để tham gia phòng đấu giá
-        const response = await axios.post(`${API_BASE_URL}/api/BidPrices/JoinBid/join`, {
-          accountId: Number(accountId),
-          lotId: Number(lotId),
-          connectionId
-        })
-
-        if (!response.data.isSuccess) {
-          throw new Error(response.data.message)
-        }
-
-        connectionRef.current = connection
+      connection.onreconnected(() => {
         setIsConnected(true)
         setError(null)
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to establish connection'
-        setError(errorMessage)
-        console.error('SignalR connection error:', err)
+      })
+
+      await connection.start()
+      console.log('SignalR Connection established')
+
+      const connectionId = connection.connectionId
+      if (!connectionId) {
+        throw new Error('Failed to get connection ID')
       }
-    },
-    [setupSignalRHandlers]
-  )
+
+      // Gọi API để tham gia phòng đấu giá
+      const response = await axios.post(`${API_BASE_URL}/api/BidPrices/JoinBid/join`, {
+        accountId: Number(accountId),
+        lotId: Number(lotId),
+        connectionId
+      })
+
+      if (!response.data.isSuccess) {
+        throw new Error(response.data.message)
+      }
+
+      connectionRef.current = connection
+      setIsConnected(true)
+      setError(null)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to establish connection'
+      setError(errorMessage)
+      console.error('SignalR connection error:', err)
+    }
+  }, [])
 
   const sendBid = useCallback(async (price: number) => {
     if (!connectionRef.current?.connectionId) {
@@ -172,7 +176,7 @@ export function useBidding(): UseBiddingResult {
         console.error('Error disconnecting:', err)
       }
     }
-  }, [])
+  }, [setupSignalRHandlers])
 
   // Cleanup khi component unmount
   useEffect(() => {
