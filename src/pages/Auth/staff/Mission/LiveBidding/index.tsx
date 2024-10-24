@@ -1,6 +1,6 @@
 import ProductDetail from './ProductDetail'
 import LiveBidding from './LiveBidding'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useBidding } from '../../../../../hooks/useBidding'
 import { Data } from '../../../../../types/Account.type'
 
@@ -40,20 +40,27 @@ const Index = () => {
   }
 
   const [timeLeft, setTimeLeft] = useState<number>(calculateTimeLeft())
+  const prevTimeLeft = useRef<number>(timeLeft) // Reference to store previous timeLeft
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft())
+      const newTimeLeft = calculateTimeLeft()
+
+      if (newTimeLeft !== prevTimeLeft.current) {
+        setTimeLeft(newTimeLeft)
+        prevTimeLeft.current = newTimeLeft
+      }
     }, 1000)
 
     return () => clearInterval(timer)
-  }, []) // nhét endtime vào đây nếu khi dùng api
+  }, [endTime])
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60)
     const secs = seconds % 60
     return `${minutes}:${secs < 10 ? `0${secs}` : secs}`
   }
+
   const auctionItem: AuctionItem = {
     id: 4,
     name: "A Lady's Gold 'Santos Vendome' Wristwatch, Cartier",
@@ -73,11 +80,12 @@ const Index = () => {
   }
 
   useEffect(() => {
-    joinLiveBidding(userID, 41)
+    joinLiveBidding(userID, 49)
+
     return () => {
       disconnect()
     }
-  }, [])
+  }, [joinLiveBidding, disconnect, userID])
 
   return (
     <>
