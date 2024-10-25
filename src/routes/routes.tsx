@@ -8,6 +8,7 @@ import AuctionList from '../pages/Auth/admin/Auction/AuctionList'
 import FinanceProofListManager from '../pages/Auth/admin/FinanceProof/FinanceProofListManager'
 import LotList from '../pages/Auth/admin/Lot/LotList'
 import ManageWinList from '../pages/Auth/admin/ManageWin/ManageWinList'
+import ManageInvoiceModal from '../pages/Auth/admin/ManageWin/modal/ManageInvoiceModal'
 import RequestConsign from '../pages/Auth/admin/RequestConsign/RequestConsign'
 import RequestFinalValuation from '../pages/Auth/admin/RequestFinalValuation/RequestFinalValuation'
 import CreatePreliminaryValuationAppraiser from '../pages/Auth/appraiser/RequestPreliminaryValuation/CreatePreliminaryValuation'
@@ -50,7 +51,8 @@ const publicRoutes: RouteProps[] = [
 ]
 const managerRoutes: RouteProps[] = [
   { path: '/manager/ConsignList', component: RequestConsign, layout: ManagerLayout },
-  { path: '/manager/managewin', component: ManageWinList, layout: ManagerLayout },
+  { path: '/manager/manageinvoice', component: ManageWinList, layout: ManagerLayout },
+  // { path: '/manager/manageinvoice/:id', component: ManageInvoiceModal, layout: ManagerLayout },
   { path: '/manager/auctionlist', component: AuctionList, layout: ManagerLayout },
 
   { path: '/manager/requestfinal', component: RequestFinalValuation, layout: ManagerLayout },
@@ -71,7 +73,7 @@ const adminRoutes: RouteProps[] = [
   { path: '/admin', component: Overview, layout: AdminLayout },
   { path: '/admin/overview', component: Overview, layout: AdminLayout },
   { path: '/admin/AccountList', component: ManageAccount, layout: AdminLayout }
-  // { path: '/admin/createAccount', component: CreateAccount, layout: AdminLayout }
+  //{ path: '/admin/createAccount', component: CreateAccount, layout: AdminLayout }
 ]
 
 const staffCRoutes: RouteProps[] = [
