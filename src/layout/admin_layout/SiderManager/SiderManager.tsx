@@ -64,7 +64,7 @@ export default function SiderManager() {
   navUrl
     .set('managerConsign', '/manager/ConsignList')
     .set('requestvaluation', '/manager/requestfinal')
-    .set('managewin', '/manager/managewin')
+    .set('managewin', '/manager/manageinvoice')
     .set('auctionListSub', '/manager/auctionlist')
     .set('lotList', '/manager/lotList')
     .set('financeProof', '/manager/financeProofManager')

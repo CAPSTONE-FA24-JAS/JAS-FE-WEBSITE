@@ -12,8 +12,9 @@ import { RoleType } from '../../../../slice/authLoginAPISlice'
 const AuctionList = () => {
   const [searchText, setSearchText] = useState<string>('')
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
+  const [editAuction, setEditAuction] = useState<number>(NaN)
 
-  const { data, error, isLoading } = useGetAuctionsQuery()
+  const { data, isLoading } = useGetAuctionsQuery()
   const [approveAuction] = useApproveAuctionMutation()
 
   const roleId = useSelector((state: RootState) => state.authLoginAPI.roleId)
@@ -21,6 +22,11 @@ const AuctionList = () => {
   const handleApprove = (id: number) => () => {
     console.log('Approve', id)
     approveAuction(id)
+  }
+
+  const handleEdit = (id: number) => () => {
+    handleAddAuction()
+    setEditAuction(id)
   }
 
   const columns: TableProps<Auction>['columns'] = [
@@ -139,6 +145,19 @@ const AuctionList = () => {
           </div>
         )
       }
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      align: 'center',
+      render: (_, record) => (
+        <div className='flex items-center justify-center gap-2'>
+          <Button onClick={handleEdit(record.id)} type='primary'>
+            Edit
+          </Button>
+          <Button danger>Delete</Button>
+        </div>
+      )
     }
   ]
   const auctionFiltered = data?.data.filter((item) => item.description.toLowerCase().includes(searchText.toLowerCase()))
@@ -177,7 +196,12 @@ const AuctionList = () => {
         style={{ minHeight: '65vh' }}
         rowKey={(record) => record.id.toString()}
       />
-      <AddAuctionModal visible={isModalVisible} onCancel={handleModalCancel} />
+      <AddAuctionModal
+        visible={isModalVisible}
+        onCancel={handleModalCancel}
+        id={editAuction ?? null}
+        setEditAuction={setEditAuction}
+      />
     </div>
   )
 }

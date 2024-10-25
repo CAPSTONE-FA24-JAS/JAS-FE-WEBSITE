@@ -46,16 +46,14 @@ export const auctionApi = createApi({
       }),
       invalidatesTags: (_result, error, _body) => (error ? [] : [{ type: 'Auction', id: 'LIST' }])
     }),
-    updateAuction: builder.mutation<
-      Respone<Auction>,
-      { autionId: number; startTime: string; endTime: string; description: string; location: string; notes: string }
-    >({
-      query: ({ autionId, ...patch }) => ({
+    updateAuction: builder.mutation<Respone<Auction>, FormData>({
+      query: (updateAuction) => ({
         url: `Auction/UpdateAution`,
         method: 'put',
-        body: patch
+        body: updateAuction,
+        formData: true
       }),
-      invalidatesTags: (_result, error, data) => (error ? [] : [{ type: 'Auction', id: data.autionId }])
+      invalidatesTags: (_result, error, _body) => (error ? [] : [{ type: 'Auction', id: 'LIST' }])
     }),
     approveAuction: builder.mutation<Respone<Auction>, number>({
       query: (id) => ({
