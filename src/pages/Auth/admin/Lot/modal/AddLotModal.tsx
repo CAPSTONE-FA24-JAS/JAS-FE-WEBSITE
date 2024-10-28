@@ -10,6 +10,7 @@ import dayjs from 'dayjs'
 const { Option } = Select
 
 interface AddLotModalProps {
+  isLoading: boolean
   auctionData: Auction
   visible: boolean
   onCancel: () => void
@@ -19,10 +20,17 @@ interface AddLotModalProps {
 
 type AuctionType = 'Private Bid' | 'Random Draw Auction' | 'Dutch Auction' | 'Incremental Bidding Auction'
 
-const AddLotModal: React.FC<AddLotModalProps> = ({ auctionData, visible, onCancel, onSubmit, initialValues }) => {
-  const [form] = Form.useForm() // Form instance created here
+const AddLotModal: React.FC<AddLotModalProps> = ({
+  auctionData,
+  visible,
+  onCancel,
+  onSubmit,
+  initialValues,
+  isLoading
+}) => {
+  const [form] = Form.useForm()
   const [isEditing, setIsEditing] = useState(false)
-  const [auctionType, setAuctionType] = useState<string>('1')
+  const [auctionType, setAuctionType] = useState<string>('')
   const { data, isFetching: jewelryLoading } = useGetJewelriesNoSlotQuery(undefined, { skip: !visible })
   const [chooseJewelry, setChooseJewelry] = useState<number | null>(null)
   const [jewelryData, setJewelryData] = useState<Jewelry>()
@@ -31,11 +39,32 @@ const AddLotModal: React.FC<AddLotModalProps> = ({ auctionData, visible, onCance
     skip: !visible
   })
 
+  const getBidTypeFromBidForm = (bidForm: string | undefined): string => {
+    switch (bidForm) {
+      case 'Fixed_Price':
+        return '1'
+      case 'Secret_Auction':
+        return '2'
+      case 'Public_Auction':
+        return '3'
+      case 'Dutch_Auction':
+        return '4'
+      default:
+        return ''
+    }
+  }
+
   useEffect(() => {
-    console.log('Updated jewelry:', chooseJewelry)
-    setJewelryData(data?.data.dataResponse.find((jewelry) => jewelry.id === chooseJewelry))
-    console.log('Updated jewelryData:', jewelryData)
-  }, [chooseJewelry])
+    if (chooseJewelry !== null && data) {
+      form.setFieldValue('type', null)
+      const selectedJewelry = data.data.dataResponse.find((jewelry) => jewelry.id === chooseJewelry)
+      setJewelryData(selectedJewelry)
+
+      const newAuctionType = getBidTypeFromBidForm(selectedJewelry?.bidForm)
+      setAuctionType(newAuctionType)
+      form.setFieldValue('type', newAuctionType)
+    }
+  }, [chooseJewelry, data])
 
   useEffect(() => {
     if (visible) {
@@ -47,7 +76,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({ auctionData, visible, onCance
         setAuctionType(initialValues.lotType as AuctionType)
       } else {
         setIsEditing(false)
-        setAuctionType('Incremental Bidding Auction')
+        setAuctionType('1')
       }
     }
   }, [visible, form, initialValues])
@@ -58,8 +87,6 @@ const AddLotModal: React.FC<AddLotModalProps> = ({ auctionData, visible, onCance
         title: values.title,
         deposit: values.deposit,
         buyNowPrice: values.buyNowPrice,
-        startTime: auctionData.startTime, // ISO string for date
-        endTime: auctionData.endTime, // ISO string for date
         isExtend: values.extendTime,
         haveFinancialProof: values.proofFinance,
         staffId: values.staffCare,
@@ -68,7 +95,8 @@ const AddLotModal: React.FC<AddLotModalProps> = ({ auctionData, visible, onCance
         startPrice: values.startPrice,
         finalPriceSold: values.finalPriceSold,
         bidIncrement: values.priceStep,
-        lotTypeValue: Number(auctionType)
+        lotTypeValue: Number(auctionType),
+        bidIncrementTime: values.bidIncrementTime
       }
       onSubmit(FormatValues)
       form.resetFields()
@@ -119,8 +147,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({ auctionData, visible, onCance
             >
               <Input
                 type='number'
-                onBlur={(e) => {
-                  // Trigger validate cho cả field max khi min thay đổi
+                onBlur={() => {
                   form.validateFields(['finalPriceSold'])
                 }}
               />
@@ -150,8 +177,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({ auctionData, visible, onCance
             >
               <Input
                 type='number'
-                onBlur={(e) => {
-                  // Trigger validate cho cả field min khi max thay đổi
+                onBlur={() => {
                   form.validateFields(['startPrice'])
                 }}
               />
@@ -187,8 +213,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({ auctionData, visible, onCance
               >
                 <Input
                   type='number'
-                  onBlur={(e) => {
-                    // Trigger validate cho cả field max khi min thay đổi
+                  onBlur={() => {
                     form.validateFields(['finalPriceSold'])
                   }}
                 />
@@ -218,8 +243,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({ auctionData, visible, onCance
               >
                 <Input
                   type='number'
-                  onBlur={(e) => {
-                    // Trigger validate cho cả field min khi max thay đổi
+                  onBlur={() => {
                     form.validateFields(['startPrice'])
                   }}
                 />
@@ -239,77 +263,86 @@ const AddLotModal: React.FC<AddLotModalProps> = ({ auctionData, visible, onCance
         return (
           <>
             <div className='flex-col justify-between'>
-              <div className='flex-col justify-between'>
-                <div className='flex justify-between'>
-                  <Form.Item
-                    name='startPrice'
-                    label='Price Max' // Giá khởi điểm - cao nhất
-                    validateFirst={true}
-                    rules={[
-                      { required: true, message: 'Please input the maximum price' },
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          const minPrice = getFieldValue('finalPriceSold')
-                          if (!value || !minPrice) {
-                            return Promise.resolve()
-                          }
-                          const maxValue = Number(value)
-                          const minValue = Number(minPrice)
-                          return maxValue > minValue
-                            ? Promise.resolve()
-                            : Promise.reject(new Error('Maximum price must be greater than minimum price'))
+              <div className='flex justify-between'>
+                <Form.Item
+                  name='startPrice'
+                  label='Price Max' // Giá khởi điểm - cao nhất
+                  validateFirst={true}
+                  rules={[
+                    { required: true, message: 'Please input the maximum price' },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        const minPrice = getFieldValue('finalPriceSold')
+                        if (!value || !minPrice) {
+                          return Promise.resolve()
                         }
-                      })
-                    ]}
-                    className='w-[48%]'
-                  >
-                    <Input
-                      type='number'
-                      onBlur={() => {
-                        form.validateFields(['finalPriceSold'])
-                      }}
-                    />
-                  </Form.Item>
+                        const maxValue = Number(value)
+                        const minValue = Number(minPrice)
+                        return maxValue > minValue
+                          ? Promise.resolve()
+                          : Promise.reject(new Error('Maximum price must be greater than minimum price'))
+                      }
+                    })
+                  ]}
+                  className='w-[48%]'
+                >
+                  <Input
+                    type='number'
+                    onBlur={() => {
+                      form.validateFields(['finalPriceSold'])
+                    }}
+                  />
+                </Form.Item>
 
-                  <Form.Item
-                    name='finalPriceSold'
-                    label='Price Min' // Giá mục tiêu - thấp nhất
-                    validateFirst={true}
-                    rules={[
-                      { required: true, message: 'Please input the minimum price' },
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          const maxPrice = getFieldValue('startPrice')
-                          if (!value || !maxPrice) {
-                            return Promise.resolve()
-                          }
-                          const minValue = Number(value)
-                          const maxValue = Number(maxPrice)
-                          return minValue < maxValue
-                            ? Promise.resolve()
-                            : Promise.reject(new Error('Minimum price must be less than maximum price'))
+                <Form.Item
+                  name='finalPriceSold'
+                  label='Price Min' // Giá mục tiêu - thấp nhất
+                  validateFirst={true}
+                  rules={[
+                    { required: true, message: 'Please input the minimum price' },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        const maxPrice = getFieldValue('startPrice')
+                        if (!value || !maxPrice) {
+                          return Promise.resolve()
                         }
-                      })
-                    ]}
-                    className='w-[48%]'
-                  >
-                    <Input
-                      type='number'
-                      onBlur={() => {
-                        form.validateFields(['startPrice'])
-                      }}
-                    />
-                  </Form.Item>
-                </div>
+                        const minValue = Number(value)
+                        const maxValue = Number(maxPrice)
+                        return minValue < maxValue
+                          ? Promise.resolve()
+                          : Promise.reject(new Error('Minimum price must be less than maximum price'))
+                      }
+                    })
+                  ]}
+                  className='w-[48%]'
+                >
+                  <Input
+                    type='number'
+                    onBlur={() => {
+                      form.validateFields(['startPrice'])
+                    }}
+                  />
+                </Form.Item>
               </div>
-              <Form.Item
-                name='priceStep'
-                label='Bid Decrease Amount'
-                rules={[{ required: true, message: 'Please input the decreate amout' }]}
-                className='w-[48%]'
-              >
-                <InputNumber className='w-full' />
-              </Form.Item>
+              <div className='flex justify-between'>
+                <Form.Item
+                  name='priceStep'
+                  label='Bid Decrease Amount'
+                  rules={[{ required: true, message: 'Please input the decreate amout' }]}
+                  className='w-[48%]'
+                >
+                  <InputNumber className='w-full' />
+                </Form.Item>
+
+                <Form.Item
+                  name='bidIncrementTime'
+                  label='Bid Decrease Time (minute)'
+                  rules={[{ required: true, message: 'Please input the decreate amout' }]}
+                  className='w-[48%]'
+                >
+                  <InputNumber className='w-full' />
+                </Form.Item>
+              </div>
             </div>
           </>
         )
@@ -320,6 +353,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({ auctionData, visible, onCance
 
   return (
     <Modal
+      forceRender
       open={visible}
       title={isEditing ? 'Edit Lot Auction' : 'Add Lot Auction'}
       onCancel={onCancel}
@@ -328,7 +362,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({ auctionData, visible, onCance
         <Button key='cancel' onClick={onCancel}>
           Cancel
         </Button>,
-        <Button key='submit' type='primary' onClick={handleSubmit}>
+        <Button key='submit' type='primary' onClick={handleSubmit} loading={isLoading}>
           {isEditing ? 'Save Changes' : '+ Add Lots'}
         </Button>
       ]}
@@ -385,7 +419,11 @@ const AddLotModal: React.FC<AddLotModalProps> = ({ auctionData, visible, onCance
         </div>
 
         <Form.Item name='type' label='Type' rules={[{ required: true, message: 'Please select the type' }]}>
-          <Select defaultActiveFirstOption onChange={(value) => setAuctionType(value as AuctionType)}>
+          <Select
+            value={auctionType}
+            onChange={(value) => setAuctionType(value)}
+            disabled={!auctionType == null ? true : false}
+          >
             <Option value='1'>Fixed Price Auction</Option>
             <Option value='2'>Secret Auction</Option>
             <Option value='3'>Public Auction</Option>
@@ -395,15 +433,23 @@ const AddLotModal: React.FC<AddLotModalProps> = ({ auctionData, visible, onCance
 
         {renderAuctionTypeSpecificFields()}
 
-        <div className='flex justify-start gap-5 mb-4'>
-          <Form.Item name='extendTime' valuePropName='checked' className='mb-0'>
-            <Checkbox>Extend time</Checkbox>
-          </Form.Item>
+        {auctionType ? (
+          <div className='flex justify-start gap-5 mb-4'>
+            {auctionType === '3' || auctionType === '4' ? (
+              <Form.Item initialValue={true} name='extendTime' valuePropName='checked' className='mb-0'>
+                <Checkbox defaultChecked>Extend time</Checkbox>
+              </Form.Item>
+            ) : (
+              ''
+            )}
 
-          <Form.Item name='proofFinance' valuePropName='checked' className='mb-0'>
-            <Checkbox>Proof finance</Checkbox>
-          </Form.Item>
-        </div>
+            <Form.Item initialValue={true} name='proofFinance' valuePropName='checked' className='mb-0'>
+              <Checkbox defaultChecked>Proof finance</Checkbox>
+            </Form.Item>
+          </div>
+        ) : (
+          ''
+        )}
 
         <Form.Item
           name='staffCare'

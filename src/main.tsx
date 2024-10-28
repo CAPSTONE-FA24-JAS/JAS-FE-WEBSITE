@@ -16,7 +16,7 @@ root.render(
     <Provider store={store}>
       <PersistGate
         loading={
-          <div className='flex min-h-screen w-full items-center justify-center'>
+          <div className='flex items-center justify-center w-full min-h-screen'>
             {/* <Lottie animationData={} className='max-w-[500px]' /> */}
           </div>
         }

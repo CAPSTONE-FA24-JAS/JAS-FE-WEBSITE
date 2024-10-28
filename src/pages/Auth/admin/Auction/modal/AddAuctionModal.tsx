@@ -124,7 +124,6 @@ const AuctionModal: React.FC<AuctionModalProps> = ({ visible, onCancel, id, setE
 
       if (id) {
         formData.append('AutionId', id.toString())
-        formData.append('FileImage', data.FileImage || auctionData?.data?.imageLink || '')
         if (isImageChanged) {
           if (data.FileImage instanceof File) {
             formData.append('FileImage', data.FileImage)
@@ -285,7 +284,9 @@ const AuctionModal: React.FC<AuctionModalProps> = ({ visible, onCancel, id, setE
           <Controller
             name='FileImage'
             control={control}
-            rules={{ required: 'Image is required' }}
+            rules={{
+              required: !id ? 'Image is required' : undefined
+            }}
             render={({ field: { onChange }, fieldState: { error } }) => (
               <Form.Item label='Image' validateStatus={error ? 'error' : ''} help={error?.message}>
                 <div className='flex gap-2'>
