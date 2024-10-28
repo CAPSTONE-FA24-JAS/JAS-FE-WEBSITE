@@ -49,7 +49,7 @@ export const auctionApi = createApi({
     updateAuction: builder.mutation<Respone<Auction>, FormData>({
       query: (updateAuction) => ({
         url: `Auction/UpdateAution`,
-        method: 'put',
+        method: 'patch',
         body: updateAuction,
         formData: true
       }),
@@ -58,7 +58,7 @@ export const auctionApi = createApi({
     approveAuction: builder.mutation<Respone<Auction>, number>({
       query: (id) => ({
         url: `/Auction/ApproveAution?auctionId=${id}`,
-        method: 'put'
+        method: 'patch'
       }),
       invalidatesTags: (_result, error, _body) => (error ? [] : [{ type: 'Auction', id: 'LIST' }])
     })
