@@ -57,8 +57,8 @@ export interface MainDiamond {
   lengthWidthRatio: string
   type: string
   jewelryId: number
-  documentDiamonds?: string[]
-  imageDiamonds?: string[]
+  documentDiamonds?: DocumentDiamond[]
+  imageDiamonds?: ImageDiamond[]
 }
 
 export interface DocumentDiamond {
@@ -87,8 +87,8 @@ export interface SecondaryDiamond {
   lengthWidthRatio: string
   type: string
   jewelryId: number
-  documentDiamonds: string[]
-  imageDiamonds: string[]
+  documentDiamonds: DocumentDiamond2[]
+  imageDiamonds: ImageDiamond2[]
 }
 
 export interface DocumentDiamond2 {
@@ -112,8 +112,8 @@ export interface MainShaphy {
   settingType: string
   dimension: string
   jewelryId: number
-  documentShaphies: string[]
-  imageShaphies: string[]
+  documentShaphies: DocumentShaphy[]
+  imageShaphies: ImageShaphy[]
 }
 
 export interface DocumentShaphy {
@@ -137,8 +137,8 @@ export interface SecondaryShaphy {
   settingType: string
   dimension: string
   jewelryId: number
-  documentShaphies: string[]
-  imageShaphies: string[]
+  documentShaphies: DocumentShaphy2[]
+  imageShaphies: ImageShaphy2[]
 }
 
 export interface DocumentShaphy2 {

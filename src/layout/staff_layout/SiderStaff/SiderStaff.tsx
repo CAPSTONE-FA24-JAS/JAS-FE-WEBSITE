@@ -51,10 +51,11 @@ export default function SiderStaff() {
         getItem('Live Bidding', 'livebidding', <GrView className='text-base' />)
       ]),
 
-      getItem('Quản lí sản phẩm', 'manageProduct', <RiProductHuntLine className='text-base' />, [
-        getItem('Xem tất cả sản phẩm', 'viewAllProduct', <GrView className='text-base' />),
-        getItem('Giấy ủy quyền', 'authorization', <HiOutlineViewGridAdd className='text-base' />)
-      ]),
+      // getItem('Quản lí sản phẩm', 'manageProduct', <RiProductHuntLine className='text-base' />, [
+      //   getItem('Xem tất cả sản phẩm', 'viewAllProduct', <GrView className='text-base' />),
+      //   getItem('Giấy ủy quyền', 'authorization', <HiOutlineViewGridAdd className='text-base' />)
+      // ]),
+
       getItem('View request Consign', 'consign', <MdOutlineInventory2 className='text-base' />),
       getItem('Valuation Manage', 'manageValuation', <MdOutlineCategory className='text-base' />, [
         getItem('Valuation List', 'valuation', <GrView className='text-base' />)
@@ -69,8 +70,8 @@ export default function SiderStaff() {
   const navUrl = new Map<string, string>()
   navUrl
     .set('consign', '/staff/ConsignList')
-    .set('viewAllProduct', '/staff/requestPreliminary')
-    .set('authorization', '/staff/authorization')
+    // .set('viewAllProduct', '/staff/requestPreliminary')
+    // .set('authorization', '/staff/authorization')
     .set('valuation', '/staff/valuationList')
     .set('financeProof', '/staff/financeproof')
     .set('auctionlistSub', '/staff/auctionlist')

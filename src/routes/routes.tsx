@@ -78,11 +78,11 @@ const adminRoutes: RouteProps[] = [
 
 const staffCRoutes: RouteProps[] = [
   { path: '/staff', component: MyMissionList, layout: StaffLayout },
-  { path: '/staff/requestPreliminary', component: RequestPreliminaryList, layout: StaffLayout },
+  // { path: '/staff/requestPreliminary', component: RequestPreliminaryList, layout: StaffLayout },
   { path: '/staff/ConsignList', component: RequestConsignList, layout: StaffLayout },
   { path: '/staff/valuationList', component: ValuationTabs, layout: StaffLayout },
   { path: '/staff/financeproof', component: FinanceProofList, layout: StaffLayout },
-  { path: '/staff/auctionlist', component: AuctionList, layout: StaffLayout },
+  // { path: '/staff/auctionlist', component: AuctionList, layout: StaffLayout },npm
   { path: '/staff/authorization', component: CreateAuthorization, layout: StaffLayout },
   { path: '/staff/mymission', component: MyMissionList, layout: StaffLayout },
   { path: '/staff/livebidding', component: Index, layout: StaffLayout },

@@ -24,6 +24,7 @@ const FinalStepsStep: React.FC<FinalStepsProps> = ({ formDataPrice, handleImageC
       setSelectedImages(updatedImages)
       handleImageChange(updatedImages)
     }
+    console.log('Selected Images:', selectedImages)
   }
 
   return (
