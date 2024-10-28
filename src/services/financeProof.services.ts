@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { FinanceProof, UpdateFinanceProof } from '../types/FinanceProof.type'
 import { Respone } from '../types/Respone.type'
 import baseUrl from '../utils/http'
-import { AccessTokenResponse, Data } from '../types/Account.type'
+import { Data } from '../types/Account.type'
 
 export const financeProofApi = createApi({
   reducerPath: 'financeProofApi',

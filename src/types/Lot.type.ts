@@ -25,8 +25,6 @@ export interface CreateLot {
   title: string
   deposit: number
   buyNowPrice: number
-  startTime: string // ISO string for date
-  endTime: string // ISO string for date
   isExtend: boolean
   haveFinancialProof: boolean
   staffId: number
@@ -36,4 +34,5 @@ export interface CreateLot {
   finalPriceSold: number
   bidIncrement: number
   lotTypeValue: number
+  bidIncrementTime: number
 }

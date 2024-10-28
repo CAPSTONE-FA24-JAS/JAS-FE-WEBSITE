@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Table, Button, Input, Space, Tag, notification } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import type { TableProps } from 'antd'
@@ -13,6 +13,7 @@ import {
 } from '../../../../services/lot.services'
 import { CreateLot, Lot } from '../../../../types/Lot.type'
 import { useGetAuctionByIdQuery } from '../../../../services/auction.services'
+import { parseDate } from '../../../../utils/convertTypeDayjs'
 
 const LotList = () => {
   const [searchText, setSearchText] = useState('')
@@ -22,14 +23,16 @@ const LotList = () => {
   const { id } = useParams<{ id: string }>()
   const auctionId = parseInt(id || '0', 10)
 
-  const { data: lotsData, isLoading, isError } = useGetLotsByAuctionIdQuery(auctionId)
+  const { data: lotsData, isLoading } = useGetLotsByAuctionIdQuery(auctionId)
   const { data: auctionData } = useGetAuctionByIdQuery(auctionId)
-  const [createFixed] = useCreateLotFixedPriceMutation()
-  const [createSerect] = useCreateLotSecretAuctionMutation()
-  const [createPublic] = useCreateLotPublicAuctionMutation()
-  const [createPriceGraduallyReduced] = useCreateLotAuctionPriceGraduallyReducedMutation()
+  const [createFixed, { isLoading: loadingFixedPrice }] = useCreateLotFixedPriceMutation()
+  const [createSerect, { isLoading: loadingSecret }] = useCreateLotSecretAuctionMutation()
+  const [createPublic, { isLoading: loadingPublice }] = useCreateLotPublicAuctionMutation()
+  const [createPriceGraduallyReduced, { isLoading: loadingReduce }] = useCreateLotAuctionPriceGraduallyReducedMutation()
 
   const columns: TableProps<Lot>['columns'] = [
+    { title: 'ID', dataIndex: 'id', key: 'id' },
+    { title: 'Title', dataIndex: 'title', key: 'title' },
     { title: 'Start Price', dataIndex: 'startPrice', key: 'startPrice', render: (value) => `${value}` },
     {
       title: 'Final Price Sold',
@@ -45,13 +48,29 @@ const LotList = () => {
       render: (value) => `$${value}`
     },
     { title: 'Deposit', dataIndex: 'deposit', key: 'deposit', render: (value) => `$${value}` },
-    { title: 'Buy Now Price', dataIndex: 'buyNowPrice', key: 'buyNowPrice', render: (value) => `$${value}` },
+    {
+      title: 'Buy Now Price',
+      dataIndex: 'buyNowPrice',
+      key: 'buyNowPrice',
+      render: (value) => `${value ? value : ''}`
+    },
 
-    { title: 'Actual End Time', dataIndex: 'actualEndTime', key: 'actualEndTime' },
+    {
+      title: 'Actual End Time',
+      dataIndex: 'actualEndTime',
+      key: 'actualEndTime',
+      render: (value) => parseDate(value, 'dd/mm/yyy hh/mm/ss')
+    },
     {
       title: 'Financial Proof',
       dataIndex: 'haveFinancialProof',
       key: 'haveFinancialProof',
+      render: (value) => (value ? 'Yes' : 'No')
+    },
+    {
+      title: 'Extend Time',
+      dataIndex: 'isExtend',
+      key: 'isExtend',
       render: (value) => (value ? 'Yes' : 'No')
     },
     { title: 'Lot Type', dataIndex: 'lotType', key: 'lotType' },
@@ -130,10 +149,8 @@ const LotList = () => {
               title: values.title,
               deposit: values.deposit,
               buyNowPrice: values.buyNowPrice,
-              startTime: values.startTime,
-              endTime: values.endTime,
-              isExtend: values.isExtend ? false : values.isExtend,
-              haveFinancialProof: values.haveFinancialProof ? false : values.haveFinancialProof,
+              isExtend: values.isExtend,
+              haveFinancialProof: values.haveFinancialProof,
               staffId: values.staffId,
               jewelryId: values.jewelryId,
               auctionId: values.auctionId
@@ -150,10 +167,8 @@ const LotList = () => {
               startPrice: values.startPrice,
               finalPriceSold: values.finalPriceSold,
               deposit: values.deposit,
-              startTime: values.startTime,
-              endTime: values.endTime,
-              isExtend: values.isExtend ? false : values.isExtend,
-              haveFinancialProof: values.haveFinancialProof ? false : values.haveFinancialProof,
+              isExtend: values.isExtend,
+              haveFinancialProof: values.haveFinancialProof,
               staffId: values.staffId,
               jewelryId: values.jewelryId,
               auctionId: values.auctionId
@@ -171,10 +186,8 @@ const LotList = () => {
               finalPriceSold: values.finalPriceSold,
               bidIncrement: values.bidIncrement,
               deposit: values.deposit,
-              startTime: values.startTime,
-              endTime: values.endTime,
-              isExtend: values.isExtend ? false : values.isExtend,
-              haveFinancialProof: values.haveFinancialProof ? false : values.haveFinancialProof,
+              isExtend: values.isExtend,
+              haveFinancialProof: values.haveFinancialProof,
               staffId: values.staffId,
               jewelryId: values.jewelryId,
               auctionId: values.auctionId
@@ -193,13 +206,12 @@ const LotList = () => {
               finalPriceSold: values.finalPriceSold,
               bidIncrement: values.bidIncrement,
               deposit: values.deposit,
-              startTime: values.startTime,
-              endTime: values.endTime,
-              isExtend: values.isExtend ? false : values.isExtend,
-              haveFinancialProof: values.haveFinancialProof ? false : values.haveFinancialProof,
+              isExtend: values.isExtend,
+              haveFinancialProof: values.haveFinancialProof,
               staffId: values.staffId,
               jewelryId: values.jewelryId,
-              auctionId: values.auctionId
+              auctionId: values.auctionId,
+              bidIncrementTime: values.bidIncrementTime
             }).unwrap()
             notification.success({
               message: 'Success',
@@ -253,10 +265,11 @@ const LotList = () => {
             </Button>
           </Space>
         </div>
-        <Table columns={columns} dataSource={filteredLots} rowKey='id' pagination={{ pageSize: 5 }} />
+        <Table columns={columns} dataSource={filteredLots} rowKey='id' pagination={{ pageSize: 5 }} size='small' />
       </div>
       {auctionData && (
         <AddLotModal
+          isLoading={loadingFixedPrice || loadingSecret || loadingPublice || loadingReduce}
           auctionData={auctionData.data}
           visible={modalVisible}
           onCancel={handleModalCancel}

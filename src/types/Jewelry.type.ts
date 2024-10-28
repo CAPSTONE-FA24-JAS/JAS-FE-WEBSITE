@@ -13,7 +13,7 @@ export interface Jewelry {
   videoLink: string | null
   forGender: string | null
   title: string
-  bidForm: string | null
+  bidForm: 'Fixed_Price' | 'Secret_Auction' | 'Public_Auction' | 'Auction_Price_GraduallyReduced'
   time_Bidding: string | null
   artistId: number
   categoryId: number
