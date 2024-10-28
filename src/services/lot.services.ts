@@ -32,91 +32,96 @@ export const lotApi = createApi({
       }
     }),
     createLotFixedPrice: build.mutation<Respone<Lot>, Partial<CreateLot>>({
-      query: (body) => ({
-        url: '/Lot/CreateLotFixedPrice',
-        method: 'POST',
-        body: {
-          title: body.title,
-          deposit: Number(body.deposit),
-          buyNowPrice: body.buyNowPrice,
-          startTime: body.startTime,
-          endTime: body.endTime,
-          isExtend: body.isExtend,
-          haveFinancialProof: body.haveFinancialProof,
-          staffId: body.staffId,
-          jewelryId: body.jewelryId,
-          auctionId: body.auctionId
+      query: (body) => (
+        console.log(body),
+        {
+          url: '/Lot/CreateLotFixedPrice',
+          method: 'POST',
+          body: {
+            title: body.title,
+            deposit: Number(body.deposit),
+            buyNowPrice: body.buyNowPrice,
+            isExtend: body.isExtend,
+            haveFinancialProof: body.haveFinancialProof,
+            staffId: body.staffId,
+            jewelryId: body.jewelryId,
+            auctionId: body.auctionId
+          }
         }
-      }),
-      invalidatesTags(result, error, arg, meta) {
+      ),
+      invalidatesTags() {
         return [{ type: 'Lot', id: 'LIST' }]
       }
     }),
     createLotPublicAuction: build.mutation<Respone<Lot>, Partial<CreateLot>>({
-      query: (body) => ({
-        url: '/Lot/CreateLotPublicAuction',
-        method: 'POST',
-        body: {
-          title: body.title,
-          startPrice: Number(body.startPrice),
-          finalPriceSold: Number(body.finalPriceSold),
-          bidIncrement: Number(body.bidIncrement),
-          deposit: Number(body.deposit),
-          startTime: body.startTime,
-          endTime: body.endTime,
-          isExtend: body.isExtend,
-          haveFinancialProof: body.haveFinancialProof,
-          staffId: body.staffId,
-          jewelryId: body.jewelryId,
-          auctionId: body.auctionId
+      query: (body) => (
+        console.log(body),
+        {
+          url: '/Lot/CreateLotPublicAuction',
+          method: 'POST',
+          body: {
+            title: body.title,
+            startPrice: Number(body.startPrice),
+            finalPriceSold: Number(body.finalPriceSold),
+            bidIncrement: Number(body.bidIncrement),
+            deposit: Number(body.deposit),
+            isExtend: body.isExtend,
+            haveFinancialProof: body.haveFinancialProof,
+            staffId: body.staffId,
+            jewelryId: body.jewelryId,
+            auctionId: body.auctionId
+          }
         }
-      }),
-      invalidatesTags(result, error, arg, meta) {
+      ),
+      invalidatesTags() {
         return [{ type: 'Lot', id: 'LIST' }]
       }
     }),
     createLotSecretAuction: build.mutation<Respone<Lot>, Partial<CreateLot>>({
-      query: (body) => ({
-        url: '/Lot/CreateLotSecretAuction',
-        method: 'POST',
-        body: {
-          title: body.title,
-          startPrice: Number(body.startPrice),
-          finalPriceSold: Number(body.finalPriceSold),
-          deposit: Number(body.deposit),
-          startTime: body.startTime,
-          endTime: body.endTime,
-          isExtend: body.isExtend,
-          haveFinancialProof: body.haveFinancialProof,
-          staffId: body.staffId,
-          jewelryId: body.jewelryId,
-          auctionId: body.auctionId
+      query: (body) => (
+        console.log(body),
+        {
+          url: '/Lot/CreateLotSecretAuction',
+          method: 'POST',
+          body: {
+            title: body.title,
+            startPrice: Number(body.startPrice),
+            finalPriceSold: Number(body.finalPriceSold),
+            deposit: Number(body.deposit),
+            isExtend: body.isExtend,
+            haveFinancialProof: body.haveFinancialProof,
+            staffId: body.staffId,
+            jewelryId: body.jewelryId,
+            auctionId: body.auctionId
+          }
         }
-      }),
-      invalidatesTags(result, error, arg, meta) {
+      ),
+      invalidatesTags() {
         return [{ type: 'Lot', id: 'LIST' }]
       }
     }),
     CreateLotAuctionPriceGraduallyReduced: build.mutation<Respone<Lot>, Partial<CreateLot>>({
-      query: (body) => ({
-        url: '/Lot/CreateLotAuctionPriceGraduallyReduced',
-        method: 'POST',
-        body: {
-          title: body.title,
-          startPrice: Number(body.startPrice),
-          finalPriceSold: Number(body.finalPriceSold),
-          bidIncrement: Number(body.bidIncrement),
-          deposit: Number(body.deposit),
-          startTime: body.startTime,
-          endTime: body.endTime,
-          isExtend: body.isExtend,
-          haveFinancialProof: body.haveFinancialProof,
-          staffId: body.staffId,
-          jewelryId: body.jewelryId,
-          auctionId: body.auctionId
+      query: (body) => (
+        console.log(body),
+        {
+          url: '/Lot/CreateLotAuctionPriceGraduallyReduced',
+          method: 'POST',
+          body: {
+            title: body.title,
+            startPrice: Number(body.startPrice),
+            finalPriceSold: Number(body.finalPriceSold),
+            bidIncrement: Number(body.bidIncrement),
+            deposit: Number(body.deposit),
+            isExtend: body.isExtend,
+            haveFinancialProof: body.haveFinancialProof,
+            staffId: body.staffId,
+            jewelryId: body.jewelryId,
+            auctionId: body.auctionId,
+            bidIncrementTime: Number(body.bidIncrementTime)
+          }
         }
-      }),
-      invalidatesTags(result, error, arg, meta) {
+      ),
+      invalidatesTags() {
         return [{ type: 'Lot', id: 'LIST' }]
       }
     })
