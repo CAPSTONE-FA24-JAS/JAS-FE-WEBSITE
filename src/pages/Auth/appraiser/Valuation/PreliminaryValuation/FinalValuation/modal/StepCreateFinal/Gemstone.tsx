@@ -7,14 +7,6 @@ import {
   SecondaryShaphy
 } from '../../../../../../../../types/Gemstones.type'
 
-interface ImageFiles {
-  [gemstoneType: string]: {
-    [key in 'documentDiamonds' | 'imageDiamonds']?: {
-      [index: number]: File[]
-    }
-  }
-}
-
 interface GemstoneDetailsProps {
   formData: {
     mainDiamonds: MainDiamond[]
@@ -36,7 +28,7 @@ interface GemstoneDetailsProps {
   setGemstoneDataArray: React.Dispatch<React.SetStateAction<any>>
   handleImageChangeGemstone: (
     files: File[],
-    key: 'documentDiamonds' | 'imageDiamonds',
+    key: 'documentDiamonds' | 'imageDiamonds' | 'documentShaphies' | 'imageShaphies',
     index: number,
     gemstoneType: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies'
   ) => void
@@ -56,21 +48,19 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
   handleImageChangeGemstone,
   handleAddGemstone
 }) => {
-  const [imageFiles, setImageFiles] = useState<ImageFilesUpload>({
-    mainDiamonds: { imageDiamonds: {}, documentDiamonds: {} },
-    secondaryDiamonds: { imageDiamonds: {}, documentDiamonds: {} },
-    mainShaphies: { imageDiamonds: {}, documentDiamonds: {} },
-    secondaryShaphies: { imageDiamonds: {}, documentDiamonds: {} }
+  const [imageFiles, setImageFiles] = useState<ImageFilesUpload>({})
+
+  const [documentFiles, setDocumentFiles] = useState<ImageFilesUpload>({})
+
+  // Thêm state để theo dõi trạng thái hiển thị của từng loại gemstone
+  const [visibleGemstones, setVisibleGemstones] = useState<{
+    [key: string]: boolean
+  }>({
+    mainDiamonds: false,
+    secondaryDiamonds: false,
+    mainShaphies: false,
+    secondaryShaphies: false
   })
-
-  const [documentFiles, setDocumentFiles] = useState<{ [key: string]: { [key: number]: File[] } }>({})
-
-  useEffect(() => {
-    console.log('Main Diamonds Data:', formData.mainDiamonds)
-  }, [formData.mainDiamonds])
-  useEffect(() => {
-    console.log('Updated imageFiles:', imageFiles)
-  }, [imageFiles])
 
   const diamondFields = [
     { label: 'Name', key: 'name', placeholder: 'Enter name' },
@@ -100,57 +90,43 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
     e: ChangeEvent<HTMLInputElement>,
     index: number,
     type: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies',
-    key: 'documentDiamonds' | 'imageDiamonds'
+    key: 'documentDiamonds' | 'imageDiamonds' | 'documentShaphies' | 'imageShaphies'
   ) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files)
-      console.log(`Files selected for ${type} at index ${index}:`, filesArray)
-      const isImage = key === 'imageDiamonds'
+      const isImage = key === 'imageDiamonds' || key === 'imageShaphies'
 
-      setImageFiles((prev) => {
-        const updatedFiles = { ...prev }
-        updatedFiles[type] = updatedFiles[type] || { imageDiamonds: {}, documentDiamonds: {} }
-        updatedFiles[type][key] = updatedFiles[type][key] || {}
-        updatedFiles[type][key][index] = [...(updatedFiles[type][key][index] || []), ...filesArray].slice(0, 5)
-        console.log('Updated Image Files:', updatedFiles)
-        return updatedFiles
-      })
-
-      // Call the handler function for image change
       if (isImage) {
-        handleImageChangeGemstone(filesArray, 'imageDiamonds', index, type)
+        setImageFiles((prev) => {
+          const updatedFiles = { ...prev }
+          updatedFiles[type] = updatedFiles[type] || { imageDiamonds: {}, imageShaphies: {} }
+          updatedFiles[type][key] = updatedFiles[type][key] || {}
+          updatedFiles[type][key][index] = [...(updatedFiles[type][key][index] || []), ...filesArray].slice(0, 5)
+          return updatedFiles
+        })
       } else {
         setDocumentFiles((prev) => {
           const updatedDocs = { ...prev }
-
-          if (!updatedDocs[type]) {
-            updatedDocs[type] = {}
-          }
-
-          if (!updatedDocs[type][index]) {
-            updatedDocs[type][index] = []
-          }
-
-          updatedDocs[type][index] = [...(prev[type]?.[index] || []), ...filesArray].slice(0, 5)
+          updatedDocs[type] = updatedDocs[type] || { documentDiamonds: {}, documentShaphies: {} }
+          updatedDocs[type][key] = updatedDocs[type][key] || {}
+          updatedDocs[type][key][index] = [...(updatedDocs[type][key][index] || []), ...filesArray].slice(0, 5)
           return updatedDocs
         })
-        handleImageChangeGemstone(filesArray, 'documentDiamonds', index, type)
       }
+      handleImageChangeGemstone(filesArray, key, index, type)
     }
   }
 
   const renderImageUploadSection = (
     index: number,
     type: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies',
-    imageFiles: { [key: string]: { [key: string]: { [key: number]: File[] } } },
-    key: 'imageDiamonds'
+    key: 'imageDiamonds' | 'imageShaphies'
   ) => {
     const images = imageFiles[type]?.[key]?.[index] || []
-    console.log('Images to render:', images)
 
     return (
       <div>
-        <label className='block font-extrabold mb-2'>Upload Images</label>
+        <label className='block font-extrabold text-red-500 mb-2'>Upload Images</label>
         <div className='grid grid-cols-4 gap-4 items-center'>
           {images.length > 0 && (
             <div className='mb-4 col-span-4'>
@@ -158,7 +134,7 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
                 {images.map((file, fileIndex) => (
                   <Image
                     key={fileIndex}
-                    src={URL.createObjectURL(file)} // Create a URL for the uploaded image
+                    src={URL.createObjectURL(file)}
                     alt={`Uploaded image ${fileIndex + 1}`}
                     className='object-cover rounded-lg h-30 w-20 mb-2'
                   />
@@ -190,14 +166,13 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
   const renderDocumentUploadSection = (
     index: number,
     type: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies',
-    documentFiles: { [key: string]: { [key: number]: File[] } },
-    key: 'documentDiamonds'
+    key: 'documentDiamonds' | 'documentShaphies'
   ) => {
-    const documents = documentFiles[type]?.[index] || []
+    const documents = documentFiles[type]?.[key]?.[index] || []
 
     return (
       <div>
-        <label className='block font-extrabold mb-2'>Upload Documents</label>
+        <label className='block font-extrabold text-red-500 mb-2'>Upload Documents</label>
         <div className='grid grid-cols-4 gap-4 items-center'>
           {documents.length > 0 && (
             <div className='mb-4 col-span-4'>
@@ -238,7 +213,7 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
     return data.map((detail, index) => {
       return (
         <div key={index} className='border p-4 mb-4 rounded'>
-          <h4 className='text-lg font-semibold'>{`${type} ${index + 1}`}</h4>
+          <h4 className='text-lg font-semibold '>{`${index + 1}`}</h4>
           <div className='grid grid-cols-2 gap-4'>
             {fields.map(({ label, key, placeholder }) => (
               <div key={key}>
@@ -250,15 +225,14 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
                   onChange={(e) => {
                     handleGemstoneChange(type, index, key as keyof typeof detail, e.target.value)
                   }}
-                  className='border rounded p-2 w-full'
+                  className='w-full border border-gray-300 p-2 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 custom-input-placeholder'
                 />
               </div>
             ))}
           </div>
 
-          {renderImageUploadSection(index, type, imageFiles, 'imageDiamonds')}
-
-          {renderDocumentUploadSection(index, type, documentFiles, 'documentDiamonds')}
+          {renderImageUploadSection(index, type, 'imageDiamonds')}
+          {renderDocumentUploadSection(index, type, 'documentDiamonds')}
         </div>
       )
     })
@@ -267,24 +241,50 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
   const renderGemstoneSection = (
     gemstoneType: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies',
     label: string
-  ) => (
-    <div className='mb-6'>
-      <h4 className='text-xl font-semibold mb-4'>{label}</h4>
-      {renderGemstoneFields(
-        gemstoneType === 'mainDiamonds'
-          ? formData.mainDiamonds
-          : gemstoneType === 'secondaryDiamonds'
-          ? formData.secondaryDiamonds
-          : gemstoneType === 'mainShaphies'
-          ? formData.mainShaphies
-          : formData.secondaryShaphies,
-        gemstoneType
-      )}
-      <button onClick={() => handleAddGemstone(gemstoneType)} className='bg-blue-500 text-white p-2 rounded mt-4'>
-        {`Add ${label}`}
-      </button>
-    </div>
-  )
+  ) => {
+    const gemstoneDetails =
+      gemstoneType === 'mainDiamonds'
+        ? formData.mainDiamonds
+        : gemstoneType === 'secondaryDiamonds'
+        ? formData.secondaryDiamonds
+        : gemstoneType === 'mainShaphies'
+        ? formData.mainShaphies
+        : formData.secondaryShaphies
+
+    return (
+      <div className='mb-6'>
+        <div className='flex justify-between items-center mb-4'>
+          <p className='text-xl font-bold text-red-500'>{label}</p>
+          {!visibleGemstones[gemstoneType] ? (
+            <button
+              onClick={() => {
+                if (gemstoneDetails.length === 0) {
+                  handleAddGemstone(gemstoneType)
+                }
+                setVisibleGemstones((prev) => ({ ...prev, [gemstoneType]: true }))
+              }}
+              className='p-2 text-sm font-bold text-gray-600 rounded-lg hover:text-blue-600 bg-slate-400'
+            >
+              {`Add ${label}`}
+            </button>
+          ) : null}
+        </div>
+        {visibleGemstones[gemstoneType] && (
+          <>
+            {renderGemstoneFields(gemstoneDetails, gemstoneType)}
+            <div className='flex justify-end'>
+              <button
+                onClick={() => handleAddGemstone(gemstoneType)}
+                className='p-2 text-sm font-bold text-gray-600 rounded-lg hover:text-blue-600 bg-slate-400'
+              >
+                {`Add ${label}`}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    )
+  }
 
   return (
     <div className='p-4'>
