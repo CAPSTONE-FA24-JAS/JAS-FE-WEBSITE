@@ -57,8 +57,8 @@ export interface MainDiamond {
   lengthWidthRatio: string
   type: string
   jewelryId: number
-  documentDiamonds?: string[]
-  imageDiamonds?: string[]
+  documentDiamonds?: DocumentDiamond[]
+  imageDiamonds?: ImageDiamond[]
 }
 
 export interface DocumentDiamond {
@@ -87,8 +87,8 @@ export interface SecondaryDiamond {
   lengthWidthRatio: string
   type: string
   jewelryId: number
-  documentDiamonds: string[]
-  imageDiamonds: string[]
+  documentDiamonds: DocumentDiamond2[]
+  imageDiamonds: ImageDiamond2[]
 }
 
 export interface DocumentDiamond2 {

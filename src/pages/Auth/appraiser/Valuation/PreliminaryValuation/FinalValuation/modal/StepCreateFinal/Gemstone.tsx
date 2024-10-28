@@ -68,9 +68,10 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
   useEffect(() => {
     console.log('Main Diamonds Data:', formData.mainDiamonds)
   }, [formData.mainDiamonds])
-  useEffect(() => {
-    console.log('Updated imageFiles:', imageFiles)
-  }, [imageFiles])
+
+  // useEffect(() => {
+  //   console.log('Updated imageFiles:', imageFiles)
+  // }, [imageFiles])
 
   const diamondFields = [
     { label: 'Name', key: 'name', placeholder: 'Enter name' },
@@ -146,7 +147,7 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
     key: 'imageDiamonds'
   ) => {
     const images = imageFiles[type]?.[key]?.[index] || []
-    console.log('Images to render:', images)
+    // console.log('Images to render:', images)
 
     return (
       <div>
