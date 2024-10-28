@@ -112,8 +112,8 @@ export interface MainShaphy {
   settingType: string
   dimension: string
   jewelryId: number
-  documentShaphies: string[]
-  imageShaphies: string[]
+  documentShaphies: DocumentShaphy[]
+  imageShaphies: ImageShaphy[]
 }
 
 export interface DocumentShaphy {
@@ -137,8 +137,8 @@ export interface SecondaryShaphy {
   settingType: string
   dimension: string
   jewelryId: number
-  documentShaphies: string[]
-  imageShaphies: string[]
+  documentShaphies: DocumentShaphy2[]
+  imageShaphies: ImageShaphy2[]
 }
 
 export interface DocumentShaphy2 {

@@ -5,7 +5,6 @@ import FinalStepsStep from './StepCreateFinal/FinalInfo'
 import { useCreateFinalValuationMutation } from '../../../../../../../services/createfinalvaluation.services'
 import { useParams } from 'react-router-dom'
 import {
-  ImageDiamond,
   MainDiamond,
   MainShaphy,
   SecondaryDiamond,
@@ -19,7 +18,7 @@ const { Step } = Steps
 // Định nghĩa kiểu cho imageFiles
 interface ImageFiles {
   [gemstoneType: string]: {
-    [key in 'documentDiamonds' | 'imageDiamonds']?: {
+    [key in 'documentDiamonds' | 'imageDiamonds' | 'imageShaphies' | 'documentShaphies']?: {
       [index: number]: File[]
     }
   }
@@ -29,9 +28,8 @@ export default function CreateFinalValuation() {
   const { id } = useParams<{ id: string }>() // Lấy ID từ URL
   const [selectedImages, setSelectedImages] = useState<File[]>([])
 
-  // Sử dụng kiểu đã định nghĩa cho imageFiles
   const [imageFiles, setImageFiles] = useState<ImageFiles>({})
-  const [documentFiles, setDocumentFiles] = useState<{ [key: string]: { [key: number]: File[] } }>({})
+  const [documentFiles, setDocumentFiles] = useState<ImageFiles>({})
 
   const [formData, setFormData] = useState<ValuationGemstoneData>({
     name: '',
@@ -144,20 +142,37 @@ export default function CreateFinalValuation() {
   const [currentStep, setCurrentStep] = useState(0)
   const [createFinalValuation] = useCreateFinalValuationMutation()
 
-  // useEffect(() => {
-  //   console.log('Updated imageFiles:', imageFiles) // This will log whenever imageFiles changes
-  // }, [imageFiles])
-
   useEffect(() => {
     const updatedGemstoneDataArray = gemstoneDataArray.map((gem) => {
-      if (gem.type === 'mainDiamonds') {
+      if (gem.type === 'mainDiamonds' || gem.type === 'secondaryDiamonds') {
         return {
           ...gem,
           details: gem.details.map((detail, index) => ({
             ...detail,
-            imageDiamonds: (imageFiles['mainDiamonds']?.['imageDiamonds']?.[index] || []).map((file: File) => ({
+            imageDiamonds: (imageFiles[gem.type]?.['imageDiamonds']?.[index] || []).map((file: File) => ({
               imageLink: file.name,
               diamondId: detail.id
+            })),
+            documentDiamonds: (documentFiles[gem.type]?.['documentDiamonds']?.[index] || []).map((file: File) => ({
+              documentLink: file.name,
+              diamondId: detail.id,
+              documentTitle: 'Some Title' // Thêm thuộc tính documentTitle
+            }))
+          }))
+        }
+      } else if (gem.type === 'mainShaphies' || gem.type === 'secondaryShaphies') {
+        return {
+          ...gem,
+          details: gem.details.map((detail, index) => ({
+            ...detail,
+            imageShaphies: (imageFiles[gem.type]?.['imageShaphies']?.[index] || []).map((file: File) => ({
+              imageLink: file.name,
+              shaphieId: detail.id
+            })),
+            documentShaphies: (documentFiles[gem.type]?.['documentShaphies']?.[index] || []).map((file: File) => ({
+              documentLink: file.name,
+              shaphieId: detail.id,
+              documentTitle: 'Some Title' // Thêm thuộc tính documentTitle
             }))
           }))
         }
@@ -168,7 +183,7 @@ export default function CreateFinalValuation() {
     if (JSON.stringify(updatedGemstoneDataArray) !== JSON.stringify(gemstoneDataArray)) {
       setGemstoneDataArray(updatedGemstoneDataArray)
     }
-  }, [imageFiles])
+  }, [imageFiles, documentFiles])
 
   useEffect(() => {
     const updatedMainDiamonds = gemstoneDataArray
@@ -187,7 +202,6 @@ export default function CreateFinalValuation() {
       .filter((gem) => gem.type === 'secondaryShaphies')
       .flatMap((gem) => gem.details) as SecondaryShaphy[]
 
-    // Cập nhật formData với dữ liệu mới
     setFormData((prevData) => ({
       ...prevData,
       mainDiamonds: updatedMainDiamonds,
@@ -203,7 +217,6 @@ export default function CreateFinalValuation() {
       const gemstone = updatedData.find((gem) => gem.type === type)
 
       if (gemstone) {
-        // Create the appropriate empty object based on the type
         let newDetail
         if (type === 'mainDiamonds' || type === 'secondaryDiamonds') {
           newDetail = {
@@ -223,7 +236,7 @@ export default function CreateFinalValuation() {
             jewelryId: 0,
             documentDiamonds: [],
             imageDiamonds: []
-          } as MainDiamond | SecondaryDiamond // Cast as appropriate type
+          } as MainDiamond | SecondaryDiamond
         } else if (type === 'mainShaphies' || type === 'secondaryShaphies') {
           newDetail = {
             id: 0,
@@ -280,7 +293,10 @@ export default function CreateFinalValuation() {
       const gemstone = updatedData.find((gem) => gem.type === type)
 
       if (gemstone && gemstone.details[index]) {
-        ;(gemstone.details[index] as any)[field] = value // Use 'any' to bypass strict typing for this case
+        const currentValue = (gemstone.details[index] as any)[field]
+        if (value !== currentValue) {
+          ;(gemstone.details[index] as any)[field] = value || null
+        }
       }
 
       return updatedData
@@ -289,7 +305,7 @@ export default function CreateFinalValuation() {
 
   const handleImageChangeGemstone = (
     files: File[],
-    key: 'documentDiamonds' | 'imageDiamonds',
+    key: 'documentDiamonds' | 'imageDiamonds' | 'documentShaphies' | 'imageShaphies',
     index: number,
     gemstoneType: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies'
   ) => {
@@ -303,14 +319,27 @@ export default function CreateFinalValuation() {
         if (!updatedFiles[gemstoneType][key]) {
           updatedFiles[gemstoneType][key] = {}
         }
-        updatedFiles[gemstoneType][key]![index] = files // Sử dụng '!' để khẳng định rằng giá trị không phải là undefined
+        updatedFiles[gemstoneType][key]![index] = files
+
+        return updatedFiles
+      })
+
+      setDocumentFiles((prev: ImageFiles) => {
+        const updatedFiles: ImageFiles = { ...prev }
+
+        if (!updatedFiles[gemstoneType]) {
+          updatedFiles[gemstoneType] = {}
+        }
+        if (!updatedFiles[gemstoneType][key]) {
+          updatedFiles[gemstoneType][key] = {}
+        }
+        updatedFiles[gemstoneType][key]![index] = files
 
         return updatedFiles
       })
     } catch (error) {
-      console.error('Error updating image files:', error)
+      console.error('Error updating files:', error)
     }
-    console.log('Current imageFiles:', imageFiles)
   }
 
   const next = () => {
@@ -369,23 +398,23 @@ export default function CreateFinalValuation() {
             formDataToSend.append(`${gemstoneType}[${index}].fluorescence`, diamondDetail.fluorescence)
             formDataToSend.append(`${gemstoneType}[${index}].lengthWidthRatio`, diamondDetail.lengthWidthRatio)
 
-            // Append imageDiamonds
             imageFiles[gemstoneType]?.['imageDiamonds']?.[index]?.forEach((file: File, imgIndex: number) => {
               if (file instanceof File) {
-                console.log(`File at index ${imgIndex}:`, file) // In ra thông tin của file
-                formDataToSend.append(`${gemstoneType}[${index}].imageDiamonds[${imgIndex}]`, file)
+                console.log(`File at index ${imgIndex}:`, file)
+                formDataToSend.append(`${gemstoneType}[${index}].imageDiamonds`, file)
               } else {
                 console.error('Expected a File object, but got:', file)
               }
             })
 
-            // // Append documentDiamonds
-            // diamondDetail.documentDiamonds?.forEach((document, docIndex) => {
-            //   // Giả sử documentLink là thuộc tính chứa URL hoặc tên tệp
-            //   if (typeof document === 'string') {
-            //     formDataToSend.append(`${gemstoneType}[${index}].documentDiamonds[${docIndex}]`, document.documentLink)
-            //   }
-            // })
+            documentFiles[gemstoneType]?.['documentDiamonds']?.[index]?.forEach((file: File, imgIndex: number) => {
+              if (file instanceof File) {
+                console.log(`File at index ${imgIndex}:`, file)
+                formDataToSend.append(`${gemstoneType}[${index}].documentDiamonds`, file)
+              } else {
+                console.error('Expected a File object, but got:', file)
+              }
+            })
           } else if (gemstoneType === 'mainSapphires' || gemstoneType === 'secondarySapphires') {
             const shaphyDetail = detail as MainShaphy | SecondaryShaphy
             formDataToSend.append(`${gemstoneType}[${index}].name`, shaphyDetail.name)
@@ -395,16 +424,32 @@ export default function CreateFinalValuation() {
             formDataToSend.append(`${gemstoneType}[${index}].quantity`, shaphyDetail.quantity.toString())
             formDataToSend.append(`${gemstoneType}[${index}].settingType`, shaphyDetail.settingType)
             formDataToSend.append(`${gemstoneType}[${index}].dimension`, shaphyDetail.dimension)
+
+            imageFiles[gemstoneType]?.['imageShaphies']?.[index]?.forEach((file: File, imgIndex: number) => {
+              if (file instanceof File) {
+                console.log(`File at index ${imgIndex}:`, file)
+                formDataToSend.append(`${gemstoneType}[${index}].imageShaphies`, file)
+              } else {
+                console.error('Expected a File object, but got:', file)
+              }
+            })
+
+            documentFiles[gemstoneType]?.['documentShaphies']?.[index]?.forEach((file: File, imgIndex: number) => {
+              if (file instanceof File) {
+                console.log(`File at index ${imgIndex}:`, file)
+                formDataToSend.append(`${gemstoneType}[${index}].documentShaphies`, file)
+              } else {
+                console.error('Expected a File object, but got:', file)
+              }
+            })
           }
         })
       }
 
-      // Append gemstone details
       gemstoneDataArray.forEach((gemstone) => {
         appendGemstoneDetails(gemstone.type, gemstone.details)
       })
 
-      // Kiểm tra nội dung của FormData
       for (let pair of formDataToSend.entries()) {
         console.log(pair[0] + ', ' + pair[1])
       }
