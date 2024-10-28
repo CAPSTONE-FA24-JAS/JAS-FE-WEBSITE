@@ -45,7 +45,8 @@ export const createFinal = createApi({
       query: (payload) => ({
         url: 'Jewelrys/CreateFinalValuation',
         method: 'POST',
-        body: payload
+        body: payload,
+        formData: true
       }),
       // Transform the response to match the ValuationGemstoneData interface
       transformResponse: (response: ValuationGemstoneDataParent): ValuationGemstoneData => {
