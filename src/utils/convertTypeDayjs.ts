@@ -11,6 +11,9 @@ export const dateToString = (date: Dayjs): string => {
 }
 
 export const parseDate = (dateString: string, type: 'dd/mm/yyyy' | 'dd/mm/yyy hh/mm/ss'): string => {
+  if (!dateString) {
+    return ''
+  }
   const date = new Date(dateString)
   const day = date.getDate()
   const month = date.getMonth() + 1

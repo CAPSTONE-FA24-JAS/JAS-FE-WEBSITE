@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { Menu, MenuProps } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import Sider from 'antd/es/layout/Sider'
-import { RiAuctionLine, RiProductHuntLine } from 'react-icons/ri'
+import { RiAuctionLine } from 'react-icons/ri'
 import { GrView } from 'react-icons/gr'
-import { HiOutlineViewGridAdd } from 'react-icons/hi'
 import { MdInventory, MdOutlineCategory, MdOutlineMenu } from 'react-icons/md'
 import { cn } from '../../../utils/cn'
 import { BarChartOutlined } from '@ant-design/icons'
@@ -53,8 +52,7 @@ export default function SiderManager() {
       ]),
       getItem('Manage Invoice', 'managewin', <BarChartOutlined />),
       getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
-        getItem('Auction List', 'auctionListSub', <GrView className='text-base' />),
-        getItem('Lot List', 'lotList', <GrView className='text-base' />)
+        getItem('Auction List', 'auctionListSub', <GrView className='text-base' />)
       ]),
       getItem('Finance Proof', 'financeProof', <TbZoomMoney className='text-base' />)
     ]
@@ -66,7 +64,6 @@ export default function SiderManager() {
     .set('requestvaluation', '/manager/requestfinal')
     .set('managewin', '/manager/manageinvoice')
     .set('auctionListSub', '/manager/auctionlist')
-    .set('lotList', '/manager/lotList')
     .set('financeProof', '/manager/financeProofManager')
 
   return (

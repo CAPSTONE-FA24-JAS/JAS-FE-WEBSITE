@@ -76,7 +76,7 @@ export default function ManageInvoiceModal({
     <>
       <Modal title={`Invoice Details: ${invoiceDetails.id}`} open={visible} onCancel={onCancel} footer={null}>
         <div className='flex space-x-4'>
-          <div className='w-1/3 flex justify-center mt-5 mb-5'>
+          <div className='flex justify-center w-1/3 mt-5 mb-5'>
             <Avatar
               size={128}
               src={imageLinkJewelry}
@@ -85,9 +85,9 @@ export default function ManageInvoiceModal({
             />
           </div>
 
-          <div className='w-2/3 space-y-2 mt-5 mb-5'>
+          <div className='w-2/3 mt-5 mb-5 space-y-2'>
             <p>
-              <strong className='font-extrabold mt-4 mb-2 text-lg'>{productName}</strong>
+              <strong className='mt-4 mb-2 text-lg font-extrabold'>{productName}</strong>
             </p>
 
             <div className='flex'>
@@ -100,14 +100,14 @@ export default function ManageInvoiceModal({
               <p>
                 <strong>Status:</strong>
               </p>
-              <p className='ml-11 font-bold text-red-700'>{status}</p>
+              <p className='font-bold text-red-700 ml-11'>{status}</p>
             </div>
           </div>
         </div>
 
-        <div className='border-t border-gray-300 my-4'></div>
+        <div className='my-4 border-t border-gray-300'></div>
 
-        <p className='font-extrabold mt-4 mb-2 text-lg'>Winner Information:</p>
+        <p className='mt-4 mb-2 text-lg font-extrabold'>Winner Information:</p>
 
         <div className='flex justify-between mb-4'>
           <p>
@@ -128,9 +128,9 @@ export default function ManageInvoiceModal({
           <p className='font-bold text-gray-600'>{winnerEmail}</p>
         </div>
 
-        <div className='border-t border-gray-300 my-4'></div>
+        <div className='my-4 border-t border-gray-300'></div>
 
-        <p className='font-extrabold mt-4 mb-2 text-lg'>Additional Information:</p>
+        <p className='mt-4 mb-2 text-lg font-extrabold'>Additional Information:</p>
 
         <div className='space-y-2'>
           {/* Display times based on current status */}
@@ -212,8 +212,8 @@ export default function ManageInvoiceModal({
           )}
         </div>
 
-        <h3 className='font-semibold mb-2'>Total Amount:</h3>
-        <p className='text-right font-bold'>₫{totalPrice.toLocaleString()}</p>
+        <h3 className='mb-2 font-semibold'>Total Amount:</h3>
+        <p className='font-bold text-right'>₫{totalPrice.toLocaleString()}</p>
 
         {status === 'Delivered' && (
           <div className='flex justify-end' style={{ marginTop: 20 }}>

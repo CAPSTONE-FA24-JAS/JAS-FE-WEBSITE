@@ -18,9 +18,11 @@ interface UseBiddingResult {
   highestPrice: number
   messages: Message[]
   error: string | null
-  joinLiveBidding: (accountId: string | number, lotId: string | number) => Promise<void>
+  joinLiveBidding: (accountId: string | number, lotId: string | number, lotType: string) => Promise<void>
   sendBid: (price: number) => Promise<void>
   disconnect: () => Promise<void>
+  isEndAuction: boolean
+  reducePrice: string
 }
 
 export function useBidding(): UseBiddingResult {
@@ -29,8 +31,36 @@ export function useBidding(): UseBiddingResult {
   const [messages, setMessages] = useState<Message[]>([])
   const [endTime, setEndTime] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
+  const [isEndAuction, setIsEndAuction] = useState<boolean>(false)
+  const [reducePrice, setReducePrice] = useState<string>('0')
 
   const connectionRef = useRef<HubConnection | null>(null)
+
+  const setupSignalRMethod4 = useCallback((connection: HubConnection) => {
+    connection.on('JoinLot', (user: string, message: string) => {
+      console.log(`${user}: ${message}`)
+    })
+
+    ///ket thuc lot dau gia
+    connection.on(
+      'SendBiddingPriceForStaffforReducedBidding',
+      (cusid: string, cusName: string, price: string, bidtime: string) => {
+        console.log(`Current price updated: ${price} at ${bidtime} by ${cusName} ${cusid}`)
+        setIsEndAuction(true)
+        setReducePrice(price)
+      }
+    )
+
+    connection.on('SendCurrentPriceForReduceBidding', (currentPrice: string, dateNow: string) => {
+      console.log(`currentPrice ${currentPrice} at ${dateNow}`)
+      setReducePrice(() => currentPrice)
+    })
+
+    connection.on('ReducePriceBidding', (mess: string, currentPrice: string, time: string) => {
+      console.log(`currentPrice: ${mess} + ${currentPrice} at ${time}`)
+      setReducePrice(() => currentPrice)
+    })
+  }, [])
 
   const setupSignalRHandlers = useCallback((connection: HubConnection) => {
     // Xử lý sự kiện khi có người tham gia phòng đấu giá
@@ -76,7 +106,7 @@ export function useBidding(): UseBiddingResult {
     })
   }, [])
 
-  const joinLiveBidding = useCallback(async (accountId: string | number, lotId: string | number) => {
+  const joinLiveBidding = useCallback(async (accountId: string | number, lotId: string | number, lotType: string) => {
     try {
       if (connectionRef.current) {
         await connectionRef.current.stop()
@@ -88,7 +118,9 @@ export function useBidding(): UseBiddingResult {
         .configureLogging(LogLevel.Information)
         .build()
 
-      setupSignalRHandlers(connection)
+      if (lotType === 'Auction_Price_GraduallyReduced') {
+        setupSignalRMethod4(connection)
+      } else setupSignalRHandlers(connection)
 
       // Xử lý các sự kiện kết nối
       connection.onclose(() => {
@@ -193,6 +225,8 @@ export function useBidding(): UseBiddingResult {
     error,
     joinLiveBidding,
     sendBid,
-    disconnect
+    disconnect,
+    isEndAuction,
+    reducePrice
   }
 }
