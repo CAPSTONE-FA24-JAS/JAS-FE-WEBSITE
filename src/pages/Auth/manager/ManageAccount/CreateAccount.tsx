@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react'
+import { useState, ChangeEvent } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { Image, notification } from 'antd'
 import { CreateNewStaffForm } from '../../../../types/Account.type'
@@ -18,7 +18,7 @@ interface FormData {
   roleId: string
 }
 
-export default function User() {
+export default function CreateAccount() {
   const {
     register,
     handleSubmit,

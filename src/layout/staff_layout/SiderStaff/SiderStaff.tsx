@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import Sider from 'antd/es/layout/Sider'
 import { RiAuctionLine, RiProductHuntLine } from 'react-icons/ri'
 import { GrView } from 'react-icons/gr'
-import { HiOutlineViewGridAdd } from 'react-icons/hi'
 import { MdOutlineCategory, MdOutlineInventory2, MdOutlineMenu } from 'react-icons/md'
 import { cn } from '../../../utils/cn'
 import { TbZoomMoney } from 'react-icons/tb'
@@ -47,8 +46,7 @@ export default function SiderStaff() {
   const getConditionalItems = (): MenuItem[] => {
     return [
       getItem('My Mision', 'myMission', <RiProductHuntLine className='text-base' />, [
-        getItem('Mission List', 'mymission', <GrView className='text-base' />),
-        getItem('Live Bidding', 'livebidding', <GrView className='text-base' />)
+        getItem('Mission List', 'mymission', <GrView className='text-base' />)
       ]),
 
       // getItem('Quản lí sản phẩm', 'manageProduct', <RiProductHuntLine className='text-base' />, [
@@ -76,7 +74,6 @@ export default function SiderStaff() {
     .set('financeProof', '/staff/financeproof')
     .set('auctionlistSub', '/staff/auctionlist')
     .set('mymission', '/staff/mymission')
-    .set('livebidding', '/staff/livebidding')
   return (
     <>
       <Sider
