@@ -7,16 +7,19 @@ import StaffLayout from '../layout/staff_layout/StaffLayout'
 import AuctionList from '../pages/Auth/admin/Auction/AuctionList'
 import FinanceProofListManager from '../pages/Auth/admin/FinanceProof/FinanceProofListManager'
 import LotList from '../pages/Auth/admin/Lot/LotList'
+import BillInVoiceList from '../pages/Auth/admin/ManageWin/CheckBillInVoice/BillInvoiveList'
 import ManageWinList from '../pages/Auth/admin/ManageWin/ManageWinList'
-import ManageInvoiceModal from '../pages/Auth/admin/ManageWin/modal/ManageInvoiceModal'
 import RequestConsign from '../pages/Auth/admin/RequestConsign/RequestConsign'
 import RequestFinalValuation from '../pages/Auth/admin/RequestFinalValuation/RequestFinalValuation'
+import TransactionsComponent from '../pages/Auth/admin/Transaction/Transaction'
 import CreatePreliminaryValuationAppraiser from '../pages/Auth/appraiser/RequestPreliminaryValuation/CreatePreliminaryValuation'
 import RequestPreliminaryList from '../pages/Auth/appraiser/RequestPreliminaryValuation/RequestPreliminaryValuation'
 import FinalValuationList from '../pages/Auth/appraiser/Valuation/PreliminaryValuation/FinalValuation/FinalValuationList'
 import CreateFinalValuation from '../pages/Auth/appraiser/Valuation/PreliminaryValuation/FinalValuation/modal/CreateFinalValuation'
 import PreliminaryValuationList from '../pages/Auth/appraiser/Valuation/PreliminaryValuation/PreliminaryValuationList'
 import LoginPage from '../pages/Auth/login/LoginPage'
+import ArtistList from '../pages/Auth/manager/Artist/ArtistList'
+import CategoriesComponent from '../pages/Auth/manager/Category/CategoryList'
 import ManageAccount from '../pages/Auth/manager/ManageAccount/AccountList'
 import CreateAccount from '../pages/Auth/manager/ManageAccount/CreateAccount'
 import Overview from '../pages/Auth/manager/Overview'
@@ -53,12 +56,17 @@ const publicRoutes: RouteProps[] = [
 const managerRoutes: RouteProps[] = [
   { path: '/manager/ConsignList', component: RequestConsign, layout: ManagerLayout },
   { path: '/manager/manageinvoice', component: ManageWinList, layout: ManagerLayout },
-  { path: '/manager/manageinvoice/:id', component: ManageInvoiceModal, layout: ManagerLayout },
+
+  { path: '/manager/checkinvoice', component: BillInVoiceList, layout: ManagerLayout },
+
+ 
+
   { path: '/manager/auctionlist', component: AuctionList, layout: ManagerLayout },
   { path: '/manager/requestfinal', component: RequestFinalValuation, layout: ManagerLayout },
   { path: '/manager/lotlist', component: LotList, layout: ManagerLayout },
   { path: '/manager/lotlist/:id', component: LotList, layout: ManagerLayout },
   { path: '/manager/financeProofManager', component: FinanceProofListManager, layout: ManagerLayout },
+  { path: '/manager/transaction', component: TransactionsComponent, layout: ManagerLayout }
   { path: '/manager/lotdetailmanager/:id', component: Index, layout: ManagerLayout }
 ]
 const appraiserRoutes: RouteProps[] = [
@@ -73,7 +81,11 @@ const adminRoutes: RouteProps[] = [
   { path: '/admin', component: Overview, layout: AdminLayout },
   { path: '/admin/overview', component: Overview, layout: AdminLayout },
   { path: '/admin/AccountList', component: ManageAccount, layout: AdminLayout },
-  { path: '/admin/createAccount', component: CreateAccount, layout: AdminLayout }
+  { path: '/admin/createAccount', component: CreateAccount, layout: AdminLayout },
+  { path: '/admin/category', component: CategoriesComponent, layout: AdminLayout },
+  { path: '/admin/artist', component: ArtistList, layout: AdminLayout }
+
+
 ]
 
 const staffCRoutes: RouteProps[] = [

@@ -1,10 +1,11 @@
-import { BarChartOutlined } from '@ant-design/icons'
 import { Menu, MenuProps } from 'antd'
 import Sider from 'antd/es/layout/Sider'
 import React, { useEffect, useState } from 'react'
 import { MdOutlineMenu } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 import { cn } from '../../../utils/cn'
+import { HiOutlineDocument } from 'react-icons/hi'
+import { MdAssessment } from 'react-icons/md'
 
 export default function SiderAppraiser() {
   type MenuItem = Required<MenuProps>['items'][number]
@@ -43,10 +44,10 @@ export default function SiderAppraiser() {
 
   const getConditionalItems = (): MenuItem[] => {
     return [
-      getItem('Request Consign', 'requestConsign', <BarChartOutlined />),
-      getItem('Valuation', 'valuation', <BarChartOutlined />, [
-        getItem('Preliminary Valuation List', 'preliminaryList', <BarChartOutlined />),
-        getItem('Final Valuation List', 'finalList', <BarChartOutlined />)
+      getItem('Request Consign', 'requestConsign', <HiOutlineDocument className='text-base' />),
+      getItem('Valuation', 'valuation', <MdAssessment className='text-base' />, [
+        getItem('Preliminary Valuation List', 'preliminaryList', <MdAssessment className='text-base' />),
+        getItem('Final Valuation List', 'finalList', <MdAssessment className='text-base' />)
       ])
     ]
   }
@@ -56,6 +57,7 @@ export default function SiderAppraiser() {
     .set('requestConsign', '/appraiser/requestConsign')
     .set('preliminaryList', '/appraiser/preliminaryList')
     .set('finalList', '/appraiser/finalList')
+
   return (
     <Sider
       theme='light'
@@ -90,7 +92,7 @@ export default function SiderAppraiser() {
 
       <Menu
         defaultSelectedKeys={['overview']}
-        defaultOpenKeys={getConditionalItems().map((item) => item?.key as string)}
+        defaultOpenKeys={[]}
         selectedKeys={[selectedKey]}
         mode='inline'
         items={getConditionalItems()}
