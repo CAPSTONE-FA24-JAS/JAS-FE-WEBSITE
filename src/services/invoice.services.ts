@@ -1,4 +1,5 @@
 // services/accountApi.ts
+
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { Data } from '../types/Account.type'
 import baseUrl from '../utils/http'
@@ -23,7 +24,7 @@ export const manageInvoice = createApi({
       query: () => `Invoices/getInvoicesByStatusForManger`
     }),
     getInvoiceById: build.query({
-      query: (invoiceId) => `Invoices/GetDetailInvoice?invoiceId=${invoiceId}` // New endpoint for getting invoice by ID
+      query: (invoiceId) => `Invoices/GetDetailInvoice?invoiceId=${invoiceId}`
     }),
     assignShipper: build.mutation<{ message: string }, { invoiceId: number; shipperId: number; status: number }>({
       query: ({ invoiceId, shipperId, status }) => ({
@@ -38,13 +39,21 @@ export const manageInvoice = createApi({
         method: 'PUT',
         params: { invoiceId }
       })
+    }),
+    approvePaymentByBankTransfer: build.mutation<{ message: string }, { invoiceId: number }>({
+      query: ({ invoiceId }) => ({
+        url: `/Invoices/ApprovePaymentInvoiceByBankTransfer`,
+        method: 'POST',
+        params: { invoiceId }
+      })
     })
   })
 })
 
 export const {
   useGetInvoicesForManagerQuery,
-  useGetInvoiceByIdQuery, // Exporting the new query hook
+  useGetInvoiceByIdQuery,
   useAssignShipperMutation,
-  useFinishInvoiceMutation
+  useFinishInvoiceMutation,
+  useApprovePaymentByBankTransferMutation // Exporting the new mutation hook
 } = manageInvoice

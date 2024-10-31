@@ -2,13 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { Menu, MenuProps } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import Sider from 'antd/es/layout/Sider'
-import { RiAuctionLine, RiProductHuntLine } from 'react-icons/ri'
-import { GrView } from 'react-icons/gr'
-import { HiOutlineViewGridAdd } from 'react-icons/hi'
-import { MdInventory, MdOutlineCategory, MdOutlineMenu } from 'react-icons/md'
-import { cn } from '../../../utils/cn'
-import { BarChartOutlined } from '@ant-design/icons'
+import { RiAuctionLine, RiBillLine, RiCheckDoubleLine, RiMoneyDollarCircleLine } from 'react-icons/ri'
+import { HiOutlineDocument } from 'react-icons/hi'
+import { MdAssessment, MdLocalShipping, MdOutlineMenu, MdFormatListBulleted } from 'react-icons/md'
 import { TbZoomMoney } from 'react-icons/tb'
+import { cn } from '../../../utils/cn'
 
 export default function SiderManager() {
   type MenuItem = Required<MenuProps>['items'][number]
@@ -47,14 +45,18 @@ export default function SiderManager() {
 
   const getConditionalItems = (): MenuItem[] => {
     return [
-      getItem('View request Consign', 'managerConsign', <MdInventory className='text-base' />),
-      getItem('Valuation Manage', 'manageValuation', <MdOutlineCategory className='text-base' />, [
-        getItem('Valuation List', 'requestvaluation', <GrView className='text-base' />)
+      getItem('Transaction', 'transaction', <RiMoneyDollarCircleLine className='text-base' />),
+      getItem('View request Consign', 'managerConsign', <HiOutlineDocument className='text-base' />),
+      getItem('Valuation Manage', 'manageValuation', <MdAssessment className='text-base' />, [
+        getItem('Valuation List', 'requestvaluation', <MdFormatListBulleted className='text-base' />)
       ]),
-      getItem('Manage Invoice', 'managewin', <BarChartOutlined />),
+      getItem('Manage Invoice', 'manageInvoice', <RiBillLine className='text-base' />, [
+        getItem('Shipper Assign', 'managewin', <MdLocalShipping className='text-base' />),
+        getItem('Check Invoice', 'managecheckinvoice', <RiCheckDoubleLine className='text-base' />)
+      ]),
       getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
-        getItem('Auction List', 'auctionListSub', <GrView className='text-base' />),
-        getItem('Lot List', 'lotList', <GrView className='text-base' />)
+        getItem('Auction List', 'auctionListSub', <RiAuctionLine className='text-base' />), // You can change this if needed
+        getItem('Lot List', 'lotList', <MdFormatListBulleted className='text-base' />)
       ]),
       getItem('Finance Proof', 'financeProof', <TbZoomMoney className='text-base' />)
     ]
@@ -62,9 +64,11 @@ export default function SiderManager() {
 
   const navUrl = new Map<string, string>()
   navUrl
+    .set('transaction', '/manager/transaction')
     .set('managerConsign', '/manager/ConsignList')
     .set('requestvaluation', '/manager/requestfinal')
     .set('managewin', '/manager/manageinvoice')
+    .set('managecheckinvoice', '/manager/checkinvoice')
     .set('auctionListSub', '/manager/auctionlist')
     .set('lotList', '/manager/lotList')
     .set('financeProof', '/manager/financeProofManager')
@@ -103,7 +107,7 @@ export default function SiderManager() {
 
       <Menu
         defaultSelectedKeys={['overview']}
-        defaultOpenKeys={getConditionalItems().map((item) => item?.key as string)}
+        defaultOpenKeys={[]}
         selectedKeys={[selectedKey]}
         mode='inline'
         items={getConditionalItems()}

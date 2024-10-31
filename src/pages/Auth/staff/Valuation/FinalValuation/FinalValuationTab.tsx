@@ -84,7 +84,7 @@ const FinalValuationTab = () => {
         columns={finalColumns}
         rowKey='id'
         loading={isLoading}
-        pagination={false}
+        pagination={{ pageSize: 6 }}
       />
 
       {selectedFinalRecord && (

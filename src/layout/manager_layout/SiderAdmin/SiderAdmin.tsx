@@ -2,12 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { Menu, MenuProps } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import Sider from 'antd/es/layout/Sider'
-import { RiAuctionLine, RiProductHuntLine } from 'react-icons/ri'
-import { GrView } from 'react-icons/gr'
-import { HiOutlineViewGridAdd } from 'react-icons/hi'
-import { MdInventory, MdOutlineCategory, MdOutlineMenu } from 'react-icons/md'
-import { cn } from '../../../utils/cn'
+import { MdOutlineMenu } from 'react-icons/md'
 import { BarChartOutlined } from '@ant-design/icons'
+import { cn } from '../../../utils/cn'
 
 export default function SiderAdmin() {
   type MenuItem = Required<MenuProps>['items'][number]
@@ -48,9 +45,11 @@ export default function SiderAdmin() {
     return [
       getItem('OverView', 'overview', <BarChartOutlined />),
       getItem('Manage Account', 'manageAccount', <BarChartOutlined />, [
-        getItem('Account List', 'manageAccount', <BarChartOutlined />),
+        getItem('Account List', 'accountList', <BarChartOutlined />),
         getItem('Create Account', 'createAccount', <BarChartOutlined />)
-      ])
+      ]),
+      getItem('Manage Category', 'category', <BarChartOutlined />),
+      getItem('Manage Artist', 'artist', <BarChartOutlined />)
     ]
   }
 
@@ -59,6 +58,9 @@ export default function SiderAdmin() {
     .set('overview', '/admin/overview')
     .set('manageAccount', '/admin/AccountList')
     .set('createAccount', '/admin/createAccount')
+    .set('category', '/admin/category')
+    .set('artist', '/admin/artist')
+
   return (
     <Sider
       theme='light'
@@ -93,7 +95,7 @@ export default function SiderAdmin() {
 
       <Menu
         defaultSelectedKeys={['overview']}
-        defaultOpenKeys={getConditionalItems().map((item) => item?.key as string)}
+        defaultOpenKeys={[]}
         selectedKeys={[selectedKey]}
         mode='inline'
         items={getConditionalItems()}
