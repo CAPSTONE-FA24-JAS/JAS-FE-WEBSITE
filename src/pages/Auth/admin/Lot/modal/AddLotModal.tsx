@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Modal, Form, Input, Select, DatePicker, InputNumber, Checkbox, Button, Image } from 'antd'
-import { CreateLot, Lot } from '../../../../../types/Lot.type'
+import { CreateLot, ListLot } from '../../../../../types/Lot.type'
 import { useGetJewelriesNoSlotQuery } from '../../../../../services/jewelry.services'
 import { useGetFilterByRoleQuery } from '../../../../../services/account.services'
 import { Jewelry } from '../../../../../types/Jewelry.type'
@@ -14,8 +14,8 @@ interface AddLotModalProps {
   auctionData: Auction
   visible: boolean
   onCancel: () => void
-  onSubmit: (values: Partial<Lot>) => void
-  initialValues: Lot
+  onSubmit: (values: Partial<ListLot>) => void
+  initialValues: ListLot
 }
 
 type AuctionType = 'Private Bid' | 'Random Draw Auction' | 'Dutch Auction' | 'Incremental Bidding Auction'
@@ -47,7 +47,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
         return '2'
       case 'Public_Auction':
         return '3'
-      case 'Dutch_Auction':
+      case 'Auction_Price_GraduallyReduced':
         return '4'
       default:
         return ''
@@ -61,6 +61,8 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
       setJewelryData(selectedJewelry)
 
       const newAuctionType = getBidTypeFromBidForm(selectedJewelry?.bidForm)
+      console.log('ándasnd', selectedJewelry?.bidForm)
+
       setAuctionType(newAuctionType)
       form.setFieldValue('type', newAuctionType)
     }
