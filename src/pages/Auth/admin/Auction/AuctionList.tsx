@@ -8,6 +8,7 @@ import { Input } from 'antd'
 import { RootState } from '../../../../store'
 import { useSelector } from 'react-redux'
 import { RoleType } from '../../../../slice/authLoginAPISlice'
+import { parseDate } from '../../../../utils/convertTypeDayjs'
 
 const AuctionList = () => {
   const [searchText, setSearchText] = useState<string>('')
@@ -79,18 +80,20 @@ const AuctionList = () => {
         {
           title: 'Start Date',
           dataIndex: 'startTime',
-          key: 'createDate'
+          key: 'createDate',
+          render: (text) => (text ? parseDate(text, 'dd/mm/yyy hh/mm/ss') : 'N/A')
         },
         {
           title: 'End Date',
           dataIndex: 'endTime',
-          key: 'expiredDate'
+          key: 'expiredDate',
+          render: (text) => (text ? parseDate(text, 'dd/mm/yyy hh/mm/ss') : 'N/A')
         },
         {
           title: 'Actual End Date',
           dataIndex: 'actualEndTime',
           key: 'actualEndTime',
-          render: (text) => (text ? text : 'N/A')
+          render: (text) => (text ? parseDate(text, 'dd/mm/yyy hh/mm/ss') : 'N/A')
         }
       ]
     },
