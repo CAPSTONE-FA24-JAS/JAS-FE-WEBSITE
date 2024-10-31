@@ -21,7 +21,7 @@ export const consignApi = createApi({
   refetchOnMountOrArgChange: true,
   endpoints: (build) => ({
     getValuations: build.query({
-      query: ({ pageSize, pageIndex }) => `/Valuations/getValuations?pageSize=${pageSize}&pageIndex=${pageIndex}`,
+      query: () => `/Valuations/getValuations`,
       transformResponse: (response: any) => ({
         dataResponse: response.data.dataResponse,
         totalItemRepsone: response.data.totalItemRepsone

@@ -11,10 +11,11 @@ export default function RequestConsign() {
   const [selectedRecord, setSelectedRecord] = useState<any>(null)
   const [status, setStatus] = useState<string>('')
   const [searchText, setSearchText] = useState<string>('')
-  const [pageIndex, setPageIndex] = useState<number>(1)
-  const [pageSize, setPageSize] = useState<number>(5)
 
-  const { data, isLoading, error, refetch } = useGetValuationsQuery({ pageSize, pageIndex })
+  const { data, isLoading, error, refetch } = useGetValuationsQuery(undefined)
+
+  // Log the API data to check if it returns correctly
+  console.log('API Data:', data)
 
   const showModal = (record: any) => {
     setSelectedRecord(record)
@@ -35,12 +36,18 @@ export default function RequestConsign() {
     setSearchText(value)
   }
 
+  // Filter data based on search text and status
   const filteredDataSource =
-    data?.dataResponse.filter(
-      (item: any) =>
-        (item.seller.firstName || '').toLowerCase().includes(searchText.toLowerCase()) ||
-        (item.seller.lastName || '').toLowerCase().includes(searchText.toLowerCase())
-    ) || []
+    data?.dataResponse
+      .filter(
+        (item: any) =>
+          (item.seller.firstName || '').toLowerCase().includes(searchText.toLowerCase()) ||
+          (item.seller.lastName || '').toLowerCase().includes(searchText.toLowerCase())
+      )
+      .filter((item: any) => item.status === 'Requested' || item.status === 'Assigned') || []
+
+  // Log the filtered data to check results
+  console.log('Filtered Data:', filteredDataSource)
 
   const columns = [
     {
@@ -116,21 +123,13 @@ export default function RequestConsign() {
       ) : error ? (
         <p>Error loading data</p>
       ) : (
-        <Table
-          dataSource={filteredDataSource}
-          columns={columns}
-          rowKey='id'
-          pagination={{
-            total: data?.totalItemRepsone,
-            current: pageIndex,
-            pageSize: pageSize,
-            onChange: (page, pageSize) => {
-              setPageIndex(page)
-              setPageSize(pageSize)
-              refetch()
-            }
-          }}
-        />
+        <>
+          {filteredDataSource.length === 0 ? (
+            <p>No consignments found.</p>
+          ) : (
+            <Table dataSource={filteredDataSource} columns={columns} rowKey='id' pagination={{ pageSize: 6 }} />
+          )}
+        </>
       )}
 
       <RequestConsignDetail

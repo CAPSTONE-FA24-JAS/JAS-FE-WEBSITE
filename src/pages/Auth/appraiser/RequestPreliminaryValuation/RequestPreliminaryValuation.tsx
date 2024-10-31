@@ -15,7 +15,7 @@ const RequestPreliminaryList = () => {
   const [pageIndex, setPageIndex] = useState<number>(1)
   const [pageSize, setPageSize] = useState<number>(5)
 
-  const { data, isLoading, error, refetch } = useGetRequestPreliminaryValuationQuery({ pageSize, pageIndex })
+  const { data, isLoading, error, refetch } = useGetRequestPreliminaryValuationQuery({ pageSize: 5, pageIndex: 1 })
 
   const showModal = (record: any) => {
     setCurrentRecord(record)

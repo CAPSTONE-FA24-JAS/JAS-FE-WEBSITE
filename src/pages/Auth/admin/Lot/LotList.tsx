@@ -3,7 +3,7 @@ import { Table, Button, Input, Space, Tag, notification } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import type { TableProps } from 'antd'
 import AddLotModal from './modal/AddLotModal'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import {
   useCreateLotFixedPriceMutation,
   useGetLotsByAuctionIdQuery,
@@ -11,14 +11,17 @@ import {
   useCreateLotPublicAuctionMutation,
   useCreateLotAuctionPriceGraduallyReducedMutation
 } from '../../../../services/lot.services'
-import { CreateLot, Lot } from '../../../../types/Lot.type'
+import { CreateLot, ListLot } from '../../../../types/Lot.type'
 import { useGetAuctionByIdQuery } from '../../../../services/auction.services'
 import { parseDate } from '../../../../utils/convertTypeDayjs'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../../../store'
+import { RoleType } from '../../../../slice/authLoginAPISlice'
 
 const LotList = () => {
   const [searchText, setSearchText] = useState('')
   const [modalVisible, setModalVisible] = useState(false)
-  const [editingLot, setEditingLot] = useState<Lot | null>(null)
+  const [editingLot, setEditingLot] = useState<ListLot | null>(null)
 
   const { id } = useParams<{ id: string }>()
   const auctionId = parseInt(id || '0', 10)
@@ -30,9 +33,31 @@ const LotList = () => {
   const [createPublic, { isLoading: loadingPublice }] = useCreateLotPublicAuctionMutation()
   const [createPriceGraduallyReduced, { isLoading: loadingReduce }] = useCreateLotAuctionPriceGraduallyReducedMutation()
 
-  const columns: TableProps<Lot>['columns'] = [
+  console.log('lotsData:', lotsData)
+
+  const roleId = useSelector((state: RootState) => state.authLoginAPI.roleId)
+
+  const columns: TableProps<ListLot>['columns'] = [
     { title: 'ID', dataIndex: 'id', key: 'id' },
-    { title: 'Title', dataIndex: 'title', key: 'title' },
+    {
+      title: 'Title',
+      dataIndex: 'title',
+      key: 'title',
+      render: (text, record: ListLot) => {
+        let linkPath = ''
+        switch (roleId) {
+          case RoleType.MANAGER:
+            linkPath = `/manager/lotdetailmanager/${record.id}`
+            break
+          case RoleType.STAFFC:
+            linkPath = `/staff/lotdetailmanager/${record.id}`
+            break
+          default:
+            linkPath = `/staff/lotdetailmanager/${record.id}`
+        }
+        return <Link to={linkPath}>{text}</Link>
+      }
+    },
     { title: 'Start Price', dataIndex: 'startPrice', key: 'startPrice', render: (value) => `${value}` },
     {
       title: 'Final Price Sold',
@@ -123,7 +148,7 @@ const LotList = () => {
     setModalVisible(true)
   }
 
-  const handleEdit = (lot: Lot) => {
+  const handleEdit = (lot: ListLot) => {
     setEditingLot(lot)
     setModalVisible(true)
   }
@@ -154,7 +179,7 @@ const LotList = () => {
               staffId: values.staffId,
               jewelryId: values.jewelryId,
               auctionId: values.auctionId
-            }).unwrap() // Thêm .unwrap() để handle error
+            }).unwrap()
             notification.success({
               message: 'Success',
               description: 'Fixed Price Lot created successfully!'
@@ -238,12 +263,9 @@ const LotList = () => {
     setEditingLot(null)
   }
 
-  const filteredLots =
-    lotsData?.data.filter(
-      (lot) =>
-        lot.lotType.toLowerCase().includes(searchText.toLowerCase()) ||
-        lot.id.toString().includes(searchText.toLowerCase())
-    ) || []
+  const filteredLots = Array.isArray(lotsData?.data)
+    ? lotsData.data.filter((lot) => lot.title.includes(searchText))
+    : []
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -253,7 +275,7 @@ const LotList = () => {
     <>
       <div className='p-5 rounded-lg bg-slate-50'>
         <div className='flex items-center justify-between mb-4'>
-          <h2 className='text-xl font-semibold'>{auctionData?.data.name} - Lots List</h2>
+          <h1 className='text-xl font-semibold'>{auctionData?.data.name} - Lots List</h1>
           <Space>
             <Input.Search
               placeholder='Search lots'
@@ -265,7 +287,15 @@ const LotList = () => {
             </Button>
           </Space>
         </div>
-        <Table columns={columns} dataSource={filteredLots} rowKey='id' pagination={{ pageSize: 5 }} size='small' />
+        <Table
+          columns={columns}
+          dataSource={filteredLots || []}
+          rowKey='id'
+          pagination={{
+            pageSize: 5
+          }}
+          size='small'
+        />
       </div>
       {auctionData && (
         <AddLotModal
@@ -274,7 +304,7 @@ const LotList = () => {
           visible={modalVisible}
           onCancel={handleModalCancel}
           onSubmit={handleModalSubmit}
-          initialValues={editingLot || ({} as Lot)}
+          initialValues={editingLot || ({} as ListLot)}
         />
       )}
     </>

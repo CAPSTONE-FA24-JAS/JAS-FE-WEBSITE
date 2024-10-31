@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { Data } from '../types/Account.type'
 import baseUrl from '../utils/http'
-import { CreateLot, Lot } from '../types/Lot.type'
+import { CreateLot, ListLot, LotDetail } from '../types/Lot.type'
 import { Respone } from '../types/Respone.type'
 
 export const lotApi = createApi({
@@ -21,17 +21,28 @@ export const lotApi = createApi({
   }),
   refetchOnMountOrArgChange: true,
   endpoints: (build) => ({
-    getLotsByAuctionId: build.query<Respone<Lot[]>, number>({
+    getLotsByAuctionId: build.query<Respone<ListLot[]>, number>({
       query: (auctionId) => `/Lot/ViewListLotByAuction?auctionId=${auctionId}`,
       providesTags: (result) => {
+        if (result?.data !== null) {
+          return result?.data
+            ? [...result.data.map(({ id }) => ({ type: 'Lot' as const, id })), { type: 'Lot', id: 'LIST' }]
+            : [{ type: 'Lot', id: 'LIST' }]
+        }
+        return [{ type: 'Lot', id: 'LIST' }]
+      }
+    }),
+    getLotDetailById: build.query<Respone<LotDetail>, number>({
+      query: (id) => `/Lot/ViewDetailLotById?Id=${id}`,
+      providesTags: (result) => {
         if (result) {
-          return [...result.data.map(({ id }) => ({ type: 'Lot' as const, id })), { type: 'Lot', id: 'LIST' }]
+          return [{ type: 'Lot', id: result.data.id }]
         } else {
-          return [{ type: 'Lot', id: 'LIST' }]
+          return []
         }
       }
     }),
-    createLotFixedPrice: build.mutation<Respone<Lot>, Partial<CreateLot>>({
+    createLotFixedPrice: build.mutation<Respone<ListLot>, Partial<CreateLot>>({
       query: (body) => (
         console.log(body),
         {
@@ -53,7 +64,7 @@ export const lotApi = createApi({
         return [{ type: 'Lot', id: 'LIST' }]
       }
     }),
-    createLotPublicAuction: build.mutation<Respone<Lot>, Partial<CreateLot>>({
+    createLotPublicAuction: build.mutation<Respone<ListLot>, Partial<CreateLot>>({
       query: (body) => (
         console.log(body),
         {
@@ -77,7 +88,7 @@ export const lotApi = createApi({
         return [{ type: 'Lot', id: 'LIST' }]
       }
     }),
-    createLotSecretAuction: build.mutation<Respone<Lot>, Partial<CreateLot>>({
+    createLotSecretAuction: build.mutation<Respone<ListLot>, Partial<CreateLot>>({
       query: (body) => (
         console.log(body),
         {
@@ -100,7 +111,7 @@ export const lotApi = createApi({
         return [{ type: 'Lot', id: 'LIST' }]
       }
     }),
-    CreateLotAuctionPriceGraduallyReduced: build.mutation<Respone<Lot>, Partial<CreateLot>>({
+    CreateLotAuctionPriceGraduallyReduced: build.mutation<Respone<ListLot>, Partial<CreateLot>>({
       query: (body) => (
         console.log(body),
         {
@@ -130,6 +141,7 @@ export const lotApi = createApi({
 
 export const {
   useGetLotsByAuctionIdQuery,
+  useGetLotDetailByIdQuery,
   useCreateLotFixedPriceMutation,
   useCreateLotAuctionPriceGraduallyReducedMutation,
   useCreateLotPublicAuctionMutation,
