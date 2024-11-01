@@ -130,16 +130,18 @@ const LotList = () => {
     {
       title: 'Action',
       key: 'action',
-      render: (_, record) => (
-        <Space size='middle'>
-          <Button icon={<EditOutlined />} size='small' onClick={() => handleEdit(record)}>
-            Edit
-          </Button>
-          <Button icon={<DeleteOutlined />} size='small' danger>
-            Delete
-          </Button>
-        </Space>
-      )
+      render: (_, record) =>
+        auctionData?.data.status === 'Waiting' ||
+        (auctionData?.data.status === 'UpComing' && (
+          <Space size='middle'>
+            <Button icon={<EditOutlined />} size='small' onClick={() => handleEdit(record)}>
+              Edit
+            </Button>
+            <Button icon={<DeleteOutlined />} size='small' danger>
+              Delete
+            </Button>
+          </Space>
+        ))
     }
   ]
 
@@ -282,9 +284,11 @@ const LotList = () => {
               onChange={(e) => setSearchText(e.target.value)}
               style={{ width: 250 }}
             />
-            <Button type='primary' onClick={handleAdd}>
-              + Add
-            </Button>
+            {auctionData?.data.status === 'Waiting' && (
+              <Button type='primary' onClick={handleAdd}>
+                + Add
+              </Button>
+            )}
           </Space>
         </div>
         <Table

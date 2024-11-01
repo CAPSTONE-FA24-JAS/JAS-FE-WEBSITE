@@ -59,14 +59,12 @@ const managerRoutes: RouteProps[] = [
 
   { path: '/manager/checkinvoice', component: BillInVoiceList, layout: ManagerLayout },
 
- 
-
   { path: '/manager/auctionlist', component: AuctionList, layout: ManagerLayout },
   { path: '/manager/requestfinal', component: RequestFinalValuation, layout: ManagerLayout },
   { path: '/manager/lotlist', component: LotList, layout: ManagerLayout },
   { path: '/manager/lotlist/:id', component: LotList, layout: ManagerLayout },
   { path: '/manager/financeProofManager', component: FinanceProofListManager, layout: ManagerLayout },
-  { path: '/manager/transaction', component: TransactionsComponent, layout: ManagerLayout }
+  { path: '/manager/transaction', component: TransactionsComponent, layout: ManagerLayout },
   { path: '/manager/lotdetailmanager/:id', component: Index, layout: ManagerLayout }
 ]
 const appraiserRoutes: RouteProps[] = [
@@ -84,8 +82,6 @@ const adminRoutes: RouteProps[] = [
   { path: '/admin/createAccount', component: CreateAccount, layout: AdminLayout },
   { path: '/admin/category', component: CategoriesComponent, layout: AdminLayout },
   { path: '/admin/artist', component: ArtistList, layout: AdminLayout }
-
-
 ]
 
 const staffCRoutes: RouteProps[] = [

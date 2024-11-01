@@ -1,4 +1,4 @@
-import { Button, Divider, Input, Modal, Skeleton, Space, message } from 'antd'
+import { Button, Divider, Input, InputNumber, Modal, Skeleton, Space, message } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import React, { useState } from 'react'
 import {
@@ -69,7 +69,7 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
         open={visible}
         onCancel={onClose}
         footer={
-          financeProof?.data.status == 'Approved' || financeProof?.data.status == 'Reject'
+          financeProof?.data.status == 'Processing'
             ? [
                 <Button key='reject' type='primary' danger onClick={handleReject}>
                   Reject
@@ -88,7 +88,13 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
             <p>Customer Name: {financeProof.data.customerName}</p>
             <p>Create Date: {financeProof.data.startDate}</p>
             <p>Expired Date: {financeProof.data.expireDate}</p>
-            <Input placeholder='Limit Bid' value={financeProof.data.priceLimit} disabled prefix='$' />
+            <InputNumber
+              className='w-[70%]'
+              placeholder='Limit Bid'
+              value={financeProof.data.priceLimit}
+              disabled
+              prefix='$'
+            />
             <p>Reason: {financeProof.data?.reason}</p>
             <Divider />
             <embed src={financeProof.data.file} width='300' height='200' />
