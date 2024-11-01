@@ -35,7 +35,6 @@ export const consignApi = createApi({
         totalItemRepsone: response.data.totalItemRepsone
       })
     }),
-
     assignStaffForValuation: build.mutation<AssignStaffResponse, AssignStaffRequest>({
       query: ({ id, staffId, status }) => ({
         url: `/Valuations/AssignStaffForValuation?id=${id}&staffId=${staffId}&status=${status}`,
@@ -47,6 +46,10 @@ export const consignApi = createApi({
         url: `/Valuations/UpdateStatusForValuations?id=${id}&status=${encodeURIComponent(status)}`,
         method: 'PUT'
       })
+    }),
+    // Add the new endpoint here
+    getValuationById: build.query({
+      query: (valuationId) => `/Valuations/getValuationById?valuationId=${valuationId}`
     })
   })
 })
@@ -56,5 +59,6 @@ export const {
   useGetValuationsQuery,
   useGetPreliminaryValuationsByStaffQuery,
   useAssignStaffForValuationMutation,
-  useUpdateValuationStatusMutation
+  useUpdateValuationStatusMutation,
+  useGetValuationByIdQuery // Export the new hook
 } = consignApi

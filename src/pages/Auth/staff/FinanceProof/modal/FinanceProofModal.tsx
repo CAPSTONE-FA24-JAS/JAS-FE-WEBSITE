@@ -76,25 +76,22 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
     setReasonReject(false)
   }
 
+  const renderFooter = () => {
+    if (financeProof && financeProof?.data.status == 'Pending') {
+      return [
+        <Button key='reject' type='primary' danger onClick={handleReject}>
+          Reject
+        </Button>,
+        <Button key='setLimitBid' type='primary' onClick={showSetLimitBidModal}>
+          Set Limit Bid
+        </Button>
+      ]
+    }
+  }
+
   return (
     <>
-      <Modal
-        title='Financial Proof Details'
-        open={visible}
-        onCancel={onClose}
-        footer={
-          financeProof && financeProof?.data.status == 'Pending'
-            ? [
-                <Button key='reject' type='primary' danger onClick={handleReject}>
-                  Reject
-                </Button>,
-                <Button key='setLimitBid' type='primary' onClick={showSetLimitBidModal}>
-                  Set Limit Bid
-                </Button>
-              ]
-            : null
-        }
-      >
+      <Modal forceRender title='Financial Proof Details' open={visible} onCancel={onClose} footer={renderFooter}>
         {isLoading ? (
           <Skeleton active />
         ) : financeProof ? (
