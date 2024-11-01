@@ -155,10 +155,14 @@ const AuctionList = () => {
       align: 'center',
       render: (_, record) => (
         <div className='flex items-center justify-center gap-2'>
-          <Button onClick={handleEdit(record.id)} type='primary'>
-            Edit
-          </Button>
-          <Button danger>Delete</Button>
+          {record.status === 'Waiting' && (
+            <>
+              <Button onClick={handleEdit(record.id)} type='primary'>
+                Edit
+              </Button>
+              <Button danger>Delete</Button>
+            </>
+          )}
         </div>
       )
     }

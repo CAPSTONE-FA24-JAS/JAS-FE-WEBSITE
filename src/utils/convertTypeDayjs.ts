@@ -21,9 +21,10 @@ export const parseDate = (dateString: string, type: 'dd/mm/yyyy' | 'dd/mm/yyy hh
   const hours = date.getHours()
   const minutes = date.getMinutes()
   const seconds = date.getSeconds()
+  const gmt = -(date.getTimezoneOffset() / 60)
   if (type === 'dd/mm/yyy hh/mm/ss') {
-    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} GMT: ${gmt}`
   }
 
-  return `${day}/${month}/${year}`
+  return `${day}/${month}/${year} GMT:${gmt}`
 }
