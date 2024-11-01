@@ -52,8 +52,7 @@ export default function SiderManager() {
       ]),
       getItem('Manage Invoice', 'managewin', <RiBillLine className='text-base' />),
       getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
-        getItem('Auction List', 'auctionListSub', <RiAuctionLine className='text-base' />), // You can change this if needed
-        getItem('Lot List', 'lotList', <MdFormatListBulleted className='text-base' />)
+        getItem('Auction List', 'auctionListSub', <RiAuctionLine className='text-base' />) // You can change this if needed
       ]),
       getItem('Finance Proof', 'financeProof', <TbZoomMoney className='text-base' />)
     ]
@@ -67,7 +66,6 @@ export default function SiderManager() {
     .set('managewin', '/manager/manageinvoice')
     .set('managecheckinvoice', '/manager/checkinvoice')
     .set('auctionListSub', '/manager/auctionlist')
-    .set('lotList', '/manager/lotList')
     .set('financeProof', '/manager/financeProofManager')
 
   return (
@@ -103,8 +101,8 @@ export default function SiderManager() {
       </div>
 
       <Menu
-        defaultSelectedKeys={['overview']}
-        defaultOpenKeys={[]}
+        defaultSelectedKeys={['transaction']}
+        defaultOpenKeys={[selectedKey]}
         selectedKeys={[selectedKey]}
         mode='inline'
         items={getConditionalItems()}

@@ -57,8 +57,9 @@ const publicRoutes: RouteProps[] = [
 ]
 const managerRoutes: RouteProps[] = [
   { path: '/manager/ConsignList', component: RequestConsign, layout: ManagerLayout },
-  // { path: '/manager/ConsignList/:id', component: RequestConsignDetail, layout: ManagerLayout },
+
   { path: '/manager/manageinvoice', component: InvoiceTab, layout: ManagerLayout },
+
   { path: '/manager/auctionlist', component: AuctionList, layout: ManagerLayout },
   { path: '/manager/requestfinal', component: RequestFinalValuation, layout: ManagerLayout },
   { path: '/manager/lotlist', component: LotList, layout: ManagerLayout },
