@@ -21,7 +21,7 @@ export default function ProtectedRoutes({ children, allowedRoles, redirectPath }
 
   if (!allowedRoles.includes(roleId)) {
     if (roleId === RoleType.MANAGER) {
-      return <Navigate to='/manager/ConsignList' />
+      return <Navigate to='/manager/transaction' />
     }
     if (roleId === RoleType.STAFFC) {
       return <Navigate to='/staff/ConsignList' />

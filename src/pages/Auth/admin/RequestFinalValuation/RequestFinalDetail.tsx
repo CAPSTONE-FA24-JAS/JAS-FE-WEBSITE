@@ -1,30 +1,39 @@
 import React, { useState } from 'react'
-import { Button, Modal, Select, notification } from 'antd'
+import { Button, Modal, Select, notification, Spin } from 'antd'
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
-import { useUpdateJewelryStatusByManagerMutation } from '../../../../services/valuation.services'
+import {
+  useUpdateJewelryStatusByManagerMutation,
+  useGetValuationByIdQuery
+} from '../../../../services/valuation.services'
 
 const { Option } = Select
 
 interface RequestFinalDetailProps {
+  recordId: number
   isVisible: boolean
-  onCancel: () => void
-  onUpdate: () => void
-  record: any
+  onClose: () => void
   setStatus: (status: string) => void
-  refetch: () => void // Add refetch function to props
+  refetch: () => void
 }
 
 const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
+  recordId,
   isVisible,
-  onCancel,
-  onUpdate,
-  record,
+  onClose,
   setStatus,
   refetch
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [selectedStatus, setSelectedStatus] = useState<string>(record?.status || '') // Initialize with an empty string
-  const images = record?.imageValuations?.map((img: any) => img.imageLink) || [
+  const [selectedStatus, setSelectedStatus] = useState<string>('')
+
+  const {
+    data: valuationData,
+    isLoading: valuationLoading,
+    error: valuationError
+  } = useGetValuationByIdQuery({ id: recordId })
+  console.log('Valuation Data: ', valuationData)
+
+  const images = valuationData?.data?.imageValuations?.map((img: any) => img.imageLink) || [
     'https://via.placeholder.com/150?text=No+Image'
   ]
 
@@ -35,6 +44,7 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
   const prevImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length)
   }
+
   const statusOptions = [
     { label: 'Final Valuated', value: 'FinalValuated' },
     { label: 'Manager Approved', value: 'ManagerApproved' }
@@ -47,23 +57,31 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
   }
 
   const handleUpdateClick = async () => {
-    if (!selectedStatus) {
+    const jewelryId = valuationData?.data?.jewelry?.id // Ensure you're using the correct path to jewelry ID
+    const status = 7
+
+    console.log('Updating status with:', { jewelryId, status })
+
+    if (!jewelryId) {
       notification.error({
         message: 'Update Failed',
-        description: 'Please select a valid status before updating.'
+        description: 'Invalid jewelry ID.'
       })
       return
     }
+
     try {
-      await updateStatus({ jewelryId: record?.jewelry?.id, status: 7 }).unwrap()
+      await updateStatus({ jewelryId, status }).unwrap()
       notification.success({
         message: 'Status Updated',
-        description: `The status has been updated to ${selectedStatus}`
+        description: 'The status has been updated to Final Valuated' // Message reflects the new status
       })
-      setStatus(selectedStatus)
-      onUpdate()
+      setStatus('FinalValuated') // Set the status in the state
+
       refetch()
+      onClose()
     } catch (error) {
+      console.error('Error updating status:', error)
       notification.error({
         message: 'Update Failed',
         description: 'There was an error updating the status.'
@@ -71,13 +89,21 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
     }
   }
 
+  if (valuationLoading) {
+    return <Spin tip='Loading...' />
+  }
+
+  if (valuationError) {
+    return <p>Error fetching valuation details</p>
+  }
+
   return (
     <Modal
       title='Request Final Valuation Details'
       open={isVisible}
-      onCancel={onCancel}
+      onCancel={onClose}
       footer={[
-        <Button key='cancel' onClick={onCancel}>
+        <Button key='cancel' onClick={onClose}>
           Cancel
         </Button>,
         <Button key='update' type='primary' onClick={handleUpdateClick} loading={isLoading}>
@@ -100,51 +126,49 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
         </div>
 
         <div>
-          <p className='mb-2 text-xl font-bold'>{record?.id}</p>
-          <p className='mb-6 text-xl font-bold'>{record?.jewelry?.name}</p>
+          <p className='mb-2 text-xl font-bold'>ID: {valuationData?.data?.id || 'N/A'}</p>
+          <p className='mb-6 text-xl font-bold'>{valuationData?.data?.name || 'No Name Available'}</p>
 
           <div className='flex mb-4'>
             <strong className='w-1/3'>Customer Name:</strong>
             <span>
-              {record?.seller?.firstName} {record?.seller?.lastName}
+              {valuationData?.data?.seller?.firstName || ''} {valuationData?.data?.seller?.lastName || ''}
             </span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Email:</strong>
-            <span>{record?.seller?.accountDTO.email}</span>
+            <span>{valuationData?.data?.seller?.accountDTO?.email || 'No Email Available'}</span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Phone:</strong>
-            <span>{record?.seller?.accountDTO.phoneNumber}</span>
+            <span>{valuationData?.data?.seller?.accountDTO?.phoneNumber || 'No Phone Available'}</span>
           </div>
-
           <div className='flex mb-4'>
             <strong className='w-1/3'>Estimated Price:</strong>
             <span>
-              {record?.jewelry?.estimatePriceMin} - {record?.jewelry?.estimatePriceMax} VND
+              {valuationData?.data?.jewelry?.estimatePriceMin || 0} -{' '}
+              {valuationData?.data?.jewelry?.estimatePriceMax || 0} VND
             </span>
           </div>
           <div className='flex mb-4'>
-            <strong className='w-1/3'>Starting Price:</strong>
-            <span>{record?.jewelry?.startingPrice} VND</span>
-          </div>
-          <div className='flex mb-4'>
             <strong className='w-1/3'>Artist:</strong>
-            <span>{record?.jewelry?.artist?.name}</span>
+            <span>{valuationData?.data?.jewelry?.artist?.name || 0} </span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Category:</strong>
-            <span>{record?.jewelry?.category?.name}</span>
+            <span>{valuationData?.data?.jewelry?.category?.name || 0} </span>
           </div>
-
+          <div className='flex mb-4'>
+            <strong className='w-1/3'>Starting Price:</strong>
+            <span className='text-red-700 font-bold'>{valuationData?.data?.jewelry?.startingPrice || 0} </span>
+          </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Final Price:</strong>
-            <span>{record?.jewelry?.specificPrice} VND</span>
+            <span>{valuationData?.data?.jewelry?.specificPrice || 0} </span>
           </div>
-
           <div className='mt-4 flex'>
             <strong className='w-1/3'>Status:</strong>
-            {record?.status === 'FinalValuated' ? (
+            {valuationData?.data?.status === 'FinalValuated' ? (
               <Select value={selectedStatus} onChange={handleStatusChange} style={{ width: 200 }}>
                 {statusOptions.map((option) => (
                   <Option key={option.value} value={option.value}>
@@ -153,7 +177,7 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
                 ))}
               </Select>
             ) : (
-              <span className='font-semibold text-red-600 '>{record?.status}</span>
+              <span className='text-red-700 font-bold'>{valuationData?.data?.status || 'Unknown Status'}</span>
             )}
           </div>
         </div>
