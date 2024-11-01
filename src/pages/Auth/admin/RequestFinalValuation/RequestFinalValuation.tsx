@@ -1,5 +1,5 @@
 import { EyeOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Col, Input, Row, Table, Tag, Tooltip } from 'antd'
+import { Button, Col, Input, Row, Space, Table, Tag } from 'antd'
 import { useState } from 'react'
 import RequestFinalDetail from './RequestFinalDetail'
 import { useGetValuationsQuery } from '../../../../services/valuation.services'
@@ -17,16 +17,22 @@ interface Valuation {
 const { Search } = Input
 
 const RequestFinalValuation = () => {
-  const [finalModalVisible, setFinalModalVisible] = useState<boolean>(false)
   const [selectedFinalRecord, setSelectedFinalRecord] = useState<Valuation | null>(null)
   const [searchText, setSearchText] = useState<string>('')
 
-  const { data, error, isLoading, refetch } = useGetValuationsQuery()
+  const { data, error, isLoading } = useGetValuationsQuery()
 
-  const finalValuationData =
+  const finalValuationData: Valuation[] =
     data?.dataResponse?.filter((valuation: Valuation) =>
       ['FinalValuated', 'ManagerApproved', 'Authorized', 'RejectedPreliminary'].includes(valuation.status)
     ) || []
+  const handleUpdate = () => {
+    // Logic to handle what happens after the status update.
+    // This could be a refetch of the valuations or any other logic needed.
+    console.log('Update function triggered')
+    // For example, you can refetch the valuations here if needed
+    // refetch(); // Uncomment this if you have a refetch function defined
+  }
 
   const handleSearch = (value: string) => {
     setSearchText(value)
@@ -45,10 +51,9 @@ const RequestFinalValuation = () => {
     },
     {
       title: 'Customer Name',
-      dataIndex: 'seller',
-      key: 'seller',
-      render: (seller: { firstName: string; lastName: string }) =>
-        seller ? `${seller.firstName} ${seller.lastName}` : ''
+      dataIndex: ['seller', 'firstName'],
+      key: 'customerName',
+      render: (text: string, record: any) => `${record.firstNameSeller || ''} ${record.lastNameSeller || ''}`
     },
     {
       title: 'Status',
@@ -75,19 +80,15 @@ const RequestFinalValuation = () => {
       title: 'Actions',
       key: 'actions',
       render: (text: any, record: Valuation) => (
-        <div>
-          <Tooltip title='View Request Final Details'>
-            <Button
-              type='primary'
-              icon={<EyeOutlined />}
-              className='bg-blue-500 hover:bg-blue-600'
-              onClick={() => {
-                setSelectedFinalRecord(record)
-                setFinalModalVisible(true)
-              }}
-            />
-          </Tooltip>
-        </div>
+        <Space>
+          <Button
+            type='primary'
+            icon={<EyeOutlined />}
+            onClick={() => {
+              setSelectedFinalRecord(record)
+            }}
+          />
+        </Space>
       )
     }
   ]
@@ -116,28 +117,35 @@ const RequestFinalValuation = () => {
         </Col>
       </Row>
 
-      <Table
-        dataSource={finalValuationData.filter((item: any) =>
-          item.name.toLowerCase().includes(searchText.toLowerCase())
-        )}
-        columns={finalColumns}
-        rowKey='id'
-        loading={isLoading}
-        pagination={{ pageSize: 6 }}
-      />
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          {finalValuationData.length === 0 ? (
+            <p>No final valuations found.</p>
+          ) : (
+            <Table<Valuation>
+              dataSource={finalValuationData.filter((item: Valuation) =>
+                item.name.toLowerCase().includes(searchText.toLowerCase())
+              )}
+              columns={finalColumns}
+              rowKey='id'
+              pagination={{ pageSize: 6 }}
+            />
+          )}
+        </>
+      )}
 
       {selectedFinalRecord && (
-        <RequestFinalDetail
-          isVisible={finalModalVisible}
-          onCancel={() => setFinalModalVisible(false)}
-          onUpdate={() => {
-            console.log('Update final record:', selectedFinalRecord)
-            setFinalModalVisible(false)
-          }}
-          record={selectedFinalRecord}
-          setStatus={(status: any) => setSelectedFinalRecord({ ...selectedFinalRecord, status })}
-          refetch={refetch}
-        />
+        <div className='mt-4'>
+          <RequestFinalDetail
+            recordId={selectedFinalRecord.id}
+            isVisible={true}
+            setStatus={(status) => {}}
+            refetch={() => {}}
+            onClose={() => setSelectedFinalRecord(null)}
+          />
+        </div>
       )}
     </div>
   )

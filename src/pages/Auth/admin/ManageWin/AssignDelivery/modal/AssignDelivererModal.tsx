@@ -1,8 +1,8 @@
 import { Modal, Form, Select, Button, notification } from 'antd' // Import notification from Ant Design
-import { useGetFilterByRoleQuery } from '../../../../../services/account.services'
+import { useGetFilterByRoleQuery } from '../../../../../../services/account.services'
 import { useEffect, useState } from 'react'
-import { AdminGetFilterByRoleChildrenResponse } from '../../../../../types/Account.type'
-import { useAssignShipperMutation } from '../../../../../services/invoice.services'
+import { AdminGetFilterByRoleChildrenResponse } from '../../../../../../types/Account.type'
+import { useAssignShipperMutation } from '../../../../../../services/invoice.services'
 
 interface AssignDelivererModalProps {
   visible: boolean
@@ -25,11 +25,9 @@ const AssignDelivererModal: React.FC<AssignDelivererModalProps> = ({
   const roleId = 6
   const [assignedStaff, setAssignedStaff] = useState<string>('')
 
-  // Hook for fetching staff options
   const [staffOptions, setStaffOptions] = useState<AdminGetFilterByRoleChildrenResponse[]>([])
   const { data: staffData, isLoading: staffLoading, error: staffError } = useGetFilterByRoleQuery(roleId)
 
-  // Mutation hook for assigning shipper
   const [assignShipper, { isLoading: isAssigning }] = useAssignShipperMutation()
 
   useEffect(() => {

@@ -46,6 +46,9 @@ export const manageInvoice = createApi({
         method: 'POST',
         params: { invoiceId }
       })
+    }),
+    getInvoicesForCheckBill: build.query({
+      query: () => `Invoices/GetListInvoiceForCheckBill`
     })
   })
 })
@@ -55,5 +58,6 @@ export const {
   useGetInvoiceByIdQuery,
   useAssignShipperMutation,
   useFinishInvoiceMutation,
-  useApprovePaymentByBankTransferMutation // Exporting the new mutation hook
+  useApprovePaymentByBankTransferMutation,
+  useGetInvoicesForCheckBillQuery // Exporting the new mutation hook
 } = manageInvoice

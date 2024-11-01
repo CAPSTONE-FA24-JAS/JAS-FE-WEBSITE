@@ -1,53 +1,28 @@
 import React, { useState } from 'react'
 import { Button, Col, Input, Row, Space, Table, Tag } from 'antd'
 import { useGetValuationsQuery } from '../../../../services/requestconsign.services'
-import RequestConsignDetail from './RequestConsignDetail'
-import { DeleteOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons'
+import { EyeOutlined, SearchOutlined } from '@ant-design/icons'
+import RequestConsignDetail from './RequestConsignDetail' // Import your detail component
 
 const { Search } = Input
 
 export default function RequestConsign() {
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  const [selectedRecord, setSelectedRecord] = useState<any>(null)
-  const [status, setStatus] = useState<string>('')
   const [searchText, setSearchText] = useState<string>('')
-
-  const { data, isLoading, error, refetch } = useGetValuationsQuery(undefined)
-
-  // Log the API data to check if it returns correctly
-  console.log('API Data:', data)
-
-  const showModal = (record: any) => {
-    setSelectedRecord(record)
-    setStatus(record.status || '')
-    setIsModalVisible(true)
-  }
-
-  const handleCancel = () => {
-    setIsModalVisible(false)
-  }
-
-  const handleUpdate = () => {
-    refetch()
-    setIsModalVisible(false)
-  }
+  const { data, isLoading, error } = useGetValuationsQuery(undefined)
+  const [selectedRecord, setSelectedRecord] = useState<any>(null)
 
   const handleSearch = (value: string) => {
     setSearchText(value)
   }
 
-  // Filter data based on search text and status
   const filteredDataSource =
     data?.dataResponse
       .filter(
         (item: any) =>
-          (item.seller.firstName || '').toLowerCase().includes(searchText.toLowerCase()) ||
-          (item.seller.lastName || '').toLowerCase().includes(searchText.toLowerCase())
+          (item.firstNameSeller || '').toLowerCase().includes(searchText.toLowerCase()) ||
+          (item.lastNameSeller || '').toLowerCase().includes(searchText.toLowerCase())
       )
       .filter((item: any) => item.status === 'Requested' || item.status === 'Assigned') || []
-
-  // Log the filtered data to check results
-  console.log('Filtered Data:', filteredDataSource)
 
   const columns = [
     {
@@ -64,7 +39,7 @@ export default function RequestConsign() {
       title: 'Customer Name',
       dataIndex: ['seller', 'firstName'],
       key: 'customerName',
-      render: (text: string, record: any) => `${record.seller.firstName || ''} ${record.seller.lastName || ''}`
+      render: (text: string, record: any) => `${record.firstNameSeller || ''} ${record.lastNameSeller || ''}`
     },
     {
       title: 'Contact',
@@ -79,7 +54,7 @@ export default function RequestConsign() {
         if (!status) {
           return <Tag color='gray'>Unknown</Tag>
         }
-        let color = status === 'Assigned' ? 'green' : status === 'Requested' ? 'gray' : 'blue'
+        const color = status === 'Assigned' ? 'green' : status === 'Requested' ? 'gray' : 'blue'
         return <Tag color={color}>{status.toUpperCase()}</Tag>
       }
     },
@@ -88,8 +63,13 @@ export default function RequestConsign() {
       key: 'actions',
       render: (text: any, record: any) => (
         <Space>
-          <Button type='primary' icon={<EyeOutlined />} onClick={() => showModal(record)}></Button>
-          <Button type='primary' danger icon={<DeleteOutlined />}></Button>
+          <Button
+            type='primary'
+            icon={<EyeOutlined />}
+            onClick={() => {
+              setSelectedRecord(record)
+            }}
+          />
         </Space>
       )
     }
@@ -132,15 +112,11 @@ export default function RequestConsign() {
         </>
       )}
 
-      <RequestConsignDetail
-        isVisible={isModalVisible}
-        onCancel={handleCancel}
-        onUpdate={handleUpdate}
-        record={selectedRecord}
-        status={status}
-        setStatus={setStatus}
-        refetch={refetch}
-      />
+      {selectedRecord && (
+        <div className='mt-4'>
+          <RequestConsignDetail recordId={selectedRecord.id} onClose={() => setSelectedRecord(null)} />
+        </div>
+      )}
     </div>
   )
 }

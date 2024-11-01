@@ -1,8 +1,8 @@
 import { DeliveredProcedureOutlined, EyeOutlined } from '@ant-design/icons' // Import the required icons
 import { Avatar, Button, Table, Tag, Tooltip } from 'antd' // Import Tooltip
 import { useState } from 'react'
-import { useGetInvoicesForManagerQuery } from '../../../../services/invoice.services'
-import ManageInvoiceModal from './modal/ManageInvoiceModal'
+import { useGetInvoicesForManagerQuery } from '../../../../../services/invoice.services'
+import ManageInvoiceModal from '../ManageInvoiceModal'
 import AssignDelivererModal from './modal/AssignDelivererModal' // Import the new modal
 
 // Define the structure of the data returned by the API
@@ -61,7 +61,7 @@ export default function ManageWinList() {
     setSelectedInvoiceId(null)
   }
 
-  const allowedStatuses = ['Paid', 'Delivering', 'Delivered', 'Rejected', 'Finished']
+  const allowedStatuses = ['Paid']
 
   const columns = [
     {
@@ -118,16 +118,14 @@ export default function ManageWinList() {
   ) as Invoice[]
 
   return (
-    <div className='p-6'>
-      <h1 className='text-2xl font-bold mb-4'>Invoice List</h1>
+    <div className='p-2'>
       <Table columns={columns} dataSource={filteredData} pagination={{ pageSize: 5 }} rowKey='id' />
 
-      {/* Only show modal if selectedInvoiceId is not null */}
       {selectedInvoiceId && (
         <ManageInvoiceModal
           visible={isModalVisible}
           onCancel={handleCancel}
-          invoiceId={selectedInvoiceId} // Pass the selected invoice ID
+          invoiceId={selectedInvoiceId}
           refetch={refetch}
           setStatus={setStatus}
         />

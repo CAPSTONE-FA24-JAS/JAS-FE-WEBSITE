@@ -8,7 +8,7 @@ import AuctionList from '../pages/Auth/admin/Auction/AuctionList'
 import FinanceProofListManager from '../pages/Auth/admin/FinanceProof/FinanceProofListManager'
 import LotList from '../pages/Auth/admin/Lot/LotList'
 import BillInVoiceList from '../pages/Auth/admin/ManageWin/CheckBillInVoice/BillInvoiveList'
-import ManageWinList from '../pages/Auth/admin/ManageWin/ManageWinList'
+import ManageWinList from '../pages/Auth/admin/ManageWin/AssignDelivery/ManageWinList'
 import RequestConsign from '../pages/Auth/admin/RequestConsign/RequestConsign'
 import RequestFinalValuation from '../pages/Auth/admin/RequestFinalValuation/RequestFinalValuation'
 import TransactionsComponent from '../pages/Auth/admin/Transaction/Transaction'
@@ -34,6 +34,8 @@ import HomePage from '../pages/clientPages/Homepage'
 import Lots from '../pages/clientPages/Lots'
 import PastAuction from '../pages/clientPages/PastAuction'
 import { RoleType } from '../slice/authLoginAPISlice'
+import InvoiceTab from '../pages/Auth/admin/ManageWin/InvoiceTab'
+import RequestConsignDetail from '../pages/Auth/admin/RequestConsign/RequestConsignDetail'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -55,9 +57,8 @@ const publicRoutes: RouteProps[] = [
 ]
 const managerRoutes: RouteProps[] = [
   { path: '/manager/ConsignList', component: RequestConsign, layout: ManagerLayout },
-  { path: '/manager/manageinvoice', component: ManageWinList, layout: ManagerLayout },
 
-  { path: '/manager/checkinvoice', component: BillInVoiceList, layout: ManagerLayout },
+  { path: '/manager/manageinvoice', component: InvoiceTab, layout: ManagerLayout },
 
   { path: '/manager/auctionlist', component: AuctionList, layout: ManagerLayout },
   { path: '/manager/requestfinal', component: RequestFinalValuation, layout: ManagerLayout },

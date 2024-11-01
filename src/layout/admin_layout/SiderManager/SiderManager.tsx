@@ -50,10 +50,7 @@ export default function SiderManager() {
       getItem('Valuation Manage', 'manageValuation', <MdAssessment className='text-base' />, [
         getItem('Valuation List', 'requestvaluation', <MdFormatListBulleted className='text-base' />)
       ]),
-      getItem('Manage Invoice', 'manageInvoice', <RiBillLine className='text-base' />, [
-        getItem('Shipper Assign', 'managewin', <MdLocalShipping className='text-base' />),
-        getItem('Check Invoice', 'managecheckinvoice', <RiCheckDoubleLine className='text-base' />)
-      ]),
+      getItem('Manage Invoice', 'managewin', <RiBillLine className='text-base' />),
       getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
         getItem('Auction List', 'auctionListSub', <RiAuctionLine className='text-base' />) // You can change this if needed
       ]),
