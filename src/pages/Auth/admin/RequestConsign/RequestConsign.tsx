@@ -107,7 +107,13 @@ export default function RequestConsign() {
           {filteredDataSource.length === 0 ? (
             <p>No consignments found.</p>
           ) : (
-            <Table dataSource={filteredDataSource} columns={columns} rowKey='id' pagination={{ pageSize: 6 }} />
+            <Table
+              dataSource={filteredDataSource}
+              columns={columns}
+              rowKey='id'
+              pagination={{ pageSize: 6 }}
+              loading={isLoading}
+            />
           )}
         </>
       )}
