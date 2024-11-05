@@ -1,4 +1,5 @@
 import dayjs, { Dayjs } from 'dayjs'
+import { LotDetail } from '../types/Lot.type'
 
 // Chuyển đổi từ string sang Dayjs
 export const stringToDate = (dateString: string): Dayjs => {
@@ -27,4 +28,46 @@ export const parseDate = (dateString: string, type: 'dd/mm/yyyy' | 'dd/mm/yyy hh
   }
 
   return `${day}/${month}/${year} GMT:${gmt}`
+}
+
+export const convertArrayImages = (item: LotDetail): string[] => {
+  const images: string[] = []
+
+  if (item.jewelry) {
+    if (item.jewelry.imageJewelries) {
+      images.push(...item.jewelry.imageJewelries.map((img) => img.imageLink))
+    }
+    if (item.jewelry.mainDiamonds) {
+      item.jewelry.mainDiamonds.forEach((diamond) => {
+        if (diamond.imageDiamonds) {
+          images.push(...diamond.imageDiamonds.map((img) => img.imageLink))
+        }
+      })
+    }
+    if (item.jewelry.secondaryDiamonds) {
+      item.jewelry.secondaryDiamonds.forEach((diamond) => {
+        if (diamond.imageDiamonds) {
+          images.push(...diamond.imageDiamonds.map((img) => img.imageLink))
+        }
+      })
+    }
+
+    if (item.jewelry.mainShaphies) {
+      item.jewelry.mainShaphies.forEach((shaphy) => {
+        if (shaphy.imageShaphies) {
+          images.push(...shaphy.imageShaphies.map((img) => img.imageLink))
+        }
+      })
+    }
+
+    if (item.jewelry.secondaryShaphies) {
+      item.jewelry.secondaryShaphies.forEach((saphy) => {
+        if (saphy.imageShaphies) {
+          images.push(...saphy.imageShaphies.map((img) => img.imageLink))
+        }
+      })
+    }
+  }
+
+  return images.filter(Boolean) // loại bỏ các thành phần rỗng hoặc undefined null ""
 }

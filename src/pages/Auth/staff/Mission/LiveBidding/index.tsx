@@ -1,10 +1,10 @@
+import { useEffect, useState, useRef } from 'react'
+import { useParams } from 'react-router-dom'
 import ProductDetail from './ProductDetail'
 import LiveBidding from './LiveBidding'
-import { useEffect, useState, useRef } from 'react'
 import { useBidding } from '../../../../../hooks/useBidding'
-import { Data } from '../../../../../types/Account.type'
-import { useParams } from 'react-router-dom'
 import { useGetLotDetailByIdQuery } from '../../../../../services/lot.services'
+import type { Data } from '../../../../../types/Account.type'
 
 export interface Bid {
   bidTime: string
@@ -16,29 +16,24 @@ export interface Bid {
 const Index = () => {
   const { disconnect, endTime, error, highestPrice, isConnected, joinLiveBidding, messages, sendBid } = useBidding()
   const { id } = useParams<{ id: string }>()
-
   const { data, isError, isLoading } = useGetLotDetailByIdQuery(Number(id))
 
+  // Get user ID from localStorage
   const user = localStorage.getItem('userLogin')
-  let userID = NaN
-  if (user) {
-    const userData = JSON.parse(user) as Data
-    userID = userData ? userData.user.id : NaN
-  }
-  console.log('user', userID)
+  const userID = user ? (JSON.parse(user) as Data).user?.id : NaN
 
+  // Time calculation logic
   const calculateTimeLeft = () => {
     const difference = +new Date(endTime) - +new Date()
     return difference > 0 ? Math.floor(difference / 1000) : 0
   }
 
   const [timeLeft, setTimeLeft] = useState<number>(calculateTimeLeft())
-  const prevTimeLeft = useRef<number>(timeLeft) // Reference to store previous timeLeft
+  const prevTimeLeft = useRef<number>(timeLeft)
 
   useEffect(() => {
     const timer = setInterval(() => {
       const newTimeLeft = calculateTimeLeft()
-
       if (newTimeLeft !== prevTimeLeft.current) {
         setTimeLeft(newTimeLeft)
         prevTimeLeft.current = newTimeLeft
@@ -54,6 +49,7 @@ const Index = () => {
     return `${minutes}:${secs < 10 ? `0${secs}` : secs}`
   }
 
+  // Join live bidding on component mount
   useEffect(() => {
     if (id) {
       joinLiveBidding(userID, id.toString(), data?.data?.lotType || '')
@@ -62,20 +58,27 @@ const Index = () => {
     return () => {
       disconnect()
     }
-  }, [joinLiveBidding, disconnect, userID])
+  }, [joinLiveBidding, disconnect, userID, id, data?.data?.lotType])
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
 
   return (
-    <>
-      <div className='mt-2 text-lg font-bold text-center'>Time left: {formatTime(timeLeft)}</div>
-
+    <div className='space-y-4'>
       <div className='flex flex-col gap-4 md:flex-row'>
-        {isConnected && (
-          <div className='md:w-2/5'>{data?.data && <LiveBidding bids={messages} itemLot={data?.data} />}</div>
+        {isConnected && data?.data && (
+          <div className='md:w-2/5'>
+            <div className='text-lg font-bold text-center'>Time left: {formatTime(timeLeft)}</div>
+            <LiveBidding bids={messages} itemLot={data.data} />
+          </div>
         )}
 
-        <div className='md:w-3/5'>{data?.data && <ProductDetail item={data.data} />}</div>
+        {data?.data && (
+          <div className={isConnected ? 'md:w-3/5' : 'w-full'}>{data?.data && <ProductDetail item={data?.data} />}</div>
+        )}
       </div>
-    </>
+    </div>
   )
 }
 

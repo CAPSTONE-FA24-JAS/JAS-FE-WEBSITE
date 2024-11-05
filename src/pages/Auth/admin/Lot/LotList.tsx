@@ -299,6 +299,7 @@ const LotList = () => {
             pageSize: 5
           }}
           size='small'
+          loading={isLoading}
         />
       </div>
       {auctionData && (
