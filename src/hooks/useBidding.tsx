@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import axios from 'axios'
 
-const API_BASE_URL = 'http://localhost:7251'
+const API_BASE_URL = 'https://jewelry-auction-system-bwfbbwdecudgfbd4.centralus-01.azurewebsites.net'
 
 export interface Message {
   customerId: string
@@ -19,7 +19,6 @@ interface UseBiddingResult {
   messages: Message[]
   error: string | null
   joinLiveBidding: (accountId: string | number, lotId: string | number, lotType: string) => Promise<void>
-  sendBid: (price: number) => Promise<void>
   disconnect: () => Promise<void>
   isEndAuction: boolean
   reducePrice: string
@@ -69,18 +68,20 @@ export function useBidding(): UseBiddingResult {
     })
 
     // Xử lý sự kiện khi có người đặt giá
+    //  await _hubContext.Clients.Group(lotGroupName).SendAsync("SendBiddingPriceForStaff", customerId, customerName, request.CurrentPrice, request.BidTime);
+
     connection.on(
       'SendBiddingPriceForStaff',
-      (customerId: string, price: number, bidTime: string, firstName: string, lastName: string) => {
-        console.log(`New bid from ${customerId}: ${price} at ${bidTime} by ${firstName} ${lastName}`)
+      (customerId: string, firstName: string, lastName: string, price: string, bidtime: string) => {
+        console.log(`Current price updated: ${price} at ${bidtime} by ${firstName} ${lastName}`)
         setMessages((prev) => [
           ...prev,
           {
             customerId,
-            currentPrice: price,
-            bidTime,
             firstName,
-            lastName
+            lastName,
+            currentPrice: Number(price),
+            bidTime: bidtime
           }
         ])
       }
@@ -167,31 +168,6 @@ export function useBidding(): UseBiddingResult {
     }
   }, [])
 
-  const sendBid = useCallback(async (price: number) => {
-    if (!connectionRef.current?.connectionId) {
-      setError('No active connection')
-      return
-    }
-
-    const body = {
-      currentPrice: price,
-      bidTime: new Date().toISOString(),
-      connectionId: connectionRef.current.connectionId
-    }
-
-    try {
-      const response = await axios.post(`${API_BASE_URL}/api/BidPrices/PlaceBiding/place-bid`, body)
-
-      if (!response.data.isSuccess) {
-        throw new Error(response.data.message)
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to place bid'
-      setError(errorMessage)
-      console.error('Error placing bid:', err)
-    }
-  }, [])
-
   const disconnect = useCallback(async () => {
     if (connectionRef.current) {
       try {
@@ -224,7 +200,6 @@ export function useBidding(): UseBiddingResult {
     messages,
     error,
     joinLiveBidding,
-    sendBid,
     disconnect,
     isEndAuction,
     reducePrice

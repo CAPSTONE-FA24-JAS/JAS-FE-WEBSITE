@@ -1,4 +1,4 @@
-import { Button, Image, Table, TableProps, Tabs, Tag } from 'antd'
+import { Button, Image, message, Table, TableProps, Tabs, Tag } from 'antd'
 import { useState } from 'react'
 import AddAuctionModal from './modal/AddAuctionModal'
 import { Link } from 'react-router-dom'
@@ -21,9 +21,18 @@ const AuctionList = () => {
 
   const roleId = useSelector((state: RootState) => state.authLoginAPI.roleId)
 
-  const handleApprove = (id: number) => () => {
+  const handleApprove = (id: number) => async () => {
     console.log('Approve', id)
-    approveAuction(id)
+    try {
+      const res = await approveAuction(id).unwrap()
+      if (res.isSuccess) {
+        message.success('Approve auction successfully')
+      } else {
+        message.error('Approve auction failed')
+      }
+    } catch (error) {
+      message.error('Approve auction failed')
+    }
   }
 
   const handleEdit = (id: number) => () => {

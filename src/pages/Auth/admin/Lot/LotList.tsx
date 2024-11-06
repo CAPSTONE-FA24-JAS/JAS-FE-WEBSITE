@@ -233,7 +233,6 @@ const LotList = () => {
               finalPriceSold: values.finalPriceSold,
               bidIncrement: values.bidIncrement,
               deposit: values.deposit,
-              isExtend: values.isExtend,
               haveFinancialProof: values.haveFinancialProof,
               staffId: values.staffId,
               jewelryId: values.jewelryId,
@@ -265,9 +264,10 @@ const LotList = () => {
     setEditingLot(null)
   }
 
-  const filteredLots = Array.isArray(lotsData?.data)
-    ? lotsData.data.filter((lot) => lot.title.includes(searchText))
-    : []
+  const filteredLots =
+    Array.isArray(lotsData?.data) && lotsData.data.length > 0
+      ? lotsData.data.filter((lot) => lot.title?.includes(searchText))
+      : []
 
   if (isLoading) {
     return <div>Loading...</div>

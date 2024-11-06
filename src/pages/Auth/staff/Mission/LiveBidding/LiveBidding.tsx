@@ -82,6 +82,9 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({ bids, itemLot }) => {
     return reduction.toFixed(1)
   }
 
+  const sortBidsByTime =
+    Array.isArray(bids) && bids.length > 0 ? bids.sort((a, b) => +new Date(a.bidTime) - +new Date(b.bidTime)) : []
+
   const renderBiddingContent = () => {
     switch (itemLot.lotType) {
       case 'Public_Auction':
@@ -92,9 +95,9 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({ bids, itemLot }) => {
               <HeaderControls backgroundColor='bg-red-500' isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
             </div>
             <div className='mt-4'>
-              {Array.isArray(bids) && bids.length > 0 ? (
+              {Array.isArray(sortBidsByTime) && sortBidsByTime.length > 0 ? (
                 bids.map((bid, index) => (
-                  <div key={index} className='flex justify-between mb-1 text-sm'>
+                  <div key={index} className='flex justify-between p-2 mb-1 text-sm'>
                     <span>{bid.bidTime}</span>
                     <span>
                       {bid.customerId}: {bid.firstName} {bid.lastName}
