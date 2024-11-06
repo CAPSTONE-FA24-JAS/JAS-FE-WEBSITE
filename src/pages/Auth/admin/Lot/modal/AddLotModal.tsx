@@ -437,7 +437,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
 
         {auctionType ? (
           <div className='flex justify-start gap-5 mb-4'>
-            {auctionType === '3' || auctionType === '4' ? (
+            {auctionType === '3' ? (
               <Form.Item initialValue={true} name='extendTime' valuePropName='checked' className='mb-0'>
                 <Checkbox defaultChecked>Extend time</Checkbox>
               </Form.Item>
