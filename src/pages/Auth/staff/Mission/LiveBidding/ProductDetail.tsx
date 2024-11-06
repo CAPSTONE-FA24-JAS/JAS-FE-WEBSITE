@@ -18,8 +18,6 @@ const ImageSlider: React.FC<{ images: string[] }> = ({ images }) => {
     setImages(images) // Set the images from props
   }, [images])
 
-  console.log('images', listImage) // Log the images prop to see the content
-
   return (
     <div className='flex justify-center w-full image-slider'>
       <Carousel autoplay dots arrows className='w-full max-w-lg'>
@@ -79,7 +77,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ item }) => {
   ]
 
   const listImage: string[] = convertArrayImages(item)
-  console.log('listImage', listImage)
 
   return (
     <Space direction='vertical' size='large' style={{ width: '100%' }}>

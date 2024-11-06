@@ -52,7 +52,6 @@ export const lotApi = createApi({
             title: body.title,
             deposit: Number(body.deposit),
             buyNowPrice: body.buyNowPrice,
-            isExtend: body.isExtend,
             haveFinancialProof: body.haveFinancialProof,
             staffId: body.staffId,
             jewelryId: body.jewelryId,
@@ -99,7 +98,6 @@ export const lotApi = createApi({
             startPrice: Number(body.startPrice),
             finalPriceSold: Number(body.finalPriceSold),
             deposit: Number(body.deposit),
-            isExtend: body.isExtend,
             haveFinancialProof: body.haveFinancialProof,
             staffId: body.staffId,
             jewelryId: body.jewelryId,
@@ -123,18 +121,23 @@ export const lotApi = createApi({
             finalPriceSold: Number(body.finalPriceSold),
             bidIncrement: Number(body.bidIncrement),
             deposit: Number(body.deposit),
-            isExtend: body.isExtend,
             haveFinancialProof: body.haveFinancialProof,
             staffId: body.staffId,
             jewelryId: body.jewelryId,
             auctionId: body.auctionId,
-            bidIncrementTime: Number(body.bidIncrementTime)
+            bidIncrementTime: Number(body.bidIncrementTime) * 60
           }
         }
       ),
       invalidatesTags() {
         return [{ type: 'Lot', id: 'LIST' }]
       }
+    }),
+    UpdateStatusLot: build.mutation<Respone<ListLot>, number>({
+      query: (id) => ({
+        url: `BidPrices/CloseLot?lotId=${id}&status=6`,
+        method: 'PUT'
+      })
     })
   })
 })
@@ -145,5 +148,6 @@ export const {
   useCreateLotFixedPriceMutation,
   useCreateLotAuctionPriceGraduallyReducedMutation,
   useCreateLotPublicAuctionMutation,
-  useCreateLotSecretAuctionMutation
+  useCreateLotSecretAuctionMutation,
+  useUpdateStatusLotMutation
 } = lotApi

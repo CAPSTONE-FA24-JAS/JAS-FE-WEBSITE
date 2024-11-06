@@ -14,7 +14,7 @@ export interface Bid {
 }
 
 const Index = () => {
-  const { disconnect, endTime, error, highestPrice, isConnected, joinLiveBidding, messages, sendBid } = useBidding()
+  const { disconnect, endTime, error, highestPrice, isConnected, joinLiveBidding, messages } = useBidding()
   const { id } = useParams<{ id: string }>()
   const { data, isError, isLoading } = useGetLotDetailByIdQuery(Number(id))
 
@@ -66,16 +66,16 @@ const Index = () => {
 
   return (
     <div className='space-y-4'>
-      <div className='flex flex-col gap-4 md:flex-row'>
+      <div className='flex-col gap-4'>
         {isConnected && data?.data && (
-          <div className='md:w-2/5'>
+          <div className='w-full'>
             <div className='text-lg font-bold text-center'>Time left: {formatTime(timeLeft)}</div>
             <LiveBidding bids={messages} itemLot={data.data} />
           </div>
         )}
 
         {data?.data && (
-          <div className={isConnected ? 'md:w-3/5' : 'w-full'}>{data?.data && <ProductDetail item={data?.data} />}</div>
+          <div className={isConnected ? 'w-full' : 'w-full'}>{data?.data && <ProductDetail item={data?.data} />}</div>
         )}
       </div>
     </div>
