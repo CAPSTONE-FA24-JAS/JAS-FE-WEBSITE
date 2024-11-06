@@ -26,13 +26,13 @@ const RequestFinalValuation = () => {
     data?.dataResponse?.filter((valuation: Valuation) =>
       ['FinalValuated', 'ManagerApproved', 'Authorized', 'RejectedPreliminary'].includes(valuation.status)
     ) || []
-  const handleUpdate = () => {
-    // Logic to handle what happens after the status update.
-    // This could be a refetch of the valuations or any other logic needed.
-    console.log('Update function triggered')
-    // For example, you can refetch the valuations here if needed
-    // refetch(); // Uncomment this if you have a refetch function defined
-  }
+  // const handleUpdate = () => {
+  //   // Logic to handle what happens after the status update.
+  //   // This could be a refetch of the valuations or any other logic needed.
+  //   console.log('Update function triggered')
+  //   // For example, you can refetch the valuations here if needed
+  //   // refetch(); // Uncomment this if you have a refetch function defined
+  // }
 
   const handleSearch = (value: string) => {
     setSearchText(value)

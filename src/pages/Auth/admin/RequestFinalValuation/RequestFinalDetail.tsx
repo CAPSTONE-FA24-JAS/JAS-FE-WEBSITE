@@ -5,7 +5,7 @@ import {
   useUpdateJewelryStatusByManagerMutation,
   useGetValuationByIdQuery
 } from '../../../../services/valuation.services'
-
+import { Image as AntImage } from 'antd'
 const { Option } = Select
 
 interface RequestFinalDetailProps {
@@ -23,6 +23,7 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
   setStatus,
   refetch
 }) => {
+  const [isModalVisible, setIsModalVisible] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [selectedStatus, setSelectedStatus] = useState<string>('')
 
@@ -44,6 +45,8 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
   const prevImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length)
   }
+  const openModal = () => setIsModalVisible(true)
+  const closeModal = () => setIsModalVisible(false)
 
   const statusOptions = [
     { label: 'Final Valuated', value: 'FinalValuated' },
@@ -57,7 +60,7 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
   }
 
   const handleUpdateClick = async () => {
-    const jewelryId = valuationData?.data?.jewelry?.id // Ensure you're using the correct path to jewelry ID
+    const jewelryId = valuationData?.data?.jewelry?.id
     const status = 7
 
     console.log('Updating status with:', { jewelryId, status })
@@ -74,9 +77,9 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
       await updateStatus({ jewelryId, status }).unwrap()
       notification.success({
         message: 'Status Updated',
-        description: 'The status has been updated to Final Valuated' // Message reflects the new status
+        description: 'The status has been updated to Final Valuated'
       })
-      setStatus('FinalValuated') // Set the status in the state
+      setStatus('FinalValuated')
 
       refetch()
       onClose()
@@ -110,23 +113,42 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
           Update
         </Button>
       ]}
-      width={1100}
+      width={1200}
+      style={{ padding: '24px' }}
     >
-      <div className='grid grid-cols-2 gap-6'>
+      <div className='grid grid-cols-2 gap-6 mt-10'>
         <div className='relative'>
           <div className='flex items-center justify-center mb-4'>
-            <img src={images[currentImageIndex]} alt='product' className='max-w-full rounded-lg' />
+            <img
+              src={images[currentImageIndex]}
+              alt='product'
+              onClick={openModal}
+              className='w-[450px] h-[500px] object-cover rounded-lg'
+            />{' '}
           </div>
-          <div className='absolute inset-y-0 left-0 flex items-center justify-center pl-3'>
+          <div className='absolute top-56 left-0 flex items-center justify-center pl-3'>
             <Button icon={<LeftOutlined />} onClick={prevImage} className='bg-gray-300 hover:bg-gray-400' />
           </div>
-          <div className='absolute inset-y-0 right-0 flex items-center justify-center pr-3'>
+          <div className='absolute top-56 right-0 flex items-center justify-center pr-3'>
             <Button icon={<RightOutlined />} onClick={nextImage} className='bg-gray-300 hover:bg-gray-400' />
           </div>
+          <div className='flex ml-10 mt-10'>
+            {images.map((image: string, index: number) => (
+              <img
+                key={index}
+                src={image}
+                alt={`thumb-${index}`}
+                className='w-[100px] h-[100px] object-cover rounded-lg mx-2 cursor-pointer border'
+                onClick={() => setCurrentImageIndex(index)}
+              />
+            ))}
+          </div>
         </div>
-
+        <Modal open={isModalVisible} footer={null} onCancel={closeModal} width='40%'>
+          <img src={images[currentImageIndex]} alt='product zoomed' className='w-full h-auto object-contain' />
+        </Modal>
         <div>
-          <p className='mb-2 text-xl font-bold'>ID: {valuationData?.data?.id || 'N/A'}</p>
+          <p className='mb-2 text-xl font-bold'>{valuationData?.data?.id || 'N/A'}</p>
           <p className='mb-6 text-xl font-bold'>{valuationData?.data?.name || 'No Name Available'}</p>
 
           <div className='flex mb-4'>
@@ -144,28 +166,329 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
             <span>{valuationData?.data?.seller?.accountDTO?.phoneNumber || 'No Phone Available'}</span>
           </div>
           <div className='flex mb-4'>
+            <strong className='w-1/3'>Artist:</strong>
+            <span className=' text-blue-800'>{valuationData?.data?.jewelry?.artist?.name || 0} </span>
+          </div>
+          <div className='flex mb-4'>
+            <strong className='w-1/3'>Category:</strong>
+            <span className=' text-blue-800'>{valuationData?.data?.jewelry?.category?.name || 0} </span>
+          </div>
+          <div className='flex mb-4'>
             <strong className='w-1/3'>Estimated Price:</strong>
             <span>
               {valuationData?.data?.jewelry?.estimatePriceMin || 0} -{' '}
               {valuationData?.data?.jewelry?.estimatePriceMax || 0} VND
             </span>
           </div>
-          <div className='flex mb-4'>
-            <strong className='w-1/3'>Artist:</strong>
-            <span>{valuationData?.data?.jewelry?.artist?.name || 0} </span>
-          </div>
-          <div className='flex mb-4'>
-            <strong className='w-1/3'>Category:</strong>
-            <span>{valuationData?.data?.jewelry?.category?.name || 0} </span>
-          </div>
+
           <div className='flex mb-4'>
             <strong className='w-1/3'>Starting Price:</strong>
-            <span className='text-red-700 font-bold'>{valuationData?.data?.jewelry?.startingPrice || 0} </span>
+            <span>{valuationData?.data?.jewelry?.startingPrice || 0} </span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Final Price:</strong>
-            <span>{valuationData?.data?.jewelry?.specificPrice || 0} </span>
+            <span className='text-red-700 font-bold'>{valuationData?.data?.jewelry?.specificPrice || 0} </span>
           </div>
+
+          <div>
+            <strong className='w-full block mb-4'>Key Characteristics</strong>
+            {valuationData?.data?.jewelry?.keyCharacteristicDetails?.map((detail: any) => (
+              <div key={detail.id} className='flex mb-2 ml-10'>
+                <div className='w-1/4 font-medium'>{detail.keyCharacteristic.name}:</div>
+                <span className='w-2/3'>{detail.description}</span>
+              </div>
+            ))}
+          </div>
+
+          {valuationData?.data?.jewelry?.mainDiamonds?.length > 0 && (
+            <div>
+              <span className='w-full block mb-4 font-bold'>Main Diamonds</span>
+
+              {valuationData?.data?.jewelry?.mainDiamonds.map((diamond: any) => (
+                <div key={diamond.id} className='mb-4 ml-10'>
+                  {/* Name */}
+                  {diamond.name && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Name:</div>
+                      <span className='w-2/3'>{diamond.name}</span>
+                    </div>
+                  )}
+
+                  {/* Color */}
+                  {diamond.color && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Color:</div>
+                      <span className='w-2/3'>{diamond.color}</span>
+                    </div>
+                  )}
+
+                  {/* Cut */}
+                  {diamond.cut && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Cut:</div>
+                      <span className='w-2/3'>{diamond.cut}</span>
+                    </div>
+                  )}
+
+                  {/* Clarity */}
+                  {diamond.clarity && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Clarity:</div>
+                      <span className='w-2/3'>{diamond.clarity}</span>
+                    </div>
+                  )}
+
+                  {/* Quantity */}
+                  {diamond.quantity && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Quantity:</div>
+                      <span className='w-2/3'>{diamond.quantity}</span>
+                    </div>
+                  )}
+
+                  {/* Setting Type */}
+                  {diamond.settingType && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Setting Type:</div>
+                      <span className='w-2/3'>{diamond.settingType}</span>
+                    </div>
+                  )}
+
+                  {/* Dimension */}
+                  {diamond.dimension && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Dimension:</div>
+                      <span className='w-2/3'>{diamond.dimension}</span>
+                    </div>
+                  )}
+
+                  {/* Shape */}
+                  {diamond.shape && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Shape:</div>
+                      <span className='w-2/3'>{diamond.shape}</span>
+                    </div>
+                  )}
+
+                  {/* Certificate */}
+                  {diamond.certificate && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Certificate:</div>
+                      <span className='w-2/3'>{diamond.certificate}</span>
+                    </div>
+                  )}
+
+                  {diamond.fluorescence && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Fluorescence:</div>
+                      <span className='w-2/3'>{diamond.fluorescence}</span>
+                    </div>
+                  )}
+
+                  {diamond.lengthWidthRatio && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Length/Width Ratio:</div>
+                      <span className='w-2/3'>{diamond.lengthWidthRatio}</span>
+                    </div>
+                  )}
+
+                  {diamond.imageDiamonds?.length > 0 && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Images:</div>
+                      <div className='w-2/3'>
+                        {diamond.imageDiamonds.map((image: any, index: number) =>
+                          image.imageLink ? (
+                            <AntImage
+                              key={index}
+                              src={image.imageLink}
+                              alt={`diamond-image-${index}`}
+                              className='mb-2'
+                              style={{ maxWidth: '80px', borderRadius: '15px' }}
+                              preview={{ src: image.imageLink }}
+                            />
+                          ) : null
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {diamond.documentDiamonds?.length > 0 && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Documents:</div>
+                      <div className='w-2/3'>
+                        {diamond.documentDiamonds.map((document: any, index: number) =>
+                          document.documentLink ? (
+                            <a
+                              key={index}
+                              href={document.documentLink}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              className='text-blue-500'
+                            >
+                              Document {index + 1}
+                            </a>
+                          ) : null
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          {valuationData?.data?.jewelry?.secondaryDiamonds?.length > 0 && (
+            <div>
+              <span className='w-full block mb-4 font-bold'>Secondary Diamonds</span>
+              {valuationData?.data?.jewelry?.secondaryDiamonds.map((diamond: any) => (
+                <div key={diamond.id} className='mb-4 ml-10'>
+                  {diamond.name && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Name:</div>
+                      <span className='w-2/3'>{diamond.name}</span>
+                    </div>
+                  )}
+
+                  {diamond.color && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Color:</div>
+                      <span className='w-2/3'>{diamond.color}</span>
+                    </div>
+                  )}
+
+                  {diamond.cut && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Cut:</div>
+                      <span className='w-2/3'>{diamond.cut}</span>
+                    </div>
+                  )}
+
+                  {diamond.clarity && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Clarity:</div>
+                      <span className='w-2/3'>{diamond.clarity}</span>
+                    </div>
+                  )}
+
+                  {diamond.quantity && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Quantity:</div>
+                      <span className='w-2/3'>{diamond.quantity}</span>
+                    </div>
+                  )}
+
+                  {diamond.settingType && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Setting Type:</div>
+                      <span className='w-2/3'>{diamond.settingType}</span>
+                    </div>
+                  )}
+
+                  {diamond.dimension && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Dimension:</div>
+                      <span className='w-2/3'>{diamond.dimension}</span>
+                    </div>
+                  )}
+
+                  {diamond.shape && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Shape:</div>
+                      <span className='w-2/3'>{diamond.shape}</span>
+                    </div>
+                  )}
+
+                  {diamond.certificate && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Certificate:</div>
+                      <span className='w-2/3'>{diamond.certificate}</span>
+                    </div>
+                  )}
+
+                  {diamond.fluorescence && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Fluorescence:</div>
+                      <span className='w-2/3'>{diamond.fluorescence}</span>
+                    </div>
+                  )}
+
+                  {diamond.lengthWidthRatio && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Length/Width Ratio:</div>
+                      <span className='w-2/3'>{diamond.lengthWidthRatio}</span>
+                    </div>
+                  )}
+
+                  {diamond.imageDiamonds?.length > 0 && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Images:</div>
+                      <div className='w-2/3'>
+                        {diamond.imageDiamonds.map((image: any, index: number) =>
+                          image.imageLink ? (
+                            <AntImage
+                              key={index}
+                              src={image.imageLink}
+                              alt={`diamond-image-${index}`}
+                              className='mb-2'
+                              style={{ maxWidth: '80px' }}
+                              preview={{ src: image.imageLink }}
+                            />
+                          ) : null
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {diamond.documentDiamonds?.length > 0 && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Documents:</div>
+                      <div className='w-2/3'>
+                        {diamond.documentDiamonds.map((document: any, index: number) =>
+                          document.documentLink ? (
+                            <a
+                              key={index}
+                              href={document.documentLink}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              className='text-blue-500'
+                            >
+                              Document {index + 1}
+                            </a>
+                          ) : null
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          {/* Main Sapphires */}
+          {valuationData?.data?.jewelry?.mainShaphies?.length > 0 && (
+            <div>
+              <span className='w-full block mb-4 font-bold'>Main Sapphires</span>
+              {valuationData?.data?.jewelry?.mainShaphies.map((sapphire: any) => (
+                <div key={sapphire.id} className='flex mb-2 ml-10'>
+                  <div className='w-1/4 font-medium'>Name:</div>
+                  <span className='w-2/3'>{sapphire.name}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Secondary Sapphires */}
+          {valuationData?.data?.jewelry?.secondaryShaphies?.length > 0 && (
+            <div>
+              <span className='w-full block mb-4 font-bold'>Secondary Sapphires</span>
+              {valuationData?.data?.jewelry?.secondaryShaphies.map((sapphire: any) => (
+                <div key={sapphire.id} className='flex mb-2 ml-10'>
+                  <div className='w-1/4 font-medium'>Name:</div>
+                  <span className='w-2/3'>{sapphire.name}</span>
+                  {/* Các thuộc tính khác của sapphire */}
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className='mt-4 flex'>
             <strong className='w-1/3'>Status:</strong>
             {valuationData?.data?.status === 'FinalValuated' ? (

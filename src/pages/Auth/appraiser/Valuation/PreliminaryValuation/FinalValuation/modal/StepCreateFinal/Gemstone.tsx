@@ -207,7 +207,8 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
     data: (MainDiamond | SecondaryDiamond | MainShaphy | SecondaryShaphy)[],
     type: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies'
   ) => {
-    const isDiamondType = type === 'mainDiamonds' || type === 'secondaryDiamonds'
+    const isDiamondType =
+      type === 'mainDiamonds' || type === 'secondaryDiamonds' || type === 'mainShaphies' || type === 'secondaryShaphies'
     const fields = isDiamondType ? diamondFields : shaphyFields
 
     return data.map((detail, index) => {
@@ -232,7 +233,9 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
           </div>
 
           {renderImageUploadSection(index, type, 'imageDiamonds')}
+          {renderImageUploadSection(index, type, 'imageShaphies')}
           {renderDocumentUploadSection(index, type, 'documentDiamonds')}
+          {renderDocumentUploadSection(index, type, 'documentShaphies')}
         </div>
       )
     })

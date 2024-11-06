@@ -156,7 +156,7 @@ export default function CreateFinalValuation() {
             documentDiamonds: (documentFiles[gem.type]?.['documentDiamonds']?.[index] || []).map((file: File) => ({
               documentLink: file.name,
               diamondId: detail.id,
-              documentTitle: 'Some Title' // Thêm thuộc tính documentTitle
+              documentTitle: 'Some Title'
             }))
           }))
         }
@@ -172,7 +172,7 @@ export default function CreateFinalValuation() {
             documentShaphies: (documentFiles[gem.type]?.['documentShaphies']?.[index] || []).map((file: File) => ({
               documentLink: file.name,
               shaphieId: detail.id,
-              documentTitle: 'Some Title' // Thêm thuộc tính documentTitle
+              documentTitle: 'Some Title'
             }))
           }))
         }
@@ -415,7 +415,7 @@ export default function CreateFinalValuation() {
                 console.error('Expected a File object, but got:', file)
               }
             })
-          } else if (gemstoneType === 'mainSapphires' || gemstoneType === 'secondarySapphires') {
+          } else if (gemstoneType === 'mainShaphies' || gemstoneType === 'secondaryShaphies') {
             const shaphyDetail = detail as MainShaphy | SecondaryShaphy
             formDataToSend.append(`${gemstoneType}[${index}].name`, shaphyDetail.name)
             formDataToSend.append(`${gemstoneType}[${index}].color`, shaphyDetail.color)

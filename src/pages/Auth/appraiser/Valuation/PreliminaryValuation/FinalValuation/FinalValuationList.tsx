@@ -1,69 +1,26 @@
 import React, { useState } from 'react'
-import { Table, Button, Typography, Tag } from 'antd'
+import { Table, Button, Typography, Tag, Tooltip } from 'antd'
 import { EyeOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import FinalDetailModal from './FinalDetailModal'
-
+import { RootState } from '../../../../../../store'
+import { useSelector } from 'react-redux'
+import { useGetFinalValuationsOfAppraiserQuery } from '../../../../../../services/valuation.services'
 const { Title } = Typography
-
-const finalValuationRequests = [
-  {
-    id: 1,
-    valuationName: 'Diamond Ring Final Valuation',
-    customerName: 'Nguyễn Văn A',
-    status: 'Hoàn thành'
-  },
-  {
-    id: 2,
-    valuationName: 'Gold Necklace Final Valuation',
-    customerName: 'Trần Thị B',
-    status: 'Đã từ chối'
-  },
-  {
-    id: 3,
-    valuationName: 'Silver Bracelet Final Valuation',
-    customerName: 'Lê Văn C',
-    status: 'Đang xử lý'
-  },
-  {
-    id: 4,
-    valuationName: 'Emerald Pendant Final Valuation',
-    customerName: 'Phạm Thị D',
-    status: 'Hoàn thành'
-  },
-  {
-    id: 5,
-    valuationName: 'Platinum Watch Final Valuation',
-    customerName: 'Đặng Văn E',
-    status: 'Đang chờ xử lý'
-  }
-]
-
-const statusTagColors: { [key: string]: string } = {
-  'Đang chờ xử lý': 'orange',
-  'Đang xử lý': 'blue',
-  'Hoàn thành': 'green',
-  'Đã từ chối': 'red'
-}
-
 const FinalValuationList = () => {
-  const navigate = useNavigate()
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  const [currentRecord, setCurrentRecord] = useState<any>(null)
+  const [finalModalVisible, setFinalModalVisible] = useState<boolean>(false)
+  const [selectedFinalRecord, setSelectedFinalRecord] = useState<any>(null)
+  const appraiserId = useSelector((state: RootState) => state.authLoginAPI.staffId)
 
-  const showModal = (record: any) => {
-    setCurrentRecord(record)
-    setIsModalVisible(true)
-  }
-  const handleUpdate = () => {
-    console.log('Update clicked for record:', currentRecord)
-  }
-  const handleCancel = () => {
-    setIsModalVisible(false)
-    setCurrentRecord(null)
-  }
+  const { data, error, isLoading } = useGetFinalValuationsOfAppraiserQuery({
+    appraiserId: appraiserId || 0,
+    pageSize: 10,
+    pageIndex: 1
+  })
 
-  const columns = [
+  const finalValuationData = data?.dataResponse || []
+
+  const finalColumns = [
     {
       title: 'ID',
       dataIndex: 'id',
@@ -71,26 +28,50 @@ const FinalValuationList = () => {
     },
     {
       title: 'Valuation Name',
-      dataIndex: 'valuationName',
-      key: 'valuationName'
+      dataIndex: 'name',
+      key: 'name'
     },
     {
       title: 'Customer Name',
-      dataIndex: 'customerName',
-      key: 'customerName'
+      dataIndex: 'seller',
+      key: 'seller',
+      render: (seller: any) => (seller ? `${seller.firstName} ${seller.lastName}` : '')
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => <Tag color={statusTagColors[status]}>{status}</Tag>
+      render: (status: string) => {
+        let color = 'green'
+        let label = status
+
+        if (status === 'FinalValuated') {
+          color = 'red'
+        } else if (status === 'ManagerApproved') {
+          color = 'blue'
+        } else if (status === 'Authorized') {
+          color = 'green'
+        }
+
+        return <Tag color={color}>{label}</Tag>
+      }
     },
     {
       title: 'Actions',
       key: 'actions',
-      render: (record: any) => (
+      render: (text: any, record: any) => (
         <div>
-          <Button type='link' icon={<EyeOutlined />} onClick={() => showModal(record)} />
+          <Tooltip title='View Final Details'>
+            <Button
+              type='primary'
+              icon={<EyeOutlined />}
+              className='bg-blue-500 hover:bg-blue-600'
+              onClick={() => {
+                setSelectedFinalRecord(record)
+                setFinalModalVisible(true)
+              }}
+            />
+          </Tooltip>
         </div>
       )
     }
@@ -101,14 +82,30 @@ const FinalValuationList = () => {
       <Title level={3} className='mb-6'>
         Final Valuation List
       </Title>
-      <Table dataSource={finalValuationRequests} columns={columns} rowKey='id' />
+      <div>
+        {error && <p>Error fetching final valuations</p>}
+        <Table
+          dataSource={finalValuationData}
+          columns={finalColumns}
+          rowKey='id'
+          loading={isLoading}
+          pagination={{ pageSize: 6 }}
+        />
 
-      <FinalDetailModal
-        visible={isModalVisible}
-        onUpdate={handleUpdate}
-        record={currentRecord}
-        onCancel={handleCancel}
-      />
+        {selectedFinalRecord && (
+          <FinalDetailModal
+            isVisible={finalModalVisible}
+            onCancel={() => setFinalModalVisible(false)}
+            onUpdate={() => {
+              console.log('Update final record:', selectedFinalRecord)
+              setFinalModalVisible(false)
+            }}
+            record={selectedFinalRecord}
+            // status={selectedFinalRecord.status}
+            setStatus={(status: any) => setSelectedFinalRecord({ ...selectedFinalRecord, status })}
+          />
+        )}
+      </div>
     </div>
   )
 }
