@@ -1,4 +1,4 @@
-import { Button, Image, Table, TableProps, Tag } from 'antd'
+import { Button, Image, Table, TableProps, Tabs, Tag } from 'antd'
 import { useState } from 'react'
 import AddAuctionModal from './modal/AddAuctionModal'
 import { Link } from 'react-router-dom'
@@ -14,6 +14,7 @@ const AuctionList = () => {
   const [searchText, setSearchText] = useState<string>('')
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
   const [editAuction, setEditAuction] = useState<number>(NaN)
+  const [tabKey, setTabKey] = useState<string>('all')
 
   const { data, isLoading } = useGetAuctionsQuery()
   const [approveAuction] = useApproveAuctionMutation()
@@ -72,7 +73,8 @@ const AuctionList = () => {
       dataIndex: 'description',
       key: 'location',
       align: 'center',
-      render: (text) => <Input.TextArea value={text} autoSize={{ minRows: 3 }} readOnly />
+      width: 200,
+      render: (text) => <Input.TextArea value={text} autoSize={{ minRows: 2, maxRows: 4 }} readOnly />
     },
     {
       title: 'Auction Time',
@@ -167,7 +169,12 @@ const AuctionList = () => {
       )
     }
   ]
-  const auctionFiltered = data?.data.filter((item) => item.description.toLowerCase().includes(searchText.toLowerCase()))
+
+  const auctionFiltered = data?.data.filter((item) => {
+    const matchSearch = item.description.toLowerCase().includes(searchText.toLowerCase())
+    if (tabKey === 'all') return matchSearch
+    return item.status === tabKey && matchSearch
+  })
 
   const handleAddAuction = () => {
     setIsModalVisible(true)
@@ -177,16 +184,43 @@ const AuctionList = () => {
     setIsModalVisible(false)
   }
 
+  const tabItems = [
+    {
+      key: 'all',
+      label: 'All'
+    },
+    {
+      key: 'Waiting',
+      label: 'Waiting'
+    },
+    {
+      key: 'UpComing',
+      label: 'UpComing'
+    },
+    {
+      key: 'Live',
+      label: 'Live'
+    },
+    {
+      key: 'Past',
+      label: 'Past'
+    },
+    {
+      key: 'Cancelled',
+      label: 'Cancelled'
+    }
+  ]
+
   return (
     <div className='p-5 rounded-lg bg-slate-50'>
-      <div className='flex justify-between'>
-        <h2 className='mb-4 text-xl font-semibold'>Auction List</h2>
-        <div className='flex justify-evenly'>
+      <div className='flex flex-col gap-4 sm:flex-row sm:justify-between'>
+        <h2 className='text-xl font-semibold'>Auction List</h2>
+        <div className='flex flex-col gap-2 sm:flex-row sm:items-center'>
           <input
             onChange={(e) => setSearchText(e.target.value)}
             type='text'
             placeholder='Search'
-            className='w-2/4 px-3 py-[6px] mb-4 text-sm text-gray-600 placeholder-gray-400 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400'
+            className='w-full px-3 py-[6px] text-sm text-gray-600 placeholder-gray-400 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 sm:w-48'
           />
           {roleId === RoleType.MANAGER && (
             <Button className='px-3 py-2' type='primary' onClick={handleAddAuction}>
@@ -195,14 +229,23 @@ const AuctionList = () => {
           )}
         </div>
       </div>
-      <Table
-        columns={columns}
-        dataSource={auctionFiltered}
-        pagination={{ pageSize: 5 }}
-        loading={isLoading}
-        style={{ minHeight: '65vh' }}
-        rowKey={(record) => record.id.toString()}
-      />
+
+      <div className='mt-4 overflow-x-auto'>
+        <div className='min-w-[1024px]'>
+          <Tabs defaultActiveKey='all' items={tabItems} onChange={(key) => setTabKey(key)} />
+
+          <Table
+            columns={columns}
+            dataSource={auctionFiltered}
+            pagination={{ pageSize: 5 }}
+            loading={isLoading}
+            style={{ minHeight: '65vh' }}
+            rowKey={(record) => record.id.toString()}
+            scroll={{ x: 768 }}
+          />
+        </div>
+      </div>
+
       <AddAuctionModal
         visible={isModalVisible}
         onCancel={handleModalCancel}
