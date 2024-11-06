@@ -134,12 +134,7 @@ const PreliminaryValuationList = () => {
         Preliminary Valuation List
       </Title>
       <div className='mb-4' style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Search
-          placeholder='Search by customer name'
-          enterButton
-          onSearch={handleSearch}
-          style={{ width: 300 }} // You can adjust the width as needed
-        />
+        <Search placeholder='Search by customer name' enterButton onSearch={handleSearch} style={{ width: 300 }} />
       </div>
       <Table dataSource={filteredPreliminaryData} columns={columns} rowKey='id' />
       <PreliminaryDetailsModal
