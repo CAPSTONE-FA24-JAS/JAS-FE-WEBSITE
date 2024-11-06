@@ -36,6 +36,7 @@ import PastAuction from '../pages/clientPages/PastAuction'
 import { RoleType } from '../slice/authLoginAPISlice'
 import InvoiceTab from '../pages/Auth/admin/ManageWin/InvoiceTab'
 import RequestConsignDetail from '../pages/Auth/admin/RequestConsign/RequestConsignDetail'
+import Dashboard from '../pages/Auth/admin/Dashboard/Dashboard'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -56,6 +57,7 @@ const publicRoutes: RouteProps[] = [
   { path: '/detaillot/:id', component: LotDetail, layout: ClientLayout }
 ]
 const managerRoutes: RouteProps[] = [
+  { path: '/manager/dashboard', component: Dashboard, layout: ManagerLayout },
   { path: '/manager/ConsignList', component: RequestConsign, layout: ManagerLayout },
 
   { path: '/manager/manageinvoice', component: InvoiceTab, layout: ManagerLayout },

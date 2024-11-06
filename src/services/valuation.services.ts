@@ -88,6 +88,14 @@ export const valuationApi = createApi({
         totalItemResponse: response.data.totalItemResponse
       })
     }),
+    getFinalValuationsOfAppraiser: build.query<any, { appraiserId: number; pageSize: number; pageIndex: number }>({
+      query: ({ appraiserId, pageSize, pageIndex }) =>
+        `Valuations/getFinalValuationsOfAppraiser?appraiserId=${appraiserId}&pageSize=${pageSize}&pageIndex=${pageIndex}`,
+      transformResponse: (response: any) => ({
+        dataResponse: response.data.dataResponse,
+        totalItemResponse: response.data.totalItemResponse
+      })
+    }),
 
     requestFinalValuationForManager: build.mutation<void, RequestFinalValuation>({
       query: (data) => ({
@@ -124,6 +132,7 @@ export const {
   useGetRequestPreliminaryValuationQuery,
   useGetPreliminaryValuationsByAppraiserQuery,
   useGetFinalValuationsOfStaffQuery,
+  useGetFinalValuationsOfAppraiserQuery,
   useRequestFinalValuationForManagerMutation,
   useGetValuationsQuery,
   useUpdateJewelryStatusByManagerMutation
