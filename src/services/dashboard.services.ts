@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { Data, UserLoginRequest, UserLoginResponse } from '../types/Account.type'
+import { Data } from '../types/Account.type'
 import baseUrl from '../utils/http'
 
 export const dashboardApi = createApi({
@@ -10,15 +10,28 @@ export const dashboardApi = createApi({
       const user = localStorage.getItem('userLogin')
       if (user) {
         const userData = JSON.parse(user) as Data
-        console.log('userData', userData)
         const token = userData ? userData.accessToken : ''
-        console.log('token', token)
         headers.set('authorization', `Bearer ${token}`)
       }
       return headers
     }
   }),
   refetchOnMountOrArgChange: true,
-  endpoints: (build) => ({})
+  endpoints: (build) => ({
+    getTotalInvoice: build.query({
+      query: () => 'DashBoard/TotalInvoice'
+    }),
+    getTotalRevenue: build.query({
+      query: () => 'DashBoard/TotalRevenue'
+    }),
+    getRevenueInYear: build.query({
+      query: (year: number) => `DashBoard/DashBoardRevenueInYear?year=${year}`
+    })
+  })
 })
-export const {} = dashboardApi
+
+export const {
+  useGetTotalInvoiceQuery,
+  useGetTotalRevenueQuery,
+  useGetRevenueInYearQuery // Export the new hook for use in components
+} = dashboardApi
