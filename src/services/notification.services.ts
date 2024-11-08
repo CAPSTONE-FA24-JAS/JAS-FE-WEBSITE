@@ -22,8 +22,14 @@ export const notiApi = createApi({
   endpoints: (build) => ({
     getNotificationsByAccount: build.query({
       query: (accountId: number) => `/Notifications/getNotificationsByAccount?accountId=${accountId}`
+    }),
+    markNotificationAsReadByAccount: build.mutation({
+      query: (notificationId: number) => ({
+        url: `/Notifications/markNotificationAsReadByAccount?notificationId=${notificationId}`,
+        method: 'PUT'
+      })
     })
   })
 })
 
-export const { useGetNotificationsByAccountQuery } = notiApi
+export const { useGetNotificationsByAccountQuery, useMarkNotificationAsReadByAccountMutation } = notiApi

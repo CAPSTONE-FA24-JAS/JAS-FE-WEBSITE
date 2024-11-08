@@ -1,13 +1,23 @@
 import { EyeOutlined, FileTextOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Col, Input, Row, Tabs, Tag, Tooltip } from 'antd'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
 import PreliminaryValuationTab from './PreliminaryValuation/PreliminaryValuationTab'
 import FinalValuationTab from './FinalValuation/FinalValuationTab'
+import { useLocation } from 'react-router-dom'
 
 const { Search } = Input
 
 const ValuationTabs = () => {
+  const location = useLocation()
+  const queryParams = new URLSearchParams(location.search)
+  const [activeTabKey, setActiveTabKey] = useState<string>('1')
+
+  useEffect(() => {
+    const tabKey = queryParams.get('tab') || '1'
+    setActiveTabKey(tabKey)
+  }, [location.search])
+
   const [searchText, setSearchText] = useState<string>('')
   const [selectedRecord, setSelectedRecord] = useState<any>(null)
   const [selectedRecord1, setSelectedRecord1] = useState<any>(null)
@@ -165,7 +175,7 @@ const ValuationTabs = () => {
         </Col>
       </Row>
 
-      <Tabs defaultActiveKey='1' items={tabItems} />
+      <Tabs activeKey={activeTabKey} onChange={setActiveTabKey} items={tabItems} />
     </div>
   )
 }
