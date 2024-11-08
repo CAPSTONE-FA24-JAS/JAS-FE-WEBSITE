@@ -1,7 +1,8 @@
 export const currencyFormat = (amount: number, options: Intl.NumberFormatOptions = {}) => {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('vi-VN', {
+    // Sử dụng mã ngôn ngữ vi-VN cho VND
     style: 'currency',
-    currency: 'usd',
+    currency: 'VND',
     maximumFractionDigits: 3,
     minimumFractionDigits: 0,
     useGrouping: true,

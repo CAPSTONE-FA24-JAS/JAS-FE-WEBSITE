@@ -1,11 +1,13 @@
-import { BellOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons'
-import { Avatar, Dropdown, MenuProps, Modal, Spin, Badge } from 'antd'
-import { Header } from 'antd/es/layout/layout'
+// src/components/HeaderStaff.tsx
+
+import { Avatar, Dropdown, MenuProps } from 'antd'
+import { UserOutlined, LogoutOutlined } from '@ant-design/icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { logoutUser, RoleType } from '../../../slice/authLoginAPISlice'
 import { RootState } from '../../../store'
-// import { RootState } from 'store';
+import NotificationMenu from './NotificationMenu' // Import NotificationMenu component
+import { Header } from 'antd/es/layout/layout'
 
 export default function HeaderStaff() {
   const navigate = useNavigate()
@@ -13,8 +15,6 @@ export default function HeaderStaff() {
 
   const handleLogout = () => {
     localStorage.removeItem('userLogin')
-
-    // Đưa trạng thái user về null trong Redux
     dispatch(logoutUser())
     navigate('/')
   }
@@ -29,25 +29,11 @@ export default function HeaderStaff() {
     }
   ]
 
-  const notificationItems: MenuProps['items'] = [
-    {
-      key: '1',
-      label: 'Thông báo 1'
-    },
-    {
-      key: '2',
-      label: 'Thông báo 2'
-    }
-  ]
-
   return (
     <Header className='fixed z-50 flex w-full px-5 bg-white border-b border-gray-200'>
       <div className='flex items-center justify-end gap-3'>
-        <Dropdown menu={{ items: notificationItems }} placement='bottomRight' trigger={['click']}>
-          <Badge count={2} className='mr-4'>
-            <BellOutlined className='cursor-pointer' style={{ fontSize: '24px' }} />
-          </Badge>
-        </Dropdown>
+        {/* Use the NotificationMenu component */}
+        <NotificationMenu />
         <Dropdown menu={{ items }} placement='bottomRight' trigger={['click']} arrow>
           <Avatar
             className='cursor-pointer'
@@ -65,12 +51,6 @@ export default function HeaderStaff() {
         {user === RoleType.CUSTOMER && <span className='font-bold'>Customer</span>}
         {user === RoleType.GUEST && <span className='font-bold'>Guest</span>}
       </div>
-      <Modal footer={null} closable={false}>
-        <div className='flex flex-col items-center justify-center'>
-          <Spin size='large' />
-          <span>Đang đăng xuất...</span>
-        </div>
-      </Modal>
     </Header>
   )
 }

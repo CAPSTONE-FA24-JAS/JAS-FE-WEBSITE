@@ -1,45 +1,58 @@
+import React, { useState, useEffect, useRef } from 'react'
 import { Line } from 'react-chartjs-2'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-} from 'chart.js'
+import { useGetRevenueInYearQuery } from '../../../../../services/dashboard.services'
+import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
 
-// Register required chart.js components
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
+// Đăng ký các thành phần của Chart.js
+Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
 const RevenueChart = () => {
-  // Sample data for the chart: Revenue by month
-  const data = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], // Months
+  const [year, setYear] = useState(2024)
+  const { data: revenueData, isLoading } = useGetRevenueInYearQuery(year)
+
+  const chartRef = useRef<Chart<'line', any, unknown> | null>(null)
+
+  const monthlyRevenue = revenueData?.data.map((item: any) => item.revenue) || Array(12).fill(0)
+
+  const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setYear(parseInt(event.target.value))
+  }
+
+  const chartData = {
+    labels: [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ],
     datasets: [
       {
-        label: 'Revenue', // Label for the revenue line
-        data: [5000, 4500, 5200, 4800, 6000, 6700, 6500, 7200, 7500, 8000, 8500, 9000], // Revenue values for each month
-        borderColor: '#FF0000', // Changed line color to red
-        backgroundColor: 'rgba(255, 0, 0, 0.2)', // Background color for the area under the line, adjusted to a red tint
-        fill: true, // Fill the area under the line (biểu đồ miền)
-        tension: 0.4, // Smoothness of the line
-        pointRadius: 5 // Point size on the line
+        label: 'Revenue',
+        data: monthlyRevenue, // Use revenue data from API response
+        borderColor: '#FF0000',
+        backgroundColor: 'rgba(255, 0, 0, 0.2)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 5
       }
     ]
   }
 
-  // Chart options to customize the appearance
   const options = {
     responsive: true,
     plugins: {
       title: {
         display: true,
-        text: 'Revenue', // Chart title
-        font: {
-          size: 18
-        }
+        text: `Revenue for ${year}`,
+        font: { size: 18 }
       },
       tooltip: {
         callbacks: {
@@ -48,27 +61,39 @@ const RevenueChart = () => {
       }
     },
     scales: {
-      x: {
-        title: {
-          display: true,
-          text: 'Tháng'
-        }
-      },
-      y: {
-        title: {
-          display: true,
-          text: 'Revenue (VND)'
-        },
-        beginAtZero: true // Start the y-axis at 0
-      }
+      x: { title: { display: true, text: 'Month' } },
+      y: { title: { display: true, text: 'Revenue (VND)' }, beginAtZero: true }
     }
   }
 
+  useEffect(() => {
+    if (chartRef.current) {
+      const chartInstance = chartRef.current
+      chartInstance.destroy()
+    }
+  }, [chartData])
+
   return (
-    <div className='p-0 w-2/3 h-screen bg-white'>
-      <Line data={data} options={options} />
+    <div className='p-4 w-2/3  rounded-3xl shadow-xl border border-gray-200 hover:shadow-2xl transition-shadow duration-300'>
+      <div className='flex justify-between items-center'>
+        <div className='flex-1'></div>
+        <select
+          onChange={handleYearChange}
+          value={year}
+          className='ml-auto rounded-lg border-2 bg-gradient-to-r from-gray-400 to-white text-black font-semibold hover:bg-gradient-to-l hover:from-gray-600 hover:to-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-colors duration-300'
+        >
+          <option value={2024}>2024</option>
+        </select>
+      </div>
+
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <div>
+          <Line ref={chartRef} data={chartData} options={options} />
+        </div>
+      )}
     </div>
   )
 }
-
 export default RevenueChart

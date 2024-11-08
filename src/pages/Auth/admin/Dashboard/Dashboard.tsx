@@ -5,15 +5,13 @@ import RevenueChart from './Revenue/Revenue'
 
 export default function Dashboard(): ReactElement {
   return (
-    <Row gutter={[16, 16]} style={{ paddingRight: '10px', paddingLeft: '10px' }}>
-      {/* SaleInfoCards */}
+    <Row gutter={[16, 16]}>
       <Col span={24}>
         <SaleInfoCards />
       </Col>
 
-      {/* Revenue Chart - Positioned below SaleInfoCards */}
       <Col span={24}>
-        <RevenueChart /> {/* Add the chart here */}
+        <RevenueChart />
       </Col>
 
       {/* Optional Space */}

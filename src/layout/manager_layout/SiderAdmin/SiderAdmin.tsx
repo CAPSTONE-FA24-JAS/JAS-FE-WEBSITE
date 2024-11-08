@@ -3,7 +3,7 @@ import { Menu, MenuProps } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import Sider from 'antd/es/layout/Sider'
 import { MdOutlineMenu } from 'react-icons/md'
-import { BarChartOutlined } from '@ant-design/icons'
+import { BarChartOutlined, UserOutlined, AppstoreAddOutlined, SmileOutlined, FileTextOutlined } from '@ant-design/icons'
 import { cn } from '../../../utils/cn'
 
 export default function SiderAdmin() {
@@ -44,12 +44,13 @@ export default function SiderAdmin() {
   const getConditionalItems = (): MenuItem[] => {
     return [
       getItem('OverView', 'overview', <BarChartOutlined />),
-      getItem('Manage Account', 'manageAccount', <BarChartOutlined />, [
-        getItem('Account List', 'accountList', <BarChartOutlined />),
-        getItem('Create Account', 'createAccount', <BarChartOutlined />)
+      getItem('Manage Account', 'manageAccount', <UserOutlined />, [
+        getItem('Account List', 'accountList', <UserOutlined />),
+        getItem('Create Account', 'createAccount', <UserOutlined />)
       ]),
-      getItem('Manage Category', 'category', <BarChartOutlined />),
-      getItem('Manage Artist', 'artist', <BarChartOutlined />)
+      getItem('Manage Category', 'category', <AppstoreAddOutlined />),
+      getItem('Manage Artist', 'artist', <SmileOutlined />),
+      getItem('Manage Blog', 'bloglist', <FileTextOutlined />)
     ]
   }
 
@@ -60,6 +61,7 @@ export default function SiderAdmin() {
     .set('createAccount', '/admin/createAccount')
     .set('category', '/admin/category')
     .set('artist', '/admin/artist')
+    .set('bloglist', '/admin/bloglist')
 
   return (
     <Sider

@@ -122,59 +122,83 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
           <p className='mb-2 text-xl font-bold'>{record?.id}</p>
           <p className='mb-6 text-xl font-bold'>{record?.jewelry?.name}</p>
 
-          <div className='flex mb-4'>
-            <strong className='w-1/3'>Customer Name:</strong>
-            <span>
-              {record?.seller?.firstName} {record?.seller?.lastName}
-            </span>
-          </div>
-          <div className='flex mb-4'>
-            <strong className='w-1/3'>Email:</strong>
-            <span>{record?.seller?.accountDTO?.email}</span>
-          </div>
-          <div className='flex mb-4'>
-            <strong className='w-1/3'>Phone:</strong>
-            <span>{record?.seller?.accountDTO?.phoneNumber}</span>
-          </div>
-          <div className='flex mb-4'>
-            <strong className='w-1/3'>Artist:</strong>
-            <span className=' text-blue-800'>{record?.jewelry?.artist?.name}</span>
-          </div>
-          <div className='flex mb-4'>
-            <strong className='w-1/3'>Category:</strong>
-            <span className=' text-blue-800'>{record?.jewelry?.category?.name}</span>
-          </div>
-          <div className='flex mb-4'>
-            <strong className='w-1/3'>Estimated Price:</strong>
-            <span>
-              {record?.jewelry?.estimatePriceMin} - {record?.jewelry?.estimatePriceMax} VND
-            </span>
-          </div>
-          <div className='flex mb-4'>
-            <strong className='w-1/3'>Starting Price:</strong>
-            <span>{record?.jewelry?.startingPrice} VND</span>
-          </div>
-          <div className='flex mb-4'>
-            <strong className='w-1/3'>Final Price:</strong>
-            <span className='font-bold text-red-800'>{record?.jewelry?.specificPrice} VND</span>
-          </div>
+          {record?.seller?.firstName && record?.seller?.lastName && (
+            <div className='flex mb-4'>
+              <strong className='w-1/3'>Customer Name:</strong>
+              <span>
+                {record?.seller?.firstName} {record?.seller?.lastName}
+              </span>
+            </div>
+          )}
 
-          <div>
-            <strong className='w-full block mb-4'>Key Characteristics</strong>
-            {record?.jewelry?.keyCharacteristicDetails?.map((detail: any) => (
-              <div key={detail.id} className='flex mb-2 ml-10'>
-                <div className='w-1/4 font-medium'>{detail.keyCharacteristic.name}:</div>
-                <span className='w-2/3'>{detail.description}</span>
-              </div>
-            ))}
-          </div>
-          {record?.jewelry?.mainDiamonds?.length > 0 && (
+          {record?.seller?.accountDTO?.email && (
+            <div className='flex mb-4'>
+              <strong className='w-1/3'>Email:</strong>
+              <span>{record?.seller?.accountDTO?.email}</span>
+            </div>
+          )}
+
+          {record?.seller?.accountDTO?.phoneNumber && (
+            <div className='flex mb-4'>
+              <strong className='w-1/3'>Phone:</strong>
+              <span>{record?.seller?.accountDTO?.phoneNumber}</span>
+            </div>
+          )}
+
+          {record?.jewelry?.artist?.name && (
+            <div className='flex mb-4'>
+              <strong className='w-1/3'>Artist:</strong>
+              <span className='text-blue-800'>{record?.jewelry?.artist?.name}</span>
+            </div>
+          )}
+
+          {record?.jewelry?.category?.name && (
+            <div className='flex mb-4'>
+              <strong className='w-1/3'>Category:</strong>
+              <span className='text-blue-800'>{record?.jewelry?.category?.name}</span>
+            </div>
+          )}
+
+          {(record?.jewelry?.estimatePriceMin || record?.jewelry?.estimatePriceMax) && (
+            <div className='flex mb-4'>
+              <strong className='w-1/3'>Estimated Price:</strong>
+              <span>
+                {record?.jewelry?.estimatePriceMin} - {record?.jewelry?.estimatePriceMax} VND
+              </span>
+            </div>
+          )}
+
+          {record?.jewelry?.startingPrice && (
+            <div className='flex mb-4'>
+              <strong className='w-1/3'>Starting Price:</strong>
+              <span>{record?.jewelry?.startingPrice} VND</span>
+            </div>
+          )}
+
+          {record?.jewelry?.specificPrice && (
+            <div className='flex mb-4'>
+              <strong className='w-1/3'>Final Price:</strong>
+              <span className='font-bold text-red-800'>{record?.jewelry?.specificPrice} VND</span>
+            </div>
+          )}
+
+          {record?.jewelry?.keyCharacteristicDetails?.length > 0 && (
             <div>
-              <span className='w-full block mb-4 font-bold'>Main Diamonds</span>
+              <strong className='w-full block mb-4'>Key Characteristics</strong>
+              {record?.jewelry?.keyCharacteristicDetails.map((detail: any) => (
+                <div key={detail.id} className='flex mb-2 ml-10'>
+                  <div className='w-1/4 font-medium'>{detail.keyCharacteristic.name}:</div>
+                  <span className='w-2/3'>{detail.description}</span>
+                </div>
+              ))}
+            </div>
+          )}
 
+          {record?.jewelry?.mainDiamonds?.length && (
+            <div>
+              <div className='w-full block mb-4 font-bold'>Main Diamonds</div>
               {record?.jewelry?.mainDiamonds.map((diamond: any) => (
                 <div key={diamond.id} className='mb-4 ml-10'>
-                  {/* Name */}
                   {diamond.name && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Name:</div>
@@ -182,7 +206,6 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
                     </div>
                   )}
 
-                  {/* Color */}
                   {diamond.color && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Color:</div>
@@ -190,7 +213,6 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
                     </div>
                   )}
 
-                  {/* Cut */}
                   {diamond.cut && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Cut:</div>
@@ -198,7 +220,6 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
                     </div>
                   )}
 
-                  {/* Clarity */}
                   {diamond.clarity && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Clarity:</div>
@@ -206,7 +227,6 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
                     </div>
                   )}
 
-                  {/* Quantity */}
                   {diamond.quantity && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Quantity:</div>
@@ -214,7 +234,6 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
                     </div>
                   )}
 
-                  {/* Setting Type */}
                   {diamond.settingType && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Setting Type:</div>
@@ -222,7 +241,6 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
                     </div>
                   )}
 
-                  {/* Dimension */}
                   {diamond.dimension && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Dimension:</div>
@@ -230,7 +248,6 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
                     </div>
                   )}
 
-                  {/* Shape */}
                   {diamond.shape && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Shape:</div>
@@ -238,7 +255,6 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
                     </div>
                   )}
 
-                  {/* Certificate */}
                   {diamond.certificate && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Certificate:</div>
@@ -271,7 +287,7 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
                               src={image.imageLink}
                               alt={`diamond-image-${index}`}
                               className='mb-2'
-                              style={{ maxWidth: '80px', borderRadius: '15px' }}
+                              style={{ maxWidth: '80px', borderRadius: '15px', border: '6px solid gray' }}
                               preview={{ src: image.imageLink }}
                             />
                           ) : null
@@ -432,37 +448,194 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
             </div>
           )}
 
-          {/* Main Sapphires */}
           {record?.jewelry?.mainShaphies?.length > 0 && (
             <div>
               <span className='w-full block mb-4 font-bold'>Main Sapphires</span>
               {record?.jewelry?.mainShaphies.map((sapphire: any) => (
-                <div key={sapphire.id} className='flex mb-2 ml-10'>
-                  <div className='w-1/4 font-medium'>Name:</div>
-                  <span className='w-2/3'>{sapphire.name}</span>
+                <div key={sapphire.id} className='mb-4 ml-10'>
+                  {sapphire.name && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Name:</div>
+                      <span className='w-2/3'>{sapphire.name}</span>
+                    </div>
+                  )}
+                  {sapphire.color && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Color:</div>
+                      <span className='w-2/3'>{sapphire.color}</span>
+                    </div>
+                  )}
+                  {sapphire.carat && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Carat:</div>
+                      <span className='w-2/3'>{sapphire.carat}</span>
+                    </div>
+                  )}
+                  {sapphire.enhancementType && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Enhancement Type:</div>
+                      <span className='w-2/3'>{sapphire.enhancementType}</span>
+                    </div>
+                  )}
+                  {sapphire.quantity && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Quantity:</div>
+                      <span className='w-2/3'>{sapphire.quantity}</span>
+                    </div>
+                  )}
+                  {sapphire.settingType && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Setting Type:</div>
+                      <span className='w-2/3'>{sapphire.settingType}</span>
+                    </div>
+                  )}
+                  {sapphire.dimension && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Dimension:</div>
+                      <span className='w-2/3'>{sapphire.dimension}</span>
+                    </div>
+                  )}
+                  {sapphire.imageShaphies?.length > 0 && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Images:</div>
+                      <div className='w-2/3'>
+                        {sapphire.imageShaphies.map((image: any, index: number) =>
+                          image.imageLink ? (
+                            <AntImage
+                              key={index}
+                              src={image.imageLink}
+                              alt={`diamond-image-${index}`}
+                              className='mb-2'
+                              style={{ maxWidth: '80px' }}
+                              preview={{ src: image.imageLink }}
+                            />
+                          ) : null
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {sapphire.documentShaphies?.length > 0 && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Documents:</div>
+                      <div className='w-2/3'>
+                        {sapphire.documentShaphies.map((document: any, index: number) =>
+                          document.documentLink ? (
+                            <a
+                              key={index}
+                              href={document.documentLink}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              className='text-blue-500'
+                            >
+                              Document {index + 1}
+                            </a>
+                          ) : null
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           )}
 
-          {/* Secondary Sapphires */}
           {record?.jewelry?.secondaryShaphies?.length > 0 && (
             <div>
               <span className='w-full block mb-4 font-bold'>Secondary Sapphires</span>
               {record?.jewelry?.secondaryShaphies.map((sapphire: any) => (
-                <div key={sapphire.id} className='flex mb-2 ml-10'>
-                  <div className='w-1/4 font-medium'>Name:</div>
-                  <span className='w-2/3'>{sapphire.name}</span>
-                  {/* Các thuộc tính khác của sapphire */}
+                <div key={sapphire.id} className='mb-4 ml-10'>
+                  {sapphire.name && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Name:</div>
+                      <span className='w-2/3'>{sapphire.name}</span>
+                    </div>
+                  )}
+                  {sapphire.color && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Color:</div>
+                      <span className='w-2/3'>{sapphire.color}</span>
+                    </div>
+                  )}
+                  {sapphire.carat && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Carat:</div>
+                      <span className='w-2/3'>{sapphire.carat}</span>
+                    </div>
+                  )}
+                  {sapphire.enhancementType && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Enhancement Type:</div>
+                      <span className='w-2/3'>{sapphire.enhancementType}</span>
+                    </div>
+                  )}
+                  {sapphire.quantity && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Quantity:</div>
+                      <span className='w-2/3'>{sapphire.quantity}</span>
+                    </div>
+                  )}
+                  {sapphire.settingType && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Setting Type:</div>
+                      <span className='w-2/3'>{sapphire.settingType}</span>
+                    </div>
+                  )}
+                  {sapphire.dimension && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Dimension:</div>
+                      <span className='w-2/3'>{sapphire.dimension}</span>
+                    </div>
+                  )}
+                  {sapphire.imageShaphies?.length > 0 && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Images:</div>
+                      <div className='w-2/3'>
+                        {sapphire.imageShaphies.map((image: any, index: number) =>
+                          image.imageLink ? (
+                            <AntImage
+                              key={index}
+                              src={image.imageLink}
+                              alt={`diamond-image-${index}`}
+                              className='mb-2'
+                              style={{ maxWidth: '80px' }}
+                              preview={{ src: image.imageLink }}
+                            />
+                          ) : null
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {sapphire.documentShaphies?.length > 0 && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Documents:</div>
+                      <div className='w-2/3'>
+                        {sapphire.documentShaphies.map((document: any, index: number) =>
+                          document.documentLink ? (
+                            <a
+                              key={index}
+                              href={document.documentLink}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              className='text-blue-500'
+                            >
+                              Document {index + 1}
+                            </a>
+                          ) : null
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           )}
 
-          <div className='flex mb-4'>
-            <strong className='w-1/3'>Status:</strong>
-            <span className='font-bold text-red-800'>{record?.status}</span>
-          </div>
+          {record?.status && (
+            <div className='flex mb-4'>
+              <strong className='w-1/3'>Status:</strong>
+              <span className='font-bold text-red-800'>{record?.status}</span>
+            </div>
+          )}
 
           {record?.status === 'FinalValuated' && (
             <>

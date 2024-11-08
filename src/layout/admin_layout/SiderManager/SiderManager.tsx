@@ -45,6 +45,7 @@ export default function SiderManager() {
 
   const getConditionalItems = (): MenuItem[] => {
     return [
+      getItem('Dashboard', 'dashboard', <RiMoneyDollarCircleLine className='text-base' />),
       getItem('Transaction', 'transaction', <RiMoneyDollarCircleLine className='text-base' />),
       getItem('View request Consign', 'managerConsign', <HiOutlineDocument className='text-base' />),
       getItem('Valuation Manage', 'manageValuation', <MdAssessment className='text-base' />, [
@@ -60,6 +61,7 @@ export default function SiderManager() {
 
   const navUrl = new Map<string, string>()
   navUrl
+    .set('dashboard', '/manager/dashboard')
     .set('transaction', '/manager/transaction')
     .set('managerConsign', '/manager/ConsignList')
     .set('requestvaluation', '/manager/requestfinal')

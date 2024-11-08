@@ -52,7 +52,6 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
 
   const [documentFiles, setDocumentFiles] = useState<ImageFilesUpload>({})
 
-  // Thêm state để theo dõi trạng thái hiển thị của từng loại gemstone
   const [visibleGemstones, setVisibleGemstones] = useState<{
     [key: string]: boolean
   }>({
@@ -207,14 +206,12 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
     data: (MainDiamond | SecondaryDiamond | MainShaphy | SecondaryShaphy)[],
     type: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies'
   ) => {
-    const isDiamondType =
-      type === 'mainDiamonds' || type === 'secondaryDiamonds' || type === 'mainShaphies' || type === 'secondaryShaphies'
+    const isDiamondType = type === 'mainDiamonds' || type === 'secondaryDiamonds'
     const fields = isDiamondType ? diamondFields : shaphyFields
-
     return data.map((detail, index) => {
       return (
         <div key={index} className='border p-4 mb-4 rounded'>
-          <h4 className='text-lg font-semibold '>{`${index + 1}`}</h4>
+          <h4 className='text-lg font-semibold'>{`${type} ${index + 1}`}</h4>
           <div className='grid grid-cols-2 gap-4'>
             {fields.map(({ label, key, placeholder }) => (
               <div key={key}>
@@ -226,7 +223,7 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
                   onChange={(e) => {
                     handleGemstoneChange(type, index, key as keyof typeof detail, e.target.value)
                   }}
-                  className='w-full border border-gray-300 p-2 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 custom-input-placeholder'
+                  className='border rounded p-2 w-full'
                 />
               </div>
             ))}
