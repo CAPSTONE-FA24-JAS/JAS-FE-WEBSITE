@@ -26,12 +26,12 @@ export const dashboardApi = createApi({
     }),
     getRevenueInYear: build.query({
       query: (year: number) => `DashBoard/DashBoardRevenueInYear?year=${year}`
+    }),
+    getInvoiceInYear: build.query({
+      query: (year: number) => `DashBoard/DashBoardInvoiceInYear?year=${year}`
     })
   })
 })
 
-export const {
-  useGetTotalInvoiceQuery,
-  useGetTotalRevenueQuery,
-  useGetRevenueInYearQuery // Export the new hook for use in components
-} = dashboardApi
+export const { useGetTotalInvoiceQuery, useGetTotalRevenueQuery, useGetRevenueInYearQuery, useGetInvoiceInYearQuery } =
+  dashboardApi
