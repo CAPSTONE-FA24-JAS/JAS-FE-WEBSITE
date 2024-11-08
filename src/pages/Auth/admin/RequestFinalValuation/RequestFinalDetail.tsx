@@ -34,7 +34,7 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
   } = useGetValuationByIdQuery({ id: recordId })
   console.log('Valuation Data: ', valuationData)
 
-  const images = valuationData?.data?.imageValuations?.map((img: any) => img.imageLink) || [
+  const images = valuationData?.data?.jewelry?.imageJewelries?.map((img: any) => img.imageLink) || [
     'https://via.placeholder.com/150?text=No+Image'
   ]
 
@@ -467,9 +467,88 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
             <div>
               <span className='w-full block mb-4 font-bold'>Main Sapphires</span>
               {valuationData?.data?.jewelry?.mainShaphies.map((sapphire: any) => (
-                <div key={sapphire.id} className='flex mb-2 ml-10'>
-                  <div className='w-1/4 font-medium'>Name:</div>
-                  <span className='w-2/3'>{sapphire.name}</span>
+                <div key={sapphire.id} className='mb-4 ml-10'>
+                  {sapphire.name && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Name:</div>
+                      <span className='w-2/3'>{sapphire.name}</span>
+                    </div>
+                  )}
+                  {sapphire.color && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Color:</div>
+                      <span className='w-2/3'>{sapphire.color}</span>
+                    </div>
+                  )}
+                  {sapphire.carat && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Carat:</div>
+                      <span className='w-2/3'>{sapphire.carat}</span>
+                    </div>
+                  )}
+                  {sapphire.enhancementType && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Enhancement Type:</div>
+                      <span className='w-2/3'>{sapphire.enhancementType}</span>
+                    </div>
+                  )}
+                  {sapphire.quantity && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Quantity:</div>
+                      <span className='w-2/3'>{sapphire.quantity}</span>
+                    </div>
+                  )}
+                  {sapphire.settingType && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Setting Type:</div>
+                      <span className='w-2/3'>{sapphire.settingType}</span>
+                    </div>
+                  )}
+                  {sapphire.dimension && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Dimension:</div>
+                      <span className='w-2/3'>{sapphire.dimension}</span>
+                    </div>
+                  )}
+                  {sapphire.imageShaphies?.length > 0 && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Images:</div>
+                      <div className='w-2/3'>
+                        {sapphire.imageShaphies.map((image: any, index: number) =>
+                          image.imageLink ? (
+                            <AntImage
+                              key={index}
+                              src={image.imageLink}
+                              alt={`diamond-image-${index}`}
+                              className='mb-2'
+                              style={{ maxWidth: '80px' }}
+                              preview={{ src: image.imageLink }}
+                            />
+                          ) : null
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {sapphire.documentShaphies?.length > 0 && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Documents:</div>
+                      <div className='w-2/3'>
+                        {sapphire.documentShaphies.map((document: any, index: number) =>
+                          document.documentLink ? (
+                            <a
+                              key={index}
+                              href={document.documentLink}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              className='text-blue-500'
+                            >
+                              Document {index + 1}
+                            </a>
+                          ) : null
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -480,10 +559,88 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
             <div>
               <span className='w-full block mb-4 font-bold'>Secondary Sapphires</span>
               {valuationData?.data?.jewelry?.secondaryShaphies.map((sapphire: any) => (
-                <div key={sapphire.id} className='flex mb-2 ml-10'>
-                  <div className='w-1/4 font-medium'>Name:</div>
-                  <span className='w-2/3'>{sapphire.name}</span>
-                  {/* Các thuộc tính khác của sapphire */}
+                <div key={sapphire.id} className='mb-4 ml-10'>
+                  {sapphire.name && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Name:</div>
+                      <span className='w-2/3'>{sapphire.name}</span>
+                    </div>
+                  )}
+                  {sapphire.color && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Color:</div>
+                      <span className='w-2/3'>{sapphire.color}</span>
+                    </div>
+                  )}
+                  {sapphire.carat && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Carat:</div>
+                      <span className='w-2/3'>{sapphire.carat}</span>
+                    </div>
+                  )}
+                  {sapphire.enhancementType && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Enhancement Type:</div>
+                      <span className='w-2/3'>{sapphire.enhancementType}</span>
+                    </div>
+                  )}
+                  {sapphire.quantity && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Quantity:</div>
+                      <span className='w-2/3'>{sapphire.quantity}</span>
+                    </div>
+                  )}
+                  {sapphire.settingType && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Setting Type:</div>
+                      <span className='w-2/3'>{sapphire.settingType}</span>
+                    </div>
+                  )}
+                  {sapphire.dimension && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Dimension:</div>
+                      <span className='w-2/3'>{sapphire.dimension}</span>
+                    </div>
+                  )}
+                  {sapphire.imageShaphies?.length > 0 && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Images:</div>
+                      <div className='w-2/3'>
+                        {sapphire.imageShaphies.map((image: any, index: number) =>
+                          image.imageLink ? (
+                            <AntImage
+                              key={index}
+                              src={image.imageLink}
+                              alt={`diamond-image-${index}`}
+                              className='mb-2'
+                              style={{ maxWidth: '80px' }}
+                              preview={{ src: image.imageLink }}
+                            />
+                          ) : null
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {sapphire.documentShaphies?.length > 0 && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Documents:</div>
+                      <div className='w-2/3'>
+                        {sapphire.documentShaphies.map((document: any, index: number) =>
+                          document.documentLink ? (
+                            <a
+                              key={index}
+                              href={document.documentLink}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              className='text-blue-500'
+                            >
+                              Document {index + 1}
+                            </a>
+                          ) : null
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

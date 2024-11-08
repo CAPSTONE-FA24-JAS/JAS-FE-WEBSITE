@@ -15,6 +15,7 @@ interface ConsignDetailProps {
 const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, record, setStatus, refetch }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [updateStatus] = useUpdatePreliminaryValuationStatusMutation() // Use the mutation
+  const [isLoading, setIsLoading] = useState(false) // Thêm state để quản lý loading
 
   const images = record?.imageValuations?.map((img: any) => img.imageLink) || [
     'https://via.placeholder.com/150?text=No+Image'
@@ -29,6 +30,7 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, reco
   }
 
   const handleUpdateStatus = async () => {
+    setIsLoading(true) // Bắt đầu loading
     try {
       const response = await updateStatus({ id: record.id, status: 2 }).unwrap()
       notification.success({
@@ -40,6 +42,8 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, reco
       notification.error({
         message: 'Status Update Failed'
       })
+    } finally {
+      setIsLoading(false) // Kết thúc loading
     }
   }
 
@@ -52,7 +56,7 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, reco
         <Button key='cancel' onClick={onCancel}>
           Cancel
         </Button>,
-        <Button key='update' type='primary' onClick={handleUpdateStatus}>
+        <Button key='update' type='primary' onClick={handleUpdateStatus} loading={isLoading}>
           Request
         </Button>
       ]}

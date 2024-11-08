@@ -1,17 +1,18 @@
-// src/components/HeaderStaff.tsx
-
-import { Avatar, Dropdown, MenuProps } from 'antd'
+import { Avatar, Dropdown, MenuProps, Spin } from 'antd'
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { logoutUser, RoleType } from '../../../slice/authLoginAPISlice'
 import { RootState } from '../../../store'
-import NotificationMenu from './NotificationMenu' // Import NotificationMenu component
+import NotificationMenu from './NotificationMenu'
 import { Header } from 'antd/es/layout/layout'
+import React, { useState, useEffect } from 'react'
 
 export default function HeaderStaff() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+
+  const [isLoading, setIsLoading] = useState(true) // Track the loading state for notifications
 
   const handleLogout = () => {
     localStorage.removeItem('userLogin')
@@ -19,7 +20,15 @@ export default function HeaderStaff() {
     navigate('/')
   }
 
-  const user = useSelector((state: RootState) => state.authLoginAPI.roleId)
+  // Retrieve staffId and roleId from Redux or localStorage as a fallback
+  const user = useSelector((state: RootState) => state.authLoginAPI)
+  const staffId = user?.id || JSON.parse(localStorage.getItem('userLogin') || '{}').id
+  const roleId = user?.roleId
+
+  // Update loading state after the notifications are loaded
+  useEffect(() => {
+    setIsLoading(false) // Set loading to false once notifications have loaded
+  }, [])
 
   const items: MenuProps['items'] = [
     {
@@ -32,24 +41,23 @@ export default function HeaderStaff() {
   return (
     <Header className='fixed z-50 flex w-full px-5 bg-white border-b border-gray-200'>
       <div className='flex items-center justify-end gap-3'>
-        {/* Use the NotificationMenu component */}
-        <NotificationMenu />
+        {isLoading ? <Spin className='mr-4' /> : <NotificationMenu accountId={staffId} />}
         <Dropdown menu={{ items }} placement='bottomRight' trigger={['click']} arrow>
           <Avatar
             className='cursor-pointer'
-            size={'large'}
+            size='large'
             icon={<UserOutlined />}
             src={
               'https://t.vietgiaitri.com/2021/4/8/tham-tu-lung-danh-conan-nhung-tay-ban-tia-thien-xa-trong-conan-ai-se-gop-mat-tai-phan-phim-moi-nhat-f81-5724169.jpeg'
             }
           />
         </Dropdown>
-        {user === RoleType.ADMIN && <span className='font-bold'>Admin</span>}
-        {user === RoleType.MANAGER && <span className='font-bold'>Manager</span>}
-        {user === RoleType.STAFFC && <span className='font-bold'>Staff</span>}
-        {user === RoleType.APPRAISER && <span className='font-bold'>Appraiser</span>}
-        {user === RoleType.CUSTOMER && <span className='font-bold'>Customer</span>}
-        {user === RoleType.GUEST && <span className='font-bold'>Guest</span>}
+        {roleId === RoleType.ADMIN && <span className='font-bold'>Admin</span>}
+        {roleId === RoleType.MANAGER && <span className='font-bold'>Manager</span>}
+        {roleId === RoleType.STAFFC && <span className='font-bold'>Staff</span>}
+        {roleId === RoleType.APPRAISER && <span className='font-bold'>Appraiser</span>}
+        {roleId === RoleType.CUSTOMER && <span className='font-bold'>Customer</span>}
+        {roleId === RoleType.GUEST && <span className='font-bold'>Guest</span>}
       </div>
     </Header>
   )

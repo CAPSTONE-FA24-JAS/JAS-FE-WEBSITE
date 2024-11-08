@@ -141,6 +141,7 @@ export default function CreateFinalValuation() {
 
   const [currentStep, setCurrentStep] = useState(0)
   const [createFinalValuation] = useCreateFinalValuationMutation()
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const updatedGemstoneDataArray = gemstoneDataArray.map((gem) => {
@@ -352,6 +353,7 @@ export default function CreateFinalValuation() {
   }
 
   const handleSubmit = async () => {
+    setIsLoading(true)
     try {
       const formDataToSend = new FormData()
       formDataToSend.append('name', formData.name || '')
@@ -461,6 +463,8 @@ export default function CreateFinalValuation() {
       message.success('Tạo đánh giá cuối cùng thành công!')
     } catch (error) {
       console.error('Yêu cầu API thất bại:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -550,6 +554,7 @@ export default function CreateFinalValuation() {
           <Button
             type='primary'
             onClick={handleSubmit}
+            loading={isLoading}
             className='bg-blue-500 text-white text-sm hover:bg-blue-900 shadow-2xl relative overflow-hidden transition-colors duration-300'
             style={{
               boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
