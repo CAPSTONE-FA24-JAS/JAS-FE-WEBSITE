@@ -74,16 +74,28 @@ export function useBidding(): UseBiddingResult {
       'SendBiddingPriceForStaff',
       (customerId: string, firstName: string, lastName: string, price: string, bidtime: string) => {
         console.log(`Current price updated: ${price} at ${bidtime} by ${firstName} ${lastName}`)
-        setMessages((prev) => [
-          ...prev,
-          {
-            customerId,
-            firstName,
-            lastName,
-            currentPrice: Number(price),
-            bidTime: bidtime
-          }
-        ])
+        if (messages.length > 0) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              customerId,
+              firstName,
+              lastName,
+              currentPrice: Number(price),
+              bidTime: bidtime
+            }
+          ])
+        } else {
+          setMessages([
+            {
+              customerId,
+              firstName,
+              lastName,
+              currentPrice: Number(price),
+              bidTime: bidtime
+            }
+          ])
+        }
       }
     )
 

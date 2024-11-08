@@ -13,7 +13,7 @@ import {
 } from '../../../../services/lot.services'
 import { CreateLot, ListLot } from '../../../../types/Lot.type'
 import { useGetAuctionByIdQuery } from '../../../../services/auction.services'
-import { parseDate } from '../../../../utils/convertTypeDayjs'
+import { parseDate, parsePriceVND } from '../../../../utils/convertTypeDayjs'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../../../store'
 import { RoleType } from '../../../../slice/authLoginAPISlice'
@@ -58,26 +58,26 @@ const LotList = () => {
         return <Link to={linkPath}>{text}</Link>
       }
     },
-    { title: 'Start Price', dataIndex: 'startPrice', key: 'startPrice', render: (value) => `${value}` },
+    { title: 'Start Price', dataIndex: 'startPrice', key: 'startPrice', render: (value) => parsePriceVND(value) },
     {
-      title: 'Final Price Sold',
+      title: 'Buy Now Price',
       dataIndex: 'finalPriceSold',
       key: 'finalPriceSold',
-      render: (value) => `$${value}`
+      render: (value) => parsePriceVND(value)
     },
 
     {
       title: 'Bid Increment',
       dataIndex: 'bidIncrement',
       key: 'bidIncrement',
-      render: (value) => `$${value}`
+      render: (value) => parsePriceVND(value)
     },
-    { title: 'Deposit', dataIndex: 'deposit', key: 'deposit', render: (value) => `$${value}` },
+    { title: 'Deposit', dataIndex: 'deposit', key: 'deposit', render: (value) => parsePriceVND(value) },
     {
-      title: 'Buy Now Price',
+      title: 'Buy Now Price(for method 1)',
       dataIndex: 'buyNowPrice',
       key: 'buyNowPrice',
-      render: (value) => `${value ? value : ''}`
+      render: (value) => parsePriceVND(value)
     },
 
     {

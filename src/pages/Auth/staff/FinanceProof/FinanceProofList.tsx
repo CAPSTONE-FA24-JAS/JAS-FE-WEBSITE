@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useGetFinanceProofsQuery } from '../../../../services/financeProof.services'
 import { FinanceProof } from '../../../../types/FinanceProof.type'
 import FinancialProofModal from './modal/FinanceProofModal'
-import { parseDate } from '../../../../utils/convertTypeDayjs'
+import { parseDate, parsePriceVND } from '../../../../utils/convertTypeDayjs'
 
 const FinanceProofList = () => {
   const [searchText, setSearchText] = useState<string>('')
@@ -40,7 +40,8 @@ const FinanceProofList = () => {
     {
       title: 'Price Limit',
       dataIndex: 'priceLimit',
-      key: 'priceLimit'
+      key: 'priceLimit',
+      render: (value) => parsePriceVND(value)
     },
     {
       title: 'Start Date',
