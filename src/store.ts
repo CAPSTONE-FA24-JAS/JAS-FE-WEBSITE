@@ -19,6 +19,7 @@ import { manageInvoice } from './services/invoice.services'
 import { overviewApi } from './services/overview.services'
 import { manageotherApi } from './services/manageother.services'
 import { dashboardApi } from './services/dashboard.services'
+import { notiApi } from './services/notification.services'
 
 // Tạo cấu hình persist
 export const persistConfig = {
@@ -47,7 +48,8 @@ const rootReducer = combineReducers({
   [manageInvoice.reducerPath]: manageInvoice.reducer,
   [overviewApi.reducerPath]: overviewApi.reducer,
   [manageotherApi.reducerPath]: manageotherApi.reducer,
-  [dashboardApi.reducerPath]: dashboardApi.reducer
+  [dashboardApi.reducerPath]: dashboardApi.reducer,
+  [notiApi.reducerPath]: notiApi.reducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -78,6 +80,7 @@ export const store = configureStore({
       .concat(overviewApi.middleware)
       .concat(manageotherApi.middleware)
       .concat(dashboardApi.middleware)
+      .concat(notiApi.middleware)
 })
 
 export type RootState = ReturnType<typeof store.getState>
