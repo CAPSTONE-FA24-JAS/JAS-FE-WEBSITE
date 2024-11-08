@@ -1,8 +1,8 @@
-import React from 'react'
 import { useViewCompanyTransactionsQuery } from '../../../../services/overview.services'
 import { Table, Tag, Typography } from 'antd'
 import moment from 'moment'
 import type { Key } from 'antd/es/table/interface' // Import Key type
+import { parsePriceVND } from '../../../../utils/convertTypeDayjs'
 
 const { Text } = Typography
 
@@ -15,8 +15,8 @@ interface Transaction {
 function TransactionsComponent() {
   const { data, error, isLoading } = useViewCompanyTransactionsQuery(undefined)
 
-  if (isLoading) return <p className='text-center text-lg py-4'>Loading transactions...</p>
-  if (error) return <p className='text-center text-lg text-red-500 py-4'>Error loading transactions.</p>
+  if (isLoading) return <p className='py-4 text-lg text-center'>Loading transactions...</p>
+  if (error) return <p className='py-4 text-lg text-center text-red-500'>Error loading transactions.</p>
 
   const transactions: Transaction[] = data?.data || []
 
@@ -41,10 +41,7 @@ function TransactionsComponent() {
       align: 'center' as 'left' | 'right' | 'center',
       render: (amount: number) => (
         <Text className={`font-semibold ${amount < 0 ? 'text-red-600' : 'text-green-600'}`}>
-          {amount.toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD'
-          })}
+          {parsePriceVND(amount)}
         </Text>
       )
     },
@@ -60,7 +57,7 @@ function TransactionsComponent() {
 
   return (
     <div>
-      <h2 className='text-2xl font-bold mb-4'>Transaction History</h2>
+      <h2 className='mb-4 text-2xl font-bold'>Transaction History</h2>
       <Table
         columns={columns}
         dataSource={transactions}
@@ -69,7 +66,7 @@ function TransactionsComponent() {
           pageSize: 8,
           showSizeChanger: true
         }}
-        className='rounded-lg border'
+        className='border rounded-lg'
         rowClassName='hover:bg-gray-50 transition-colors duration-200'
         scroll={{ x: true }}
       />
