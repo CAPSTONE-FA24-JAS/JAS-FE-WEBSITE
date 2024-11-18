@@ -39,6 +39,7 @@ import RequestConsignDetail from '../pages/Auth/admin/RequestConsign/RequestCons
 import Dashboard from '../pages/Auth/admin/Dashboard/Dashboard'
 import BlogTable from '../pages/Auth/manager/Blog/BlogList'
 import CreateBlogPage from '../pages/Auth/manager/Blog/CreateBlog'
+import BlogDetail from '../pages/Auth/manager/Blog/BlogDetail'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -87,7 +88,8 @@ const adminRoutes: RouteProps[] = [
   { path: '/admin/createAccount', component: CreateAccount, layout: AdminLayout },
   { path: '/admin/category', component: CategoriesComponent, layout: AdminLayout },
   { path: '/admin/artist', component: ArtistList, layout: AdminLayout },
-  { path: '/admin/bloglist', component: BlogTable, layout: AdminLayout }
+  { path: '/admin/bloglist', component: BlogTable, layout: AdminLayout },
+  { path: '/admin/blog/:id', component: BlogDetail, layout: AdminLayout }
 ]
 
 const staffCRoutes: RouteProps[] = [

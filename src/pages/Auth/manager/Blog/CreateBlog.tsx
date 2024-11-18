@@ -1,20 +1,20 @@
-import React, { useState } from 'react'
-import { Form, Input, Button, Upload, message, DatePicker, Space } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
+import { Button, DatePicker, Form, Input, Space, Upload } from 'antd'
 import { RcFile } from 'antd/es/upload/interface'
-import moment, { Moment } from 'moment' // Import moment for date handling
+import { Moment } from 'moment'
+import { useState } from 'react'
 import ReactQuill from 'react-quill'
-import 'react-quill/dist/quill.snow.css' // import styles for the toolbar
+import 'react-quill/dist/quill.snow.css'
 
 const CreateBlogPage = () => {
   const [form] = Form.useForm()
-  const [image, setImage] = useState<RcFile | null>(null) // Use RcFile type for image
-  const [createDate, setCreateDate] = useState<Moment | null>(null) // Use Moment type for date
-  const [content, setContent] = useState('') // State for rich text editor content
+  const [image, setImage] = useState<RcFile | null>(null)
+  const [createDate, setCreateDate] = useState<Moment | null>(null)
+  const [content, setContent] = useState('')
 
   const handleImageUpload = (file: RcFile) => {
     setImage(file)
-    return false // Prevent automatic upload to server
+    return false
   }
 
   // const handleCreateBlog = (values: any) => {

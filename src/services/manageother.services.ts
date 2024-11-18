@@ -52,6 +52,80 @@ interface CreateArtistRequest {
   name: string // Define the structure of the request payload for creating an artist
 }
 
+interface Blog {
+  id: number
+  title: string
+  content: string
+  date: string
+}
+
+interface BlogsResponse {
+  code: number
+  message: string
+  isSuccess: boolean
+  data: Blog[] // Specify that 'data' is an array of Blog
+  errorMessages: string | null
+}
+
+interface TopJewelryAuction {
+  id: number
+  name: string
+  price: number
+  imageUrl: string
+  description: string
+}
+
+interface TopJewelryAuctionsResponse {
+  code: number
+  message: string
+  isSuccess: boolean
+  data: TopJewelryAuction[]
+  errorMessages: string | null
+}
+
+interface AccountDTO {
+  id: number
+  email: string
+  phoneNumber: string
+  roleId: number
+  roleName: string
+}
+
+interface CustomerDTO {
+  id: number
+  firstName: string
+  lastName: string
+  profilePicture: string
+  gender: string
+  dateOfBirth: string
+  address: string
+  citizenIdentificationCard: string
+  idIssuanceDate: string
+  idExpirationDate: string
+  priceLimit: number
+  expireDate: string
+  walletId: number
+  walletDTO: {
+    id: number
+    balance: number | null
+    availableBalance: number | null
+  }
+  accountDTO: AccountDTO
+}
+
+interface TopSeller {
+  customerDTO: CustomerDTO
+  totalSellerValuation: number
+}
+
+interface TopSellersResponse {
+  code: number
+  message: string
+  isSuccess: boolean
+  data: TopSeller[] // Array of TopSeller data
+  errorMessages: string | null
+}
+
 export const manageotherApi = createApi({
   reducerPath: 'manageotherApi',
   baseQuery: fetchBaseQuery({
@@ -69,28 +143,48 @@ export const manageotherApi = createApi({
   refetchOnMountOrArgChange: true,
   endpoints: (build) => ({
     viewCategories: build.query<CategoriesResponse, void>({
-      query: () => 'Categories/ViewCategories' // Relative URL
+      query: () => 'Categories/ViewCategories'
     }),
     createCategory: build.mutation<CreateCategoryResponse, CreateCategoryRequest>({
       query: (newCategory) => ({
-        url: 'Categories/CreateCategory', // Relative URL
+        url: 'Categories/CreateCategory',
         method: 'POST',
-        body: newCategory // The payload containing the category name
+        body: newCategory
       })
     }),
     viewArtists: build.query<ArtistsResponse, void>({
-      query: () => 'Artists/ViewArtists' // Relative URL to view artists
+      query: () => 'Artists/ViewArtists'
     }),
     createArtist: build.mutation<CreateArtistResponse, CreateArtistRequest>({
       query: (newArtist) => ({
-        url: 'Artists/CreateArtist', // Assuming a relative URL for creating an artist
+        url: 'Artists/CreateArtist',
         method: 'POST',
-        body: newArtist // The payload containing the artist name
+        body: newArtist
       })
+    }),
+    viewBlogs: build.query<BlogsResponse, void>({
+      query: () => 'Blog/ViewListBlog'
+    }),
+    viewBlogDetail: build.query({
+      query: (blogId) => `Blog/ViewDetailBlog?blogId=${blogId}`
+    }),
+    viewTopJewelryAuctions: build.query<TopJewelryAuctionsResponse, void>({
+      query: () => 'DashBoard/TopFiveJewelryAuctions'
+    }),
+    // New endpoint for Top Five Sellers
+    viewTopSellers: build.query<TopSellersResponse, void>({
+      query: () => 'DashBoard/TopFiveSellers'
     })
   })
 })
 
-// Export the hooks to use these queries and mutations
-export const { useViewCategoriesQuery, useCreateCategoryMutation, useViewArtistsQuery, useCreateArtistMutation } =
-  manageotherApi
+export const {
+  useViewCategoriesQuery,
+  useCreateCategoryMutation,
+  useViewArtistsQuery,
+  useCreateArtistMutation,
+  useViewBlogsQuery,
+  useViewBlogDetailQuery,
+  useViewTopJewelryAuctionsQuery,
+  useViewTopSellersQuery // Export the hook for Top Sellers
+} = manageotherApi

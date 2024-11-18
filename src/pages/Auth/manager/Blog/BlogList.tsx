@@ -1,60 +1,46 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Table, Button, Image, Modal, Tooltip } from 'antd'
 import { DeleteOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons'
+import { useNavigate } from 'react-router-dom'
 import CreateBlogPage from './CreateBlog'
+import { useViewBlogsQuery } from '../../../../services/manageother.services'
+
+type Blog = {
+  id: number
+  image: string
+  nameBlog: string
+  createDate: string
+}
 
 const BlogTable = () => {
-  const [blogs, setBlogs] = useState([
-    {
-      id: 1,
-      image: 'https://via.placeholder.com/100',
-      nameBlog: 'Blog Post 1',
-      createDate: '2024-11-01'
-    },
-    {
-      id: 2,
-      image: 'https://via.placeholder.com/100',
-      nameBlog: 'Blog Post 2',
-      createDate: '2024-11-02'
-    },
-    {
-      id: 3,
-      image: 'https://via.placeholder.com/100',
-      nameBlog: 'Blog Post 3',
-      createDate: '2024-11-03'
-    },
-    {
-      id: 4,
-      image: 'https://via.placeholder.com/100',
-      nameBlog: 'Blog Post 4',
-      createDate: '2024-11-04'
-    },
-    {
-      id: 5,
-      image: 'https://via.placeholder.com/100',
-      nameBlog: 'Blog Post 5',
-      createDate: '2024-11-05'
+  const [blogs, setBlogs] = useState<Blog[]>([])
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const navigate = useNavigate()
+
+  const { data, error, isLoading } = useViewBlogsQuery()
+
+  useEffect(() => {
+    if (data?.isSuccess && data?.data) {
+      const formattedBlogs: Blog[] = data.data.map((blog: any) => ({
+        id: blog.id,
+        image: blog.imageBlogDTOs?.[0]?.imageLink,
+        nameBlog: blog.title,
+        createDate: new Date().toLocaleDateString()
+      }))
+      setBlogs(formattedBlogs)
     }
-  ])
+  }, [data])
 
-  const [isModalVisible, setIsModalVisible] = useState(false) // State for modal visibility
-
-  const handleView = (id: any) => {
-    console.log('Viewing blog with ID:', id)
-  }
-
-  const handleDelete = (id: any) => {
-    const updatedBlogs = blogs.filter((blog) => blog.id !== id)
-    setBlogs(updatedBlogs)
-    console.log('Deleted blog with ID:', id)
+  const handleView = (id: number) => {
+    navigate(`/admin/blog/${id}`)
   }
 
   const handleCreate = () => {
-    setIsModalVisible(true) // Open the modal
+    setIsModalVisible(true)
   }
 
   const handleCancel = () => {
-    setIsModalVisible(false) // Close the modal
+    setIsModalVisible(false)
   }
 
   const columns = [
@@ -62,13 +48,13 @@ const BlogTable = () => {
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
-      width: '20%' // Ensure each column takes equal width
+      width: '20%'
     },
     {
       title: 'Image',
       dataIndex: 'image',
       key: 'image',
-      render: (image: any) => <Image src={image} alt='Blog Image' width={50} height={50} />,
+      render: (image: string) => <Image src={image} alt='Blog Image' width={50} height={50} />,
       width: '20%'
     },
     {
@@ -92,13 +78,21 @@ const BlogTable = () => {
             <Button icon={<EyeOutlined />} onClick={() => handleView(record.id)} className='mr-2' />
           </Tooltip>
           <Tooltip title='Delete Blog'>
-            <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)} danger />
+            <Button icon={<DeleteOutlined />} />
           </Tooltip>
         </div>
       ),
       width: '20%'
     }
   ]
+
+  if (isLoading) {
+    return <div>Loading blogs...</div>
+  }
+
+  if (error) {
+    return <div>Error loading blogs</div>
+  }
 
   return (
     <div className='container mx-auto'>
