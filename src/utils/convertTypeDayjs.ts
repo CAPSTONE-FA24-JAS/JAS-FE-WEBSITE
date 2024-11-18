@@ -71,3 +71,13 @@ export const convertArrayImages = (item: LotDetail): string[] => {
 
   return images.filter(Boolean) // loại bỏ các thành phần rỗng hoặc undefined null ""
 }
+
+export const parsePriceVND = (price: number) => {
+  if (!price) {
+    return price
+  }
+  if (typeof price === 'string') {
+    return Number(price).toLocaleString('en-US', { style: 'currency', currency: 'VND' })
+  }
+  return price.toLocaleString('en-US', { style: 'currency', currency: 'VND' })
+}

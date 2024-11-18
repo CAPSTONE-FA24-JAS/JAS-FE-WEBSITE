@@ -15,14 +15,23 @@ const ValuationTabs = () => {
 
   useEffect(() => {
     const tabKey = queryParams.get('tab') || '1'
+    const modalVisible = queryParams.get('modal') === 'true'
+    const recordId = queryParams.get('recordId')
+
     setActiveTabKey(tabKey)
+
+    // Open modal in FinalValuationTab if tab 2 and modal=true are present in the URL
+    if (tabKey === '2' && modalVisible && recordId) {
+      setSelectedFinalRecord({ id: recordId }) // Mock record, retrieve actual record if needed
+      setFinalModalVisible(true)
+    }
   }, [location.search])
 
   const [searchText, setSearchText] = useState<string>('')
   const [selectedRecord, setSelectedRecord] = useState<any>(null)
   const [selectedRecord1, setSelectedRecord1] = useState<any>(null)
   const [selectedFinalRecord, setSelectedFinalRecord] = useState<any>(null)
-  const [_, setConfirmationVisible] = useState<boolean>(false)
+  const [confirmationVisible, setConfirmationVisible] = useState<boolean>(false)
   const [modalVisible, setModalVisible] = useState<boolean>(false)
   const [finalModalVisible, setFinalModalVisible] = useState<boolean>(false)
 
