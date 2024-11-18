@@ -83,13 +83,30 @@ export default function SiderStaff() {
       width={256}
     >
       <div className='border-r-[1px] border-gray-200'>
-        <div className={cn('mx-auto text-center mb-6 mt-6 pb-6', { hidden: collapsed })}>
+        {/* Add image here before the div */}
+        <div className='flex justify-center mb-4'>
+          <img
+            src='https://firebasestorage.googleapis.com/v0/b/voguary.appspot.com/o/Logo_Website%2Fsnapedit_1731943467578.png?alt=media&token=aab5b0d7-a6d1-4309-a9bc-c1fe6ecd2f01'
+            alt='Logo'
+            className='w-36 h-36 object-contain' // Adjust size as needed
+          />
+        </div>
+
+        {/* <div
+          className={cn('mx-auto text-center mb-6 mt-6 pb-6', {
+            hidden: collapsed
+          })}
+        >
           <div className='text-2xl font-bold text-black'>JAS</div>
           <div className='text-lg font-normal text-black up'>Auctions</div>
         </div>
-        <div className={cn('mx-auto text-center mb-4 mt-4 pb-4', { hidden: !collapsed })}>
+        <div
+          className={cn('mx-auto text-center mb-4 mt-4 pb-4', {
+            hidden: !collapsed
+          })}
+        >
           <div className='py-2 text-xl font-bold text-black'>JAS</div>
-        </div>
+        </div> */}
       </div>
 
       <Menu

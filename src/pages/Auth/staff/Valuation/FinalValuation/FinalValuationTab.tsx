@@ -1,14 +1,24 @@
 import { EyeOutlined } from '@ant-design/icons'
 import { Button, Table, Tag, Tooltip } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import FinalDetail from './FinalDetail'
 import { RootState } from '../../../../../store'
 import { useGetFinalValuationsOfStaffQuery } from '../../../../../services/valuation.services'
 
+import { useLocation, useNavigate } from 'react-router-dom'
+
+// FinalValuationTab component
 const FinalValuationTab = () => {
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  // Extract recordId from URL
+  const queryParams = new URLSearchParams(location.search)
+  const recordId = queryParams.get('recordId')
   const [finalModalVisible, setFinalModalVisible] = useState<boolean>(false)
   const [selectedFinalRecord, setSelectedFinalRecord] = useState<any>(null)
+
   const staffId = useSelector((state: RootState) => state.authLoginAPI.staffId)
 
   const { data, error, isLoading } = useGetFinalValuationsOfStaffQuery({
@@ -18,7 +28,15 @@ const FinalValuationTab = () => {
   })
 
   const finalValuationData = data?.dataResponse || []
-
+  useEffect(() => {
+    if (recordId) {
+      const foundRecord = finalValuationData.find((item: any) => item.id === Number(recordId))
+      if (foundRecord) {
+        setSelectedFinalRecord(foundRecord)
+        setFinalModalVisible(true)
+      }
+    }
+  }, [recordId, finalValuationData])
   const finalColumns = [
     {
       title: 'ID',
@@ -76,6 +94,18 @@ const FinalValuationTab = () => {
     }
   ]
 
+  // Use recordId from URL to set selectedFinalRecord
+  useEffect(() => {
+    const recordId = queryParams.get('recordId')
+    if (recordId) {
+      const record = finalValuationData.find((item: any) => item.id === recordId)
+      if (record) {
+        setSelectedFinalRecord(record)
+        setFinalModalVisible(true)
+      }
+    }
+  }, [location.search, finalValuationData])
+
   return (
     <div>
       {error && <p>Error fetching final valuations</p>}
@@ -96,7 +126,6 @@ const FinalValuationTab = () => {
             setFinalModalVisible(false)
           }}
           record={selectedFinalRecord}
-          // status={selectedFinalRecord.status}
           setStatus={(status: any) => setSelectedFinalRecord({ ...selectedFinalRecord, status })}
         />
       )}

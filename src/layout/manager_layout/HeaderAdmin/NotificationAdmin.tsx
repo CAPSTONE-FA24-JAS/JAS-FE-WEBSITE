@@ -6,7 +6,7 @@ import {
 } from '../../../services/notification.services'
 import { useNavigate } from 'react-router-dom'
 
-const NotificationMenu = ({ accountId }: { accountId: number }) => {
+const NotificationAdmin = ({ accountId }: { accountId: number }) => {
   const navigate = useNavigate()
   const { data, refetch } = useGetNotificationsByAccountQuery(accountId)
   const notifications = data?.data?.dataResponse || []
@@ -107,4 +107,5 @@ const NotificationMenu = ({ accountId }: { accountId: number }) => {
     </Dropdown>
   )
 }
-export default NotificationMenu
+
+export default NotificationAdmin

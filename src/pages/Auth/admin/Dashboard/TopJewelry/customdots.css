@@ -1,0 +1,20 @@
+.custom-carousel .slick-dots {
+  bottom: -20px; /* Đẩy dots lên cao hơn */
+}
+
+.custom-carousel .slick-dots li button {
+  width: 10px;
+  height: 10px;
+  background-color: #ddd; /* Màu nền nhẹ để nổi bật */
+  border-radius: 50%; /* Làm tròn dots */
+  opacity: 0.7; /* Độ trong suốt */
+}
+
+.custom-carousel .slick-dots li.slick-active button {
+  background-color: #ff5722; /* Màu cam đậm khi được chọn */
+  opacity: 1; /* Hiển thị rõ hơn */
+}
+
+.custom-carousel .slick-dots li {
+  margin: 0 5px; /* Thêm khoảng cách giữa các dots */
+}
