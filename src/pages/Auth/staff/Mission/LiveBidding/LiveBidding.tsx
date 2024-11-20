@@ -1,47 +1,9 @@
 import React, { useState } from 'react'
 import { CaretRightOutlined, PauseOutlined } from '@ant-design/icons'
 import { Message } from '../../../../../hooks/useBidding'
-import { LotDetail } from '../../../../../types/Lot.type'
-
-interface User {
-  customerId: string
-  firstName: string
-  lastName: string
-  joinTime: string
-}
-
-interface SampleData {
-  Fixed_Price: {
-    fixedPrice: number
-    users: User[]
-  }
-  Secret_Auction: {
-    bids: Message[]
-  }
-}
-
-// Sample data
-const SAMPLE_DATA: SampleData = {
-  Fixed_Price: {
-    fixedPrice: 1500,
-    users: [
-      { customerId: 'U001', firstName: 'John', lastName: 'Doe', joinTime: '2024-03-15 10:30' },
-      { customerId: 'U002', firstName: 'Alice', lastName: 'Smith', joinTime: '2024-03-15 10:35' },
-      { customerId: 'U003', firstName: 'Robert', lastName: 'Johnson', joinTime: '2024-03-15 10:40' },
-      { customerId: 'U004', firstName: 'Emma', lastName: 'Davis', joinTime: '2024-03-15 10:45' },
-      { customerId: 'U005', firstName: 'Michael', lastName: 'Wilson', joinTime: '2024-03-15 10:50' }
-    ]
-  },
-  Secret_Auction: {
-    bids: [
-      { bidTime: '2024-03-15 10:30', customerId: 'U001', firstName: 'John', lastName: 'Doe', currentPrice: 2000 },
-      { bidTime: '2024-03-15 10:35', customerId: 'U002', firstName: 'Alice', lastName: 'Smith', currentPrice: 2200 },
-      { bidTime: '2024-03-15 10:40', customerId: 'U003', firstName: 'Robert', lastName: 'Johnson', currentPrice: 2500 },
-      { bidTime: '2024-03-15 10:45', customerId: 'U004', firstName: 'Emma', lastName: 'Davis', currentPrice: 2800 },
-      { bidTime: '2024-03-15 10:50', customerId: 'U005', firstName: 'Michael', lastName: 'Wilson', currentPrice: 3000 }
-    ]
-  }
-}
+import { LotDetail, PLayerInLot } from '../../../../../types/Lot.type'
+import { parseDate } from '../../../../../utils/convertTypeDayjs'
+import { log } from 'console'
 
 interface HeaderControlsProps {
   backgroundColor: string
@@ -72,9 +34,22 @@ const HeaderControls: React.FC<HeaderControlsProps> = ({ backgroundColor, isPlay
 interface LiveBiddingProps {
   bids: Message[]
   itemLot: LotDetail
+  playerInLot?: PLayerInLot[]
+  currentPrice?: number
+  isEndAuction?: boolean
+  winnerCustomer?: string
+  winnerPrice?: string
 }
 
-const LiveBidding: React.FC<LiveBiddingProps> = ({ bids, itemLot }) => {
+const LiveBidding: React.FC<LiveBiddingProps> = ({
+  bids,
+  itemLot,
+  playerInLot,
+  currentPrice,
+  isEndAuction,
+  winnerCustomer,
+  winnerPrice
+}) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(true)
 
   const calculatePriceReduction = (startPrice: number, currentPrice: number): string => {
@@ -83,7 +58,7 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({ bids, itemLot }) => {
   }
 
   const sortBidsByTime =
-    Array.isArray(bids) && bids.length > 0 ? bids.sort((a, b) => +new Date(a.bidTime) - +new Date(b.bidTime)) : []
+    Array.isArray(bids) && bids.length > 0 ? bids.sort((a, b) => +new Date(b.bidTime) - +new Date(a.bidTime)) : []
 
   const renderBiddingContent = () => {
     switch (itemLot.lotType) {
@@ -91,18 +66,45 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({ bids, itemLot }) => {
         return (
           <>
             <div className='p-4 text-white bg-red-600 rounded-t-lg'>
-              <h2 className='mb-2 text-2xl font-bold'>TOP BID</h2>
+              <h2 className='mb-2 text-2xl font-bold'>
+                TOP BID:{' '}
+                <span>
+                  {Array.isArray(sortBidsByTime) && sortBidsByTime.length
+                    ? `${sortBidsByTime[0].currentPrice} by ${sortBidsByTime[0].firstName} ${sortBidsByTime[0].lastName}`
+                    : ''}
+                </span>
+              </h2>
               <HeaderControls backgroundColor='bg-red-500' isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
             </div>
-            <div className='mt-4'>
+            <div className='p-2 mt-4'>
               {Array.isArray(sortBidsByTime) && sortBidsByTime.length > 0 ? (
                 bids.map((bid, index) => (
-                  <div key={index} className='flex justify-between p-2 mb-1 text-sm'>
-                    <span>{bid.bidTime}</span>
+                  <div
+                    key={index}
+                    className={`flex justify-between p-2 mb-1 text-sm ${
+                      bid.status === 'Processing'
+                        ? 'bg-yellow-100'
+                        : bid.status === 'Accepted'
+                        ? 'bg-green-100'
+                        : bid.status === 'Rejected'
+                        ? 'bg-red-100'
+                        : ''
+                    }`}
+                  >
+                    <span>{parseDate(bid.bidTime, 'dd/mm/yyy hh/mm/ss')}</span>
                     <span>
                       {bid.customerId}: {bid.firstName} {bid.lastName}
                     </span>
                     <span>${bid.currentPrice}</span>
+                    <span className='font-semibold'>
+                      {bid.status === 'Processing'
+                        ? 'Pending'
+                        : bid.status === 'Success'
+                        ? 'Success'
+                        : bid.status === 'Failed'
+                        ? 'Failed'
+                        : bid.status}
+                    </span>
                   </div>
                 ))
               ) : (
@@ -112,60 +114,10 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({ bids, itemLot }) => {
           </>
         )
 
-      case 'Secret_Auction':
-        const secretBids = SAMPLE_DATA.Secret_Auction.bids
-        return (
-          <>
-            <div className='p-4 text-white bg-blue-600 rounded-t-lg'>
-              <h2 className='mb-2 text-2xl font-bold'>PRIVATE TOP BID</h2>
-              <HeaderControls backgroundColor='bg-blue-500' isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
-              <p className='mt-2 text-4xl font-bold'>${secretBids[secretBids.length - 1].currentPrice}</p>
-            </div>
-            <div className='mt-4'>
-              {secretBids.map((bid, index) => (
-                <div key={index} className='flex justify-between p-2 mb-2 text-sm rounded bg-gray-50'>
-                  <span>{bid.bidTime}</span>
-                  <span>
-                    {bid.customerId}: {bid.firstName} {bid.lastName}
-                  </span>
-                  <span>${bid.currentPrice}</span>
-                </div>
-              ))}
-            </div>
-          </>
-        )
-
-      case 'Fixed_Price':
-        const { fixedPrice, users } = SAMPLE_DATA.Fixed_Price
-        return (
-          <>
-            <div className='p-4 text-white bg-green-600 rounded-t-lg'>
-              <h2 className='mb-2 text-2xl font-bold'>FIXED PRICE</h2>
-              <HeaderControls backgroundColor='bg-green-500' isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
-              <p className='mt-2 text-4xl font-bold'>${fixedPrice}</p>
-            </div>
-            <div className='mt-4'>
-              <h3 className='mb-2 text-lg font-semibold'>Interested Buyers</h3>
-              {users.map((user, index) => (
-                <div key={index} className='flex items-center gap-3 p-3 mb-2 rounded bg-gray-50'>
-                  <div className='flex items-center justify-center w-10 h-10 font-semibold text-green-700 bg-green-100 rounded-full'>
-                    {user.firstName.charAt(0)}
-                  </div>
-                  <div className='flex-1'>
-                    <div className='font-medium'>
-                      {user.firstName} {user.lastName}
-                    </div>
-                    <div className='text-sm text-gray-500'>ID: {user.customerId}</div>
-                  </div>
-                  <div className='text-sm text-gray-500'>{user.joinTime.split(' ')[1]}</div>
-                </div>
-              ))}
-            </div>
-          </>
-        )
-
       case 'Auction_Price_GraduallyReduced':
         const startPrice = itemLot.startPrice || 0
+        console.log('current price', currentPrice)
+
         return (
           <>
             <div className='p-4 text-white bg-purple-600 rounded-t-lg'>
@@ -177,13 +129,89 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({ bids, itemLot }) => {
                   <div className='text-2xl font-bold'>${startPrice}</div>
                 </div>
                 <div className='p-3 bg-purple-500 rounded'>
-                  <div className='text-sm opacity-80'>Current Price</div>
-                  <div className='text-2xl font-bold'>$123123123</div>
+                  <div className='text-sm opacity-80'>Reduce Price</div>
+                  <div className='text-2xl font-bold'>
+                    {currentPrice?.toLocaleString('vn-vi', {
+                      style: 'currency',
+                      currency: 'VND'
+                    }) || 'N/A'}
+                  </div>
                 </div>
               </div>
               <div className='p-2 mt-4 text-center bg-purple-500 rounded'>
-                <span className='text-lg'>Price Reduction: {calculatePriceReduction(startPrice, 10000)}%</span>
+                <span className='text-lg'>
+                  Price Reduction: {calculatePriceReduction(startPrice, currentPrice || startPrice)}%
+                </span>
               </div>
+            </div>
+
+            {isEndAuction && (
+              <div className='p-4 text-center bg-purple-100'>
+                <h3 className='text-xl font-bold'>Auction Ended</h3>
+                <p>Winner: {winnerCustomer}</p>
+                <p>Winning Price: ${winnerPrice}</p>
+              </div>
+            )}
+          </>
+        )
+
+      case 'Secret_Auction':
+        const secretBids = [...(playerInLot || [])].sort((a, b) => b.bidPrice - a.bidPrice)
+        return (
+          <>
+            <div className='p-4 text-white bg-blue-600 rounded-t-lg'>
+              <h2 className='mb-2 text-2xl font-bold'>PRIVATE TOP BID</h2>
+              <HeaderControls backgroundColor='bg-blue-500' isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+              <p className='mt-2 text-4xl font-bold'>
+                {secretBids?.[0]?.bidPrice
+                  ? secretBids[0].bidPrice.toLocaleString('vn-vi', {
+                      style: 'currency',
+                      currency: 'VND'
+                    })
+                  : 'N/A'}
+              </p>
+            </div>
+            <div className='mt-4'>
+              {secretBids.map((bid, index) => (
+                <div key={index} className='flex justify-between p-2 mb-2 text-sm rounded bg-gray-50'>
+                  <span>{parseDate(bid.bidTime, 'dd/mm/yyy hh/mm/ss')}</span>
+                  <span>
+                    {bid.customerId}: {bid.customerName}
+                  </span>
+                  <span>${bid.bidPrice}</span>
+                </div>
+              ))}
+            </div>
+          </>
+        )
+
+      case 'Fixed_Price':
+        const fixedPrice = [...(playerInLot || [])].sort((a, b) => +new Date(a.bidTime) - +new Date(b.bidTime))
+        return (
+          <>
+            <div className='p-4 text-white bg-green-600 rounded-t-lg'>
+              <h2 className='mb-2 text-2xl font-bold'>FIXED PRICE</h2>
+              <HeaderControls backgroundColor='bg-green-500' isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+              <p className='mt-2 text-4xl font-bold'>
+                {itemLot.buyNowPrice
+                  ? itemLot.buyNowPrice.toLocaleString('vn-vi', {
+                      style: 'currency',
+                      currency: 'VND'
+                    })
+                  : 'N/A'}
+              </p>
+            </div>
+            <div className='mt-4'>
+              <h3 className='mb-2 text-lg font-semibold'>Interested Buyers</h3>
+              {fixedPrice.map((user, index) => (
+                <div key={index} className='flex items-center gap-3 p-3 mb-2 rounded bg-gray-50'>
+                  <div className='flex-1'>
+                    <div className='font-medium'>{user.customerName}</div>
+                    <div className='text-sm text-gray-500'>ID: {user.customerId}</div>
+                  </div>
+                  <div className='text-sm text-gray-500'>{parseDate(user.bidTime, 'dd/mm/yyy hh/mm/ss')}</div>
+                </div>
+              ))}
             </div>
           </>
         )
