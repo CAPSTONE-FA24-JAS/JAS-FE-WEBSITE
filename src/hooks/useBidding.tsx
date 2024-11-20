@@ -1,8 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import axios from 'axios'
+import { baseUrlWithoutAPI } from '../utils/http'
 
-const API_BASE_URL = 'https://jewelry-auction-system-bwfbbwdecudgfbd4.centralus-01.azurewebsites.net'
+const API_BASE_URL = baseUrlWithoutAPI
 
 export interface Message {
   customerId: string
@@ -10,6 +11,7 @@ export interface Message {
   bidTime: string
   firstName: string
   lastName: string
+  status: string
 }
 
 interface UseBiddingResult {
@@ -18,10 +20,8 @@ interface UseBiddingResult {
   highestPrice: number
   messages: Message[]
   error: string | null
-  joinLiveBidding: (accountId: string | number, lotId: string | number, lotType: string) => Promise<void>
+  joinLiveBidding: (accountId: string | number, lotId: string | number) => Promise<void>
   disconnect: () => Promise<void>
-  isEndAuction: boolean
-  reducePrice: string
 }
 
 export function useBidding(): UseBiddingResult {
@@ -30,36 +30,8 @@ export function useBidding(): UseBiddingResult {
   const [messages, setMessages] = useState<Message[]>([])
   const [endTime, setEndTime] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
-  const [isEndAuction, setIsEndAuction] = useState<boolean>(false)
-  const [reducePrice, setReducePrice] = useState<string>('0')
 
   const connectionRef = useRef<HubConnection | null>(null)
-
-  const setupSignalRMethod4 = useCallback((connection: HubConnection) => {
-    connection.on('JoinLot', (user: string, message: string) => {
-      console.log(`${user}: ${message}`)
-    })
-
-    ///ket thuc lot dau gia
-    connection.on(
-      'SendBiddingPriceForStaffforReducedBidding',
-      (cusid: string, cusName: string, price: string, bidtime: string) => {
-        console.log(`Current price updated: ${price} at ${bidtime} by ${cusName} ${cusid}`)
-        setIsEndAuction(true)
-        setReducePrice(price)
-      }
-    )
-
-    connection.on('SendCurrentPriceForReduceBidding', (currentPrice: string, dateNow: string) => {
-      console.log(`currentPrice ${currentPrice} at ${dateNow}`)
-      setReducePrice(() => currentPrice)
-    })
-
-    connection.on('ReducePriceBidding', (mess: string, currentPrice: string, time: string) => {
-      console.log(`currentPrice: ${mess} + ${currentPrice} at ${time}`)
-      setReducePrice(() => currentPrice)
-    })
-  }, [])
 
   const setupSignalRHandlers = useCallback((connection: HubConnection) => {
     // Xử lý sự kiện khi có người tham gia phòng đấu giá
@@ -74,28 +46,54 @@ export function useBidding(): UseBiddingResult {
       'SendBiddingPriceForStaff',
       (customerId: string, firstName: string, lastName: string, price: string, bidtime: string) => {
         console.log(`Current price updated: ${price} at ${bidtime} by ${firstName} ${lastName}`)
-        if (messages.length > 0) {
-          setMessages((prev) => [
-            ...prev,
-            {
-              customerId,
-              firstName,
-              lastName,
-              currentPrice: Number(price),
-              bidTime: bidtime
-            }
-          ])
-        } else {
-          setMessages([
-            {
-              customerId,
-              firstName,
-              lastName,
-              currentPrice: Number(price),
-              bidTime: bidtime
-            }
-          ])
+
+        setMessages((prevMessages) => {
+          const newBid = {
+            currentPrice: Number(price),
+            bidTime: bidtime,
+            firstName: firstName,
+            lastName: lastName,
+            customerId: customerId,
+            status: 'Processing'
+          }
+          // Nếu messages rỗng, trả về mảng chỉ có bid mới
+          if (!prevMessages || prevMessages.length === 0) {
+            return [newBid]
+          }
+          // Ngược lại thêm bid mới vào mảng hiện tại
+          return [...prevMessages, newBid]
+        })
+      }
+    )
+
+    // Xử lý sự kiện khi đã xử lý lệnh bidding đó
+    connection.on(
+      'SendBiddingPriceForStaffAfterProcessingStream',
+      (cusid: string, firstname: string, lastName: string, price: number, bidtime: string, status: string) => {
+        console.log('SendBiddingPriceForStaffAfterProcessingStream')
+
+        const newBid: Message = {
+          currentPrice: Number(price),
+          bidTime: bidtime,
+          customerId: cusid,
+          status: status,
+          firstName: firstname,
+          lastName: lastName
         }
+
+        setMessages((prev) => {
+          // Nếu không có bid nào trước đó, thêm bid này vào
+          if (!prev || prev.length === 0) {
+            return [newBid]
+          }
+
+          // Nếu đã có bid, cập nhật trạng thái của bid hiện tại
+          return prev.map((message) =>
+            message.customerId === cusid && message.status === 'Processing' && message.currentPrice === price
+              ? { ...message, status: status }
+              : message
+          )
+        })
       }
     )
 
@@ -119,7 +117,7 @@ export function useBidding(): UseBiddingResult {
     })
   }, [])
 
-  const joinLiveBidding = useCallback(async (accountId: string | number, lotId: string | number, lotType: string) => {
+  const joinLiveBidding = useCallback(async (accountId: string | number, lotId: string | number) => {
     try {
       if (connectionRef.current) {
         await connectionRef.current.stop()
@@ -131,9 +129,7 @@ export function useBidding(): UseBiddingResult {
         .configureLogging(LogLevel.Information)
         .build()
 
-      if (lotType === 'Auction_Price_GraduallyReduced') {
-        setupSignalRMethod4(connection)
-      } else setupSignalRHandlers(connection)
+      setupSignalRHandlers(connection)
 
       // Xử lý các sự kiện kết nối
       connection.onclose(() => {
@@ -212,8 +208,6 @@ export function useBidding(): UseBiddingResult {
     messages,
     error,
     joinLiveBidding,
-    disconnect,
-    isEndAuction,
-    reducePrice
+    disconnect
   }
 }

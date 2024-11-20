@@ -364,3 +364,11 @@ export interface ValuationDocument {
   creationDate: string
   createdBy: number
 }
+
+export interface PLayerInLot {
+  lotId: number
+  customerId: number
+  customerName: string
+  bidPrice: number
+  bidTime: string
+}
