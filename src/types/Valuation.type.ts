@@ -61,6 +61,6 @@ export interface ValuationDocument {
 export interface RequestFinalValuation {
   startingPrice: number
   bidForm: number
-  time_Bidding: string
+  // time_Bidding: string
   jewelryId: number
 }

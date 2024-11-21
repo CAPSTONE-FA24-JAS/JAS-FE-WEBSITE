@@ -20,7 +20,9 @@ const NotificationMenu = ({ accountId }: { accountId: number }) => {
       await markNotificationAsRead(notificationId)
       refetch()
 
-      if (notifiType === 'Valuation' && notifiableId !== null) {
+      if (notifiType === 'FinalValuation' && notifiableId !== null) {
+        navigate(`/staff/valuationList?tab=2&modal=true&recordId=${notifiableId}`)
+      } else if (notifiType === 'Authorized' && notifiableId !== null) {
         navigate(`/staff/valuationList?tab=2&modal=true&recordId=${notifiableId}`)
       } else if (notifiType === 'Assign' && notifiableId !== null) {
         navigate(`/staff/ConsignList?modal=true&recordId=${notifiableId}`)
@@ -39,9 +41,14 @@ const NotificationMenu = ({ accountId }: { accountId: number }) => {
               style={{
                 backgroundColor: noti.is_Read ? '#ffffff' : '#A3D8F4',
                 padding: '8px',
+                width: '552px',
+                height: '100px',
                 borderRadius: '4px',
                 position: 'relative',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                overflow: 'hidden'
               }}
               onClick={() => handleMarkAsRead(noti.id, noti.notifi_Type, noti.notifiableId)}
             >
@@ -60,22 +67,72 @@ const NotificationMenu = ({ accountId }: { accountId: number }) => {
                   ></span>
                 )}
               </div>
-              <div
-                style={{
-                  fontWeight: 'bold',
-                  backgroundColor: '#fcf39a',
-                  color: '#FF8C00',
-                  padding: '1px 7px',
-                  borderRadius: '4px',
-                  display: 'inline-block',
-                  textTransform: 'uppercase',
-                  marginBottom: '2px'
-                }}
-              >
-                {noti.notifi_Type}
+
+              {/* Image and Content */}
+              <div style={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+                {noti.imageLink && (
+                  <img
+                    src={noti.imageLink}
+                    alt='Notification'
+                    style={{
+                      width: '80px',
+                      height: '80px',
+                      borderRadius: '4px',
+                      marginRight: '10px'
+                    }}
+                  />
+                )}
+                <div style={{ overflow: 'hidden' }}>
+                  <div
+                    style={{
+                      display: 'flex', // Align the elements in a row
+                      alignItems: 'center', // Vertically align the elements
+
+                      marginBottom: '2px' // Space below the container
+                    }}
+                  >
+                    {/* Notification Type - Align left */}
+                    <div
+                      style={{
+                        fontWeight: 'bold',
+                        backgroundColor: '#fcf39a',
+                        color: '#FF8C00',
+                        padding: '1px 7px',
+                        borderRadius: '4px',
+                        marginRight: '5px',
+                        textTransform: 'uppercase',
+                        flexShrink: 0 // Prevent shrinking
+                      }}
+                    >
+                      {noti.notifi_Type}
+                    </div>
+
+                    {/* Date - Align right */}
+                    <div
+                      style={{
+                        fontSize: '12px',
+                        color: '#888',
+                        flexShrink: 0 // Prevent shrinking
+                      }}
+                    >
+                      {new Date(noti.creationDate).toLocaleString('vi-VN')}
+                    </div>
+                  </div>
+                  <div style={{ fontWeight: 'bold' }}>{noti.title}</div>
+                  <div
+                    style={{
+                      fontSize: '12px',
+                      color: '#888',
+                      display: 'block',
+                      whiteSpace: 'normal' // Allow text to wrap
+                    }}
+                  >
+                    {noti.description}
+                  </div>
+                </div>
               </div>
-              <div style={{ fontWeight: 'bold' }}>{noti.title}</div>
-              <div style={{ fontSize: '12px', color: '#888' }}>{noti.description}</div>
+
+              {/* Date next to Type */}
             </div>
           )
         }))
@@ -98,7 +155,18 @@ const NotificationMenu = ({ accountId }: { accountId: number }) => {
         ]
 
   return (
-    <Dropdown menu={{ items: notificationItems }} placement='bottomRight' trigger={['click']}>
+    <Dropdown
+      menu={{
+        items: notificationItems,
+        style: {
+          maxHeight: '400px',
+          width: '600px',
+          overflowY: 'auto'
+        }
+      }}
+      placement='bottomRight'
+      trigger={['click']}
+    >
       <span>
         <Badge count={unreadCount} className='mr-2 mt-6'>
           <BellOutlined className='cursor-pointer' style={{ fontSize: '24px' }} />

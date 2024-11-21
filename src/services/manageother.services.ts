@@ -174,6 +174,29 @@ export const manageotherApi = createApi({
     // New endpoint for Top Five Sellers
     viewTopSellers: build.query<TopSellersResponse, void>({
       query: () => 'DashBoard/TopFiveSellers'
+    }),
+    createBlog: build.mutation<any, { Title: string; Content: string; AccountId: number; fileImages: File[] }>({
+      query: ({ Title, Content, AccountId, fileImages }) => {
+        if (!fileImages || fileImages.length === 0) {
+          throw new Error('No files selected for upload')
+        }
+
+        const formData = new FormData()
+        formData.append('Title', Title)
+        formData.append('Content', Content)
+        formData.append('AccountId', String(AccountId))
+
+        // Append each image file to the FormData object
+        fileImages.forEach((file, index) => {
+          formData.append(`fileImages[${index}]`, file)
+        })
+
+        return {
+          url: 'Blog/CreateNewBlog',
+          method: 'POST',
+          body: formData
+        }
+      }
     })
   })
 })
@@ -186,5 +209,6 @@ export const {
   useViewBlogsQuery,
   useViewBlogDetailQuery,
   useViewTopJewelryAuctionsQuery,
-  useViewTopSellersQuery // Export the hook for Top Sellers
+  useViewTopSellersQuery,
+  useCreateBlogMutation
 } = manageotherApi

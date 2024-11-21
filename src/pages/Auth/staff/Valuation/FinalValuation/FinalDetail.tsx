@@ -24,7 +24,7 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
 
   const [startingPrice, setStartingPrice] = useState<number | undefined>(undefined)
   const [bidForm, setBidForm] = useState<number | undefined>(undefined)
-  const [timeBidding, setTimeBidding] = useState<string | undefined>(undefined)
+  const [loading, setLoading] = useState(false)
 
   const { data: auctionMethods, isLoading, isError, refetch } = useViewListLotTypeQuery(undefined)
   const [requestFinalValuationForManager] = useRequestFinalValuationForManagerMutation()
@@ -44,7 +44,7 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
   const lotTypes = auctionMethods?.data || []
 
   const handleUpdate = async () => {
-    if (startingPrice === undefined || bidForm === undefined || !timeBidding) {
+    if (startingPrice === undefined || bidForm === undefined) {
       notification.error({ message: 'Error', description: 'Please fill in all fields before sending.' })
       return
     }
@@ -52,10 +52,10 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
     const requestData = {
       startingPrice,
       bidForm,
-      time_Bidding: timeBidding,
       jewelryId: record?.jewelry?.id
     }
 
+    setLoading(true)
     try {
       await requestFinalValuationForManager(requestData).unwrap()
       notification.success({ message: 'Success', description: 'Final valuation requested successfully.' })
@@ -65,6 +65,8 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
       onCancel()
     } catch (error) {
       notification.error({ message: 'Error', description: 'Error requesting final valuation. Please try again.' })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -77,7 +79,7 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
         <Button key='cancel' onClick={onCancel}>
           Cancel
         </Button>,
-        <Button key='update' type='primary' onClick={handleUpdate}>
+        <Button key='update' type='primary' onClick={handleUpdate} loading={loading}>
           Send
         </Button>
       ]}
@@ -163,7 +165,13 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
             <div className='flex mb-4'>
               <strong className='w-1/3'>Estimated Price:</strong>
               <span>
-                {record?.jewelry?.estimatePriceMin} - {record?.jewelry?.estimatePriceMax} VND
+                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                  record?.jewelry?.estimatePriceMin || 0
+                )}{' '}
+                -
+                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                  record?.jewelry?.estimatePriceMax || 0
+                )}
               </span>
             </div>
           )}
@@ -171,14 +179,22 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
           {record?.jewelry?.startingPrice && (
             <div className='flex mb-4'>
               <strong className='w-1/3'>Starting Price:</strong>
-              <span>{record?.jewelry?.startingPrice} VND</span>
+              <span>
+                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                  record?.jewelry?.startingPrice || 0
+                )}
+              </span>
             </div>
           )}
 
           {record?.jewelry?.specificPrice && (
             <div className='flex mb-4'>
               <strong className='w-1/3'>Final Price:</strong>
-              <span className='font-bold text-red-800'>{record?.jewelry?.specificPrice} VND</span>
+              <span className='font-bold text-red-800'>
+                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                  record?.jewelry?.specificPrice || 0
+                )}
+              </span>
             </div>
           )}
 
@@ -659,16 +675,6 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
                     </Option>
                   ))}
                 </Select>
-              </div>
-
-              <div className='mb-4'>
-                <strong>Thời điểm đấu giá:</strong>
-                <Input
-                  type='datetime-local'
-                  className='mt-2'
-                  value={timeBidding}
-                  onChange={(e) => setTimeBidding(e.target.value)}
-                />
               </div>
             </>
           )}

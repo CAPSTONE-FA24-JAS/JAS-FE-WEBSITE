@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Steps, message } from 'antd'
-import BasicInfoStep from './StepCreateFinal/BasicInfo'
-import FinalStepsStep from './StepCreateFinal/FinalInfo'
+import { Button, Steps, notification } from 'antd'
+import { useEffect, useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useCreateFinalValuationMutation } from '../../../../../../../services/createfinalvaluation.services'
-import { useParams } from 'react-router-dom'
 import {
   MainDiamond,
   MainShaphy,
@@ -11,6 +9,8 @@ import {
   SecondaryShaphy,
   ValuationGemstoneData
 } from '../../../../../../../types/Gemstones.type'
+import BasicInfoStep from './StepCreateFinal/BasicInfo'
+import FinalStepsStep from './StepCreateFinal/FinalInfo'
 import GemstoneDetails from './StepCreateFinal/Gemstone'
 
 const { Step } = Steps
@@ -64,6 +64,7 @@ export default function CreateFinalValuation() {
   const [currentStep, setCurrentStep] = useState(0)
   const [createFinalValuation] = useCreateFinalValuationMutation()
   const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const updatedGemstoneDataArray = gemstoneDataArray.map((gem) => {
@@ -395,9 +396,20 @@ export default function CreateFinalValuation() {
 
       const response = await createFinalValuation(formDataToSend).unwrap()
       console.log('Phản hồi API:', response)
-      message.success('Tạo đánh giá cuối cùng thành công!')
+
+      notification.success({
+        message: 'Thành công',
+        description: 'Tạo đánh giá cuối cùng thành công!'
+      })
+
+      navigate('/appraiser/finalList')
     } catch (error) {
       console.error('Yêu cầu API thất bại:', error)
+
+      notification.error({
+        message: 'Lỗi',
+        description: 'Yêu cầu API thất bại!'
+      })
     } finally {
       setIsLoading(false)
     }

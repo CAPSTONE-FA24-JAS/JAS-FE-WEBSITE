@@ -71,39 +71,55 @@ const PreliminaryDetailsModal: React.FC<ValuationDetailsModalProps> = ({ isVisib
           <p className='mb-2 text-xl font-bold'>{record?.id}</p>
           <p className='mb-6 text-xl font-bold'>{record?.name}</p>
 
-          <p className='mb-4'>
-            <strong>Customer Name:</strong> {record?.seller?.firstName} {record?.seller?.lastName}
-          </p>
-          <p className='mb-4'>
-            <strong>Email:</strong> {record?.seller?.email}
-          </p>
-          <p className='mb-4'>
-            <strong>Phone:</strong> {record?.seller?.phoneNumber}
-          </p>
-          <p className='mb-4'>
-            <strong>Height:</strong> {record?.height} cm
-          </p>
-          <p className='mb-4'>
-            <strong>Width:</strong> {record?.width} cm
-          </p>
-          <p className='mb-4'>
-            <strong>Depth:</strong> {record?.depth} cm
-          </p>
-          <p className='mb-6'>
-            <strong>Description:</strong> {record?.description}
-          </p>
-          <p className='mb-4'>
-            <strong>Estimate Price:</strong>{' '}
+          <div className='flex mb-4'>
+            <strong className='w-1/3'>Customer Name:</strong>
+            <span className='font-semibold '>
+              {record?.seller?.firstName} {record?.seller?.lastName}
+            </span>
+          </div>
+          <div className='flex mb-4'>
+            <strong className='w-1/3'>Email:</strong>
+            <span className='font-semibold '>{record?.seller?.accountDTO.email}</span>
+          </div>
+          <div className='flex mb-4'>
+            <strong className='w-1/3'>Phone:</strong>
+            <span className='font-semibold '>{record?.seller?.phoneNumber}</span>
+          </div>
+          <div className='flex mb-4'>
+            <strong className='w-1/3'>Width:</strong>
+            <span className='font-semibold '>{record?.width} cm</span>
+          </div>
+          <div className='flex mb-4'>
+            <strong className='w-1/3'>Height:</strong>
+            <span className='font-semibold '>{record?.height} cm</span>
+          </div>
+          <div className='flex mb-4'>
+            <strong className='w-1/3'>Depth:</strong>
+            <span className='font-semibold '>{record?.depth} cm</span>
+          </div>
+          <div className='flex mb-6'>
+            <strong className='w-1/3'>Description:</strong>
+            <span className='font-semibold '>{record?.description}</span>
+          </div>
+          <div className='flex mt-4'>
+            <strong className='w-1/3'>Estimate Price:</strong>{' '}
             <span className='font-bold text-red-800'>
               {' '}
-              {record?.estimatePriceMin} - {record?.estimatePriceMax} VND
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                record?.estimatePriceMin || 0
+              )}{' '}
+              -
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                record?.estimatePriceMax || 0
+              )}
             </span>
-          </p>
+          </div>
 
           {/* Display status as a paragraph */}
-          <p className='mt-4 font-bold'>
-            <strong>Status:</strong> {record?.status}
-          </p>
+          <div className='flex mt-4'>
+            <strong className='w-1/3'>Status:</strong>
+            <span className='font-semibold text-red-600'>{record?.status}</span>
+          </div>
         </div>
       </div>
       <div className='mt-6'>

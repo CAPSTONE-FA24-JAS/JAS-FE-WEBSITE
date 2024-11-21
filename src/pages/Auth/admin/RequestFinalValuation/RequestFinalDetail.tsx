@@ -176,18 +176,32 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
           <div className='flex mb-4'>
             <strong className='w-1/3'>Estimated Price:</strong>
             <span>
-              {valuationData?.data?.jewelry?.estimatePriceMin || 0} -{' '}
-              {valuationData?.data?.jewelry?.estimatePriceMax || 0} VND
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                valuationData?.data?.jewelry?.estimatePriceMin || 0
+              )}{' '}
+              -{' '}
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                valuationData?.data?.jewelry?.estimatePriceMax || 0
+              )}
             </span>
           </div>
 
           <div className='flex mb-4'>
             <strong className='w-1/3'>Starting Price:</strong>
-            <span>{valuationData?.data?.jewelry?.startingPrice || 0} </span>
+            <span>
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                valuationData?.data?.jewelry?.startingPrice || 0
+              )}
+            </span>
           </div>
+
           <div className='flex mb-4'>
             <strong className='w-1/3'>Final Price:</strong>
-            <span className='text-red-700 font-bold'>{valuationData?.data?.jewelry?.specificPrice || 0} </span>
+            <span className='text-red-700 font-bold'>
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                valuationData?.data?.jewelry?.specificPrice || 0
+              )}
+            </span>
           </div>
 
           <div>
