@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import { Button, Col, Input, Row, Space, Table, Tag } from 'antd'
-import { useGetValuationsQuery } from '../../../../services/requestconsign.services'
 import { EyeOutlined, SearchOutlined } from '@ant-design/icons'
-import RequestConsignDetail from './RequestConsignDetail' // Import your detail component
+import { Button, Col, Input, Row, Space, Table, Tag } from 'antd'
+import { useState } from 'react'
+import { useGetValuationsQuery } from '../../../../services/requestconsign.services'
+import RequestConsignDetail from './RequestConsignDetail'
 
 const { Search } = Input
 

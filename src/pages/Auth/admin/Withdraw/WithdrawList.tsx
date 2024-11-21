@@ -4,6 +4,15 @@ import {
   useViewListRequestWithdrawForManagementQuery
 } from '../../../../services/invoice.services'
 
+interface WithdrawalRequest {
+  id: number
+  amount: number
+  viewCreditCardDTO: {
+    bankAccountHolder: string
+    bankName: string
+  }
+}
+
 export default function WithdrawalRequests() {
   const { data, error, isLoading, refetch } = useViewListRequestWithdrawForManagementQuery(undefined)
   const [approveRequestNewWithdraw] = useApproveRequestNewWithdrawMutation()
@@ -14,7 +23,7 @@ export default function WithdrawalRequests() {
       dataIndex: 'id',
       key: 'id',
       align: 'center' as const,
-      render: (text: any) => <span>{text}</span>
+      render: (text: number) => <span>{text}</span>
     },
     {
       title: 'Bank Account',
@@ -33,13 +42,13 @@ export default function WithdrawalRequests() {
       dataIndex: 'amount',
       key: 'amount',
       align: 'center' as const,
-      render: (amount: any) => <span>{amount.toLocaleString()}</span>
+      render: (amount: number) => <span>{amount.toLocaleString()}</span>
     },
     {
       title: 'Action',
       key: 'action',
       align: 'center' as const,
-      render: (record: any) => (
+      render: (record: WithdrawalRequest) => (
         <Button type='primary' onClick={() => handleApprove(record.id)}>
           Approve
         </Button>
