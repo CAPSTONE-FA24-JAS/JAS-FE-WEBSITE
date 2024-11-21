@@ -80,7 +80,7 @@ export default function InvoiceTab() {
     {
       title: 'Action',
       key: 'action',
-      render: (text: any, record: Invoice) => (
+      render: (record: Invoice) => (
         <Tooltip title='View Details'>
           <Button type='link' icon={<EyeOutlined />} onClick={() => showDetails(record)} />
         </Tooltip>
