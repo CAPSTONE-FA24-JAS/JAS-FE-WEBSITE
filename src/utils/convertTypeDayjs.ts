@@ -27,7 +27,7 @@ export const parseDate = (dateString: string, type: 'dd/mm/yyyy' | 'dd/mm/yyy hh
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} GMT: ${gmt}`
   }
 
-  return `${day}/${month}/${year} GMT:${gmt}`
+  return `${day}/${month}/${year}`
 }
 
 export const convertArrayImages = (item: LotDetail): string[] => {

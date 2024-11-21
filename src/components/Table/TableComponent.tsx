@@ -13,13 +13,13 @@ type TableComponentProps = {
 
 export default function TableComponent({ data, columns, rowKey }: TableComponentProps) {
   return (
-    <div className='-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 pr-10 lg:px-8'>
-      <div className='align-middle rounded-tl-lg rounded-tr-lg inline-block w-full py-4 overflow-hidden bg-white shadow-lg px-12'>
+    <div className='py-2 pr-10 -my-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8'>
+      <div className='inline-block w-full px-12 py-4 overflow-hidden align-middle bg-white rounded-tl-lg rounded-tr-lg shadow-lg'>
         <div className='flex justify-between'>
-          <div className='inline-flex border rounded w-7/12 px-2 lg:px-6 h-12 bg-transparent'>
-            <div className='flex flex-wrap items-stretch w-full h-full mb-6 relative'>
+          <div className='inline-flex w-7/12 h-12 px-2 bg-transparent border rounded lg:px-6'>
+            <div className='relative flex flex-wrap items-stretch w-full h-full mb-6'>
               <div className='flex'>
-                <span className='flex items-center leading-normal bg-transparent rounded rounded-r-none border border-r-0 border-none lg:px-3 py-2 whitespace-no-wrap text-grey-dark text-sm'>
+                <span className='flex items-center py-2 text-sm leading-normal whitespace-no-wrap bg-transparent border border-r-0 border-none rounded rounded-r-none lg:px-3 text-grey-dark'>
                   <svg
                     width='18'
                     height='18'
@@ -45,21 +45,21 @@ export default function TableComponent({ data, columns, rowKey }: TableComponent
               </div>
               <input
                 type='text'
-                className='flex-shrink flex-grow flex-auto leading-normal tracking-wide w-px flex-1 border border-none border-l-0 rounded rounded-l-none px-3 relative focus:outline-none text-xxs lg:text-xs lg:text-base text-gray-500 font-thin'
+                className='relative flex-1 flex-auto flex-grow flex-shrink w-px px-3 font-thin leading-normal tracking-wide text-gray-500 border border-l-0 border-none rounded rounded-l-none focus:outline-none text-xxs lg:text-xs lg:text-base'
                 placeholder='Search'
               />
             </div>
           </div>
         </div>
       </div>
-      <div className='align-middle inline-block min-w-full shadow overflow-hidden bg-white shadow-dashboard px-8 pt-3 rounded-bl-lg rounded-br-lg'>
+      <div className='inline-block min-w-full px-8 pt-3 overflow-hidden align-middle bg-white rounded-bl-lg rounded-br-lg shadow shadow-dashboard'>
         <table className='min-w-full'>
           <thead>
             <tr>
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className='px-6 py-3 border-b-2 border-gray-300 text-left leading-4 text-blue-500 tracking-wider'
+                  className='px-6 py-3 leading-4 tracking-wider text-left text-blue-500 border-b-2 border-gray-300'
                 >
                   {col.title}
                 </th>

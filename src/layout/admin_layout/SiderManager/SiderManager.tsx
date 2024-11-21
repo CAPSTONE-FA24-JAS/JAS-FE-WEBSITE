@@ -52,6 +52,7 @@ export default function SiderManager() {
         getItem('Valuation List', 'requestvaluation', <MdFormatListBulleted className='text-base' />)
       ]),
       getItem('Manage Invoice', 'managewin', <RiBillLine className='text-base' />),
+      getItem('Manage Withdraw', 'managewithdraw', <RiBillLine className='text-base' />),
       getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
         getItem('Auction List', 'auctionListSub', <RiAuctionLine className='text-base' />) // You can change this if needed
       ]),
@@ -66,6 +67,7 @@ export default function SiderManager() {
     .set('managerConsign', '/manager/ConsignList')
     .set('requestvaluation', '/manager/requestfinal')
     .set('managewin', '/manager/manageinvoice')
+    .set('managewithdraw', '/manager/managewithdraw')
     .set('managecheckinvoice', '/manager/checkinvoice')
     .set('auctionListSub', '/manager/auctionlist')
     .set('financeProof', '/manager/financeProofManager')

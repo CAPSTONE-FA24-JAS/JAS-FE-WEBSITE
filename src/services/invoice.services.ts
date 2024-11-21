@@ -49,6 +49,9 @@ export const manageInvoice = createApi({
     }),
     getInvoicesForCheckBill: build.query({
       query: () => `Invoices/GetListInvoiceForCheckBill`
+    }),
+    viewListRequestWithdrawForManagement: build.query({
+      query: () => `Wallet/ViewListRequestWithdrawForManagerment`
     })
   })
 })
@@ -59,5 +62,6 @@ export const {
   useAssignShipperMutation,
   useFinishInvoiceMutation,
   useApprovePaymentByBankTransferMutation,
-  useGetInvoicesForCheckBillQuery // Exporting the new mutation hook
+  useGetInvoicesForCheckBillQuery,
+  useViewListRequestWithdrawForManagementQuery
 } = manageInvoice

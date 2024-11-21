@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { Data } from '../types/Account.type'
 import baseUrl from '../utils/http'
-import { CreateLot, ListLot, LotDetail } from '../types/Lot.type'
+import { CreateLot, ListLot, LotDetail, PLayerInLot } from '../types/Lot.type'
 import { Respone } from '../types/Respone.type'
 
 export const lotApi = createApi({
@@ -138,6 +138,9 @@ export const lotApi = createApi({
         url: `BidPrices/CloseLot?lotId=${id}&status=6`,
         method: 'PUT'
       })
+    }),
+    getPlayerInLot: build.query<Respone<PLayerInLot[]>, number>({
+      query: (lotId) => `Lot/GetPlayerInLotFixedAndSercet?lotId=${lotId}`
     })
   })
 })
@@ -149,5 +152,6 @@ export const {
   useCreateLotAuctionPriceGraduallyReducedMutation,
   useCreateLotPublicAuctionMutation,
   useCreateLotSecretAuctionMutation,
-  useUpdateStatusLotMutation
+  useUpdateStatusLotMutation,
+  useGetPlayerInLotQuery
 } = lotApi

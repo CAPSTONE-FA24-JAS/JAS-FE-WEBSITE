@@ -1,5 +1,5 @@
-import React, { ChangeEvent, useEffect, useState } from 'react'
-import { Image, message } from 'antd'
+import { Image } from 'antd'
+import React, { ChangeEvent, useState } from 'react'
 import {
   MainDiamond,
   MainShaphy,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState } from 'react'
 import { Line, Bar } from 'react-chartjs-2'
 import { useGetRevenueInYearQuery, useGetInvoiceInYearQuery } from '../../../../../services/dashboard.services'
 import {
@@ -18,13 +18,10 @@ Chart.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement
 
 const RevenueChart = () => {
   const [year, setYear] = useState(2024)
-  const availableYears = [2022, 2023, 2024, 2025] // Danh sách các năm có sẵn
+  const availableYears = [2022, 2023, 2024, 2025] // Available years
 
   const { data: revenueData, isLoading: isLoadingRevenue } = useGetRevenueInYearQuery(year)
   const { data: invoiceData, isLoading: isLoadingInvoice } = useGetInvoiceInYearQuery(year)
-
-  const lineChartRef = useRef<Chart<'line', any, unknown> | null>(null)
-  const barChartRef = useRef<Chart<'bar', any, unknown> | null>(null)
 
   const monthlyRevenue = revenueData?.data.map((item: any) => item.revenue) || Array(12).fill(0)
   const monthlyInvoices = invoiceData?.data.map((item: any) => item.invoiceCount) || Array(12).fill(0)
@@ -127,26 +124,15 @@ const RevenueChart = () => {
     }
   }
 
-  useEffect(() => {
-    if (lineChartRef.current) {
-      const chartInstance = lineChartRef.current
-      chartInstance.destroy()
-    }
-    if (barChartRef.current) {
-      const chartInstance = barChartRef.current
-      chartInstance.destroy()
-    }
-  }, [year]) // Chỉ hủy và tạo lại biểu đồ khi năm thay đổi
-
   return (
     <div className='flex gap-4'>
-      <div className='p-4 w-1/2 rounded-3xl shadow-xl border border-gray-200 hover:shadow-2xl transition-shadow duration-300'>
-        <div className='flex justify-between items-center'>
+      <div className='w-1/2 p-4 transition-shadow duration-300 border border-gray-200 shadow-xl rounded-3xl hover:shadow-2xl'>
+        <div className='flex items-center justify-between'>
           <div className='flex-1'></div>
           <select
             onChange={handleYearChange}
             value={year}
-            className='ml-auto rounded-lg border-2 bg-gradient-to-r from-gray-400 to-white text-black font-semibold hover:bg-gradient-to-l hover:from-gray-600 hover:to-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-colors duration-300'
+            className='ml-auto font-semibold text-black transition-colors duration-300 border-2 rounded-lg bg-gradient-to-r from-gray-400 to-white hover:bg-gradient-to-l hover:from-gray-600 hover:to-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50'
           >
             {availableYears.map((yr) => (
               <option key={yr} value={yr}>
@@ -156,22 +142,16 @@ const RevenueChart = () => {
           </select>
         </div>
 
-        {isLoadingRevenue ? (
-          <p>Loading Revenue...</p>
-        ) : (
-          <div>
-            <Line ref={lineChartRef} data={lineChartData} options={lineChartOptions} />
-          </div>
-        )}
+        {isLoadingRevenue ? <p>Loading Revenue...</p> : <Line data={lineChartData} options={lineChartOptions} />}
       </div>
 
-      <div className='p-4 w-1/2 rounded-3xl shadow-xl border border-gray-200 hover:shadow-2xl transition-shadow duration-300'>
-        <div className='flex justify-between items-center'>
+      <div className='w-1/2 p-4 transition-shadow duration-300 border border-gray-200 shadow-xl rounded-3xl hover:shadow-2xl'>
+        <div className='flex items-center justify-between'>
           <div className='flex-1'></div>
           <select
             onChange={handleYearChange}
             value={year}
-            className='ml-auto rounded-lg border-2 bg-gradient-to-r from-gray-400 to-white text-black font-semibold hover:bg-gradient-to-l hover:from-gray-600 hover:to-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-colors duration-300'
+            className='ml-auto font-semibold text-black transition-colors duration-300 border-2 rounded-lg bg-gradient-to-r from-gray-400 to-white hover:bg-gradient-to-l hover:from-gray-600 hover:to-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50'
           >
             {availableYears.map((yr) => (
               <option key={yr} value={yr}>
@@ -180,13 +160,7 @@ const RevenueChart = () => {
             ))}
           </select>
         </div>
-        {isLoadingInvoice ? (
-          <p>Loading Invoices...</p>
-        ) : (
-          <div>
-            <Bar ref={barChartRef} data={barChartData} options={barChartOptions} />
-          </div>
-        )}
+        {isLoadingInvoice ? <p>Loading Invoices...</p> : <Bar data={barChartData} options={barChartOptions} />}
       </div>
     </div>
   )
