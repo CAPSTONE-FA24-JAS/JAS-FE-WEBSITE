@@ -1,14 +1,18 @@
-import { Button, Table } from 'antd'
-import { useViewListRequestWithdrawForManagementQuery } from '../../../../services/invoice.services'
+import { Button, Table, notification } from 'antd'
+import {
+  useApproveRequestNewWithdrawMutation,
+  useViewListRequestWithdrawForManagementQuery
+} from '../../../../services/invoice.services'
 
 export default function WithdrawalRequests() {
-  const { data, error, isLoading } = useViewListRequestWithdrawForManagementQuery(undefined)
+  const { data, error, isLoading, refetch } = useViewListRequestWithdrawForManagementQuery(undefined)
+  const [approveRequestNewWithdraw] = useApproveRequestNewWithdrawMutation()
 
   const columns = [
     {
       title: 'ID',
-      dataIndex: 'walletId',
-      key: 'walletId',
+      dataIndex: 'id',
+      key: 'id',
       align: 'center' as const,
       render: (text: any) => <span>{text}</span>
     },
@@ -36,15 +40,29 @@ export default function WithdrawalRequests() {
       key: 'action',
       align: 'center' as const,
       render: (record: any) => (
-        <Button type='primary' onClick={() => handleApprove(record.walletId)}>
+        <Button type='primary' onClick={() => handleApprove(record.id)}>
           Approve
         </Button>
       )
     }
   ]
 
-  function handleApprove(walletId: any) {
-    alert(`Approve withdrawal for Wallet ID: ${walletId}`)
+  async function handleApprove(requestId: number) {
+    try {
+      const response = await approveRequestNewWithdraw({ requestId }).unwrap()
+      notification.success({
+        message: 'Success',
+        description: response.message || 'Withdrawal approved successfully',
+        placement: 'topRight'
+      })
+      refetch()
+    } catch (error) {
+      notification.error({
+        message: 'Error',
+        description: 'Failed to approve withdrawal',
+        placement: 'topRight'
+      })
+    }
   }
 
   if (isLoading) return <p>Loading...</p>
@@ -52,8 +70,8 @@ export default function WithdrawalRequests() {
 
   return (
     <div>
-      <h1 className='text-2xl font-bold mb-4'>Withdraw Management</h1>
-      <Table rowKey='walletId' columns={columns} dataSource={data?.data || []} bordered pagination={{ pageSize: 5 }} />
+      <h1 className='text-2xl font-bold mb-6'>Withdraw Management</h1>
+      <Table rowKey='id' columns={columns} dataSource={data?.data || []} bordered pagination={{ pageSize: 5 }} />
     </div>
   )
 }

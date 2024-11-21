@@ -52,6 +52,13 @@ export const manageInvoice = createApi({
     }),
     viewListRequestWithdrawForManagement: build.query({
       query: () => `Wallet/ViewListRequestWithdrawForManagerment`
+    }),
+    approveRequestNewWithdraw: build.mutation<{ message: string }, { requestId: number }>({
+      query: ({ requestId }) => ({
+        url: `Wallet/ApproveRequestNewWithdraw`,
+        method: 'PATCH',
+        params: { requestId }
+      })
     })
   })
 })
@@ -63,5 +70,6 @@ export const {
   useFinishInvoiceMutation,
   useApprovePaymentByBankTransferMutation,
   useGetInvoicesForCheckBillQuery,
-  useViewListRequestWithdrawForManagementQuery
+  useViewListRequestWithdrawForManagementQuery,
+  useApproveRequestNewWithdrawMutation
 } = manageInvoice
