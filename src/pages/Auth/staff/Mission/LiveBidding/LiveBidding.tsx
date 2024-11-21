@@ -198,7 +198,6 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
         return (
           <>
             <div className='p-4 text-white bg-purple-600 rounded-t-lg'>
-              <h2 className='mb-2 text-2xl font-bold'>DECLINING PRICE AUCTION</h2>
               <HeaderControls
                 backgroundColor='bg-purple-500'
                 status={statusLot}
