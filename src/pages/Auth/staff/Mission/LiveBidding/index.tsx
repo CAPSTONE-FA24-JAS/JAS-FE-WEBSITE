@@ -15,7 +15,7 @@ export interface Bid {
 }
 
 const Index = () => {
-  const { disconnect, endTime, error, highestPrice, isConnected, joinLiveBidding, messages } = useBidding()
+  const { disconnect, endTime, error, highestPrice, isConnected, joinLiveBidding, messages, status } = useBidding()
   const {
     joinLiveBiddingMethod4,
     endTime: endTimeMethod4,
@@ -31,8 +31,6 @@ const Index = () => {
   const { id } = useParams<{ id: string }>()
   const { data, isError, isLoading } = useGetLotDetailByIdQuery(Number(id))
   const { data: playerInLot, isError: errorPlayer, isLoading: loadingPlayer } = useGetPlayerInLotQuery(Number(id))
-
-  console.log('end time method 4', endTimeMethod4)
 
   // Get user ID from localStorage
   const user = localStorage.getItem('userLogin')
@@ -105,9 +103,10 @@ const Index = () => {
                 isEndAuction={isEndAuctionMethod4}
                 winnerCustomer={winnerCustomer}
                 winnerPrice={winnerPrice}
+                status={status}
               />
             ) : (
-              <LiveBidding bids={messages} itemLot={data.data} />
+              <LiveBidding bids={messages} itemLot={data.data} status={status} />
             )
           ) : (
             <div>No lot data available</div>

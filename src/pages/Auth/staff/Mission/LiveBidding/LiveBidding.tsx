@@ -1,35 +1,60 @@
 import React, { useState } from 'react'
 import { CaretRightOutlined, PauseOutlined } from '@ant-design/icons'
 import { Message } from '../../../../../hooks/useBidding'
-import { LotDetail, PLayerInLot } from '../../../../../types/Lot.type'
+import { AuctionLotStatus, LotDetail, PLayerInLot } from '../../../../../types/Lot.type'
 import { parseDate } from '../../../../../utils/convertTypeDayjs'
-import { log } from 'console'
+import { useGetWinnerForLotQuery, useUpdateStatusLotMutation } from '../../../../../services/lot.services'
 
 interface HeaderControlsProps {
   backgroundColor: string
-  isPlaying: boolean
-  setIsPlaying: (value: boolean) => void
+  status: AuctionLotStatus
+  handlePause: () => void
+  handleStart: () => void
+  statusLot12?: string
 }
 
-const HeaderControls: React.FC<HeaderControlsProps> = ({ backgroundColor, isPlaying, setIsPlaying }) => (
-  <div className='flex justify-between py-1'>
-    <div className='flex gap-2'>
-      <button
-        className={`flex items-center justify-center p-2 text-center ${backgroundColor} rounded-3xl`}
-        onClick={() => setIsPlaying(false)}
-      >
-        <PauseOutlined style={{ fontSize: '20px' }} />
-      </button>
-      <button
-        className={`flex items-center justify-center p-2 text-center ${backgroundColor} rounded-3xl`}
-        onClick={() => setIsPlaying(true)}
-      >
-        <CaretRightOutlined style={{ fontSize: '20px' }} />
-      </button>
+const HeaderControls: React.FC<HeaderControlsProps> = ({ backgroundColor, status, handlePause, handleStart }) => {
+  console.log('statuslot', status)
+
+  const isDiableBtn =
+    status === AuctionLotStatus.Canceled ||
+    status === AuctionLotStatus.Sold ||
+    status === AuctionLotStatus.Passed ||
+    status === AuctionLotStatus.Waiting ||
+    status === AuctionLotStatus.Ready
+  return (
+    <div className='flex justify-between py-1'>
+      <div className='flex gap-2'>
+        <button
+          disabled={isDiableBtn}
+          className={`flex items-center justify-center p-2 text-center ${backgroundColor} rounded-3xl`}
+          onClick={() => {
+            handlePause()
+          }}
+        >
+          <PauseOutlined style={{ fontSize: '20px' }} />
+        </button>
+        <button
+          disabled={isDiableBtn}
+          className={`flex items-center justify-center p-2 text-center ${backgroundColor} rounded-3xl `}
+          onClick={() => handleStart()}
+        >
+          <CaretRightOutlined style={{ fontSize: '20px' }} />
+        </button>
+      </div>
+      <div className='text-sm'>
+        Status:{' '}
+        {status === AuctionLotStatus.Auctioning
+          ? 'Running'
+          : status === AuctionLotStatus.Canceled
+          ? 'Canceled'
+          : status === AuctionLotStatus.Pause
+          ? 'Pause'
+          : 'Waiting'}
+      </div>
     </div>
-    <div className='text-sm'>Status: {isPlaying ? 'Running' : 'Paused'}</div>
-  </div>
-)
+  )
+}
 
 interface LiveBiddingProps {
   bids: Message[]
@@ -39,6 +64,7 @@ interface LiveBiddingProps {
   isEndAuction?: boolean
   winnerCustomer?: string
   winnerPrice?: string
+  status?: string
 }
 
 const LiveBidding: React.FC<LiveBiddingProps> = ({
@@ -48,33 +74,81 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
   currentPrice,
   isEndAuction,
   winnerCustomer,
-  winnerPrice
+  winnerPrice,
+  status
 }) => {
-  const [isPlaying, setIsPlaying] = useState<boolean>(true)
+  const [statusLot, setStatusLot] = useState<AuctionLotStatus>(Number(status) ? Number(status) : 9)
 
   const calculatePriceReduction = (startPrice: number, currentPrice: number): string => {
     const reduction = ((startPrice - currentPrice) / startPrice) * 100
     return reduction.toFixed(1)
   }
 
+  const [updateStatusLot] = useUpdateStatusLotMutation()
+
+  const handlePause = () => {
+    updateStatusLot({ lotid: itemLot.id, status: AuctionLotStatus.Pause }).then((res) => {
+      if (res.data?.code === 200) {
+        setStatusLot(AuctionLotStatus.Pause)
+      }
+    })
+  }
+
+  const handleStart = () => {
+    updateStatusLot({ lotid: itemLot.id, status: AuctionLotStatus.Auctioning }).then((res) => {
+      if (res.data?.code === 200) {
+        setStatusLot(AuctionLotStatus.Auctioning)
+      }
+    })
+  }
+
   const sortBidsByTime =
-    Array.isArray(bids) && bids.length > 0 ? bids.sort((a, b) => +new Date(b.bidTime) - +new Date(a.bidTime)) : []
+    Array.isArray(bids) && bids.length > 0
+      ? bids.sort((a, b) => {
+          const timediff = +new Date(b.bidTime) - +new Date(a.bidTime)
+          if (timediff === 0) {
+            return b.currentPrice - a.currentPrice
+          }
+          return timediff
+        })
+      : []
 
   const renderBiddingContent = () => {
     switch (itemLot.lotType) {
       case 'Public_Auction':
+        const isAuctionEndSold = itemLot.status === 'Sold'
+        const isAuctionEndPassed = itemLot.status === 'Passed'
+
+        const topBid =
+          Array.isArray(sortBidsByTime) && sortBidsByTime.length
+            ? sortBidsByTime.filter((bid) => bid.status === 'Success')[0] || sortBidsByTime[0]
+            : null
         return (
           <>
             <div className='p-4 text-white bg-red-600 rounded-t-lg'>
-              <h2 className='mb-2 text-2xl font-bold'>
-                TOP BID:{' '}
-                <span>
-                  {Array.isArray(sortBidsByTime) && sortBidsByTime.length
-                    ? `${sortBidsByTime[0].currentPrice} by ${sortBidsByTime[0].firstName} ${sortBidsByTime[0].lastName}`
-                    : ''}
-                </span>
+              <h2 className='mb-4 text-2xl font-bold text-gray-800'>
+                {isAuctionEndSold ? 'The winner is:' : isAuctionEndPassed ? 'No winner' : 'Top bid:'}
               </h2>
-              <HeaderControls backgroundColor='bg-red-500' isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+              {!isAuctionEndPassed && Array.isArray(sortBidsByTime) && sortBidsByTime.length ? (
+                <div className='p-4 bg-red-300 rounded-lg shadow-md'>
+                  <div className='mb-2 text-lg font-semibold text-gray-700'>
+                    <span className='text-red-500'>Id: {topBid?.customerId}</span>
+                    <span className='ml-2'>
+                      {topBid?.firstName} {topBid?.lastName}
+                    </span>
+                  </div>
+                  <div className='text-xl font-bold text-green-600'>${topBid?.currentPrice}</div>
+                </div>
+              ) : (
+                ''
+              )}
+
+              <HeaderControls
+                backgroundColor='bg-red-500'
+                status={statusLot}
+                handlePause={handlePause}
+                handleStart={handleStart}
+              />
             </div>
             <div className='p-2 mt-4'>
               {Array.isArray(sortBidsByTime) && sortBidsByTime.length > 0 ? (
@@ -115,6 +189,9 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
         )
 
       case 'Auction_Price_GraduallyReduced':
+        const { data } = useGetWinnerForLotQuery(itemLot.id, {
+          skip: itemLot.status !== 'Sold' && itemLot.status !== 'Passed'
+        })
         const startPrice = itemLot.startPrice || 0
         console.log('current price', currentPrice)
 
@@ -122,7 +199,12 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
           <>
             <div className='p-4 text-white bg-purple-600 rounded-t-lg'>
               <h2 className='mb-2 text-2xl font-bold'>DECLINING PRICE AUCTION</h2>
-              <HeaderControls backgroundColor='bg-purple-500' isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+              <HeaderControls
+                backgroundColor='bg-purple-500'
+                status={statusLot}
+                handlePause={handlePause}
+                handleStart={handleStart}
+              />
               <div className='grid grid-cols-2 gap-4 mt-2'>
                 <div className='p-3 bg-purple-500 rounded'>
                   <div className='text-sm opacity-80'>Starting Price</div>
@@ -152,6 +234,23 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
                 <p>Winning Price: ${winnerPrice}</p>
               </div>
             )}
+
+            {itemLot.status === 'Sold' && data ? (
+              <div className='p-4 text-center bg-purple-100'>
+                <h3 className='text-xl font-bold'>Auction Ended</h3>
+                <p>
+                  Winner: {data.data[0].customer.firstName} {data.data[0].customer.lastName}
+                </p>
+                <p>Winning Price: ${data.data[0].currentPrice}</p>
+              </div>
+            ) : (
+              <div>
+                <div className='p-4 text-center bg-purple-100'>
+                  <h3 className='text-xl font-bold'>Auction Ended</h3>
+                  <p>No winner for this auction.</p>
+                </div>
+              </div>
+            )}
           </>
         )
 
@@ -161,7 +260,12 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
           <>
             <div className='p-4 text-white bg-blue-600 rounded-t-lg'>
               <h2 className='mb-2 text-2xl font-bold'>PRIVATE TOP BID</h2>
-              <HeaderControls backgroundColor='bg-blue-500' isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+              <HeaderControls
+                backgroundColor='bg-blue-500'
+                status={statusLot}
+                handlePause={handlePause}
+                handleStart={handleStart}
+              />
               <p className='mt-2 text-4xl font-bold'>
                 {secretBids?.[0]?.bidPrice
                   ? secretBids[0].bidPrice.toLocaleString('vn-vi', {
@@ -191,7 +295,12 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
           <>
             <div className='p-4 text-white bg-green-600 rounded-t-lg'>
               <h2 className='mb-2 text-2xl font-bold'>FIXED PRICE</h2>
-              <HeaderControls backgroundColor='bg-green-500' isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+              <HeaderControls
+                backgroundColor='bg-green-500'
+                status={statusLot}
+                handlePause={handlePause}
+                handleStart={handleStart}
+              />
               <p className='mt-2 text-4xl font-bold'>
                 {itemLot.buyNowPrice
                   ? itemLot.buyNowPrice.toLocaleString('vn-vi', {

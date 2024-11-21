@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { Data } from '../types/Account.type'
 import baseUrl from '../utils/http'
-import { CreateLot, ListLot, LotDetail, PLayerInLot } from '../types/Lot.type'
+import { CreateLot, ListLot, LotDetail, PLayerInLot, WinnerForLotMethod4 } from '../types/Lot.type'
 import { Respone } from '../types/Respone.type'
 
 export const lotApi = createApi({
@@ -133,14 +133,17 @@ export const lotApi = createApi({
         return [{ type: 'Lot', id: 'LIST' }]
       }
     }),
-    UpdateStatusLot: build.mutation<Respone<ListLot>, number>({
-      query: (id) => ({
-        url: `BidPrices/CloseLot?lotId=${id}&status=6`,
+    UpdateStatusLot: build.mutation<Respone<ListLot>, { lotid: number; status: number }>({
+      query: ({ lotid, status }) => ({
+        url: `BidPrices/CloseLot?lotId=${lotid}&status=${status}`,
         method: 'PUT'
       })
     }),
     getPlayerInLot: build.query<Respone<PLayerInLot[]>, number>({
       query: (lotId) => `Lot/GetPlayerInLotFixedAndSercet?lotId=${lotId}`
+    }),
+    getWinnerForLot: build.query<Respone<WinnerForLotMethod4[]>, number>({
+      query: (lotId) => `/CustomerLots/GetWinnerForLot?lotId=${lotId}`
     })
   })
 })
@@ -153,5 +156,6 @@ export const {
   useCreateLotPublicAuctionMutation,
   useCreateLotSecretAuctionMutation,
   useUpdateStatusLotMutation,
-  useGetPlayerInLotQuery
+  useGetPlayerInLotQuery,
+  useGetWinnerForLotQuery
 } = lotApi
