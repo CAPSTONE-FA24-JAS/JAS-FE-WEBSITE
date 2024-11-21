@@ -105,7 +105,7 @@ export default function InvoiceTab() {
           ) : error ? (
             <p>Error loading data</p>
           ) : (
-            <Table columns={columns} dataSource={allowedData} pagination={{ pageSize: 5 }} rowKey='id' />
+            <Table columns={columns} dataSource={allowedData} bordered pagination={{ pageSize: 5 }} rowKey='id' />
           )}
 
           {selectedInvoiceId && (
@@ -133,22 +133,30 @@ export default function InvoiceTab() {
     {
       key: '4',
       label: 'Delivering',
-      children: <Table columns={columns} dataSource={deliveringInvoices} pagination={{ pageSize: 5 }} rowKey='id' />
+      children: (
+        <Table columns={columns} dataSource={deliveringInvoices} bordered pagination={{ pageSize: 5 }} rowKey='id' />
+      )
     },
     {
       key: '5',
       label: 'Delivered',
-      children: <Table columns={columns} dataSource={deliveredInvoices} pagination={{ pageSize: 5 }} rowKey='id' />
+      children: (
+        <Table columns={columns} dataSource={deliveredInvoices} bordered pagination={{ pageSize: 5 }} rowKey='id' />
+      )
     },
     {
       key: '6',
       label: 'Rejected',
-      children: <Table columns={columns} dataSource={rejectedInvoices} pagination={{ pageSize: 5 }} rowKey='id' />
+      children: (
+        <Table columns={columns} dataSource={rejectedInvoices} bordered pagination={{ pageSize: 5 }} rowKey='id' />
+      )
     },
     {
       key: '7',
       label: 'Finished',
-      children: <Table columns={columns} dataSource={finishedInvoices} pagination={{ pageSize: 5 }} rowKey='id' />
+      children: (
+        <Table columns={columns} dataSource={finishedInvoices} bordered pagination={{ pageSize: 5 }} rowKey='id' />
+      )
     }
   ]
 

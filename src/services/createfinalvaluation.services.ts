@@ -1,13 +1,16 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { Data } from '../types/Account.type'
-import baseUrl from '../utils/http'
+import { ValuationGemstoneData, ValuationGemstoneDataParent } from '../types/Gemstones.type'
 import {
   DataResponseArtist,
   DataResponseCategory,
-  DataResponseKeyCharacteristic,
-  KeyCharacteristic
+  DataResponseEnumClarities,
+  DataResponseEnumColorDiamonds,
+  DataResponseEnumColorShapphies,
+  DataResponseEnumCuts,
+  DataResponseKeyCharacteristic
 } from '../types/KeyCharacteristic'
-import { ValuationGemstoneData, ValuationGemstoneDataParent } from '../types/Gemstones.type'
+import baseUrl from '../utils/http'
 
 export const createFinal = createApi({
   reducerPath: 'createFinal',
@@ -40,7 +43,22 @@ export const createFinal = createApi({
       query: () => 'Artists/ViewArtists'
     }),
 
-    // Thêm mutation để gọi API CreateFinalValuation
+    getEnumColorShapphies: build.query<DataResponseEnumColorShapphies, void>({
+      query: () => 'Jewelrys/ViewEnumColorShapphies'
+    }),
+
+    getEnumColorDiamonds: build.query<DataResponseEnumColorDiamonds, void>({
+      query: () => 'Jewelrys/ViewEnumColorDiamonds'
+    }),
+
+    getEnumCuts: build.query<DataResponseEnumCuts, void>({
+      query: () => 'Jewelrys/ViewEnumCuts'
+    }),
+
+    getEnumClarities: build.query<DataResponseEnumClarities, void>({
+      query: () => 'Jewelrys/ViewEnumClarities'
+    }),
+
     createFinalValuation: build.mutation<ValuationGemstoneData, any>({
       query: (payload) => ({
         url: 'Jewelrys/CreateFinalValuation',
@@ -48,10 +66,9 @@ export const createFinal = createApi({
         body: payload,
         formData: true
       }),
-      // Transform the response to match the ValuationGemstoneData interface
       transformResponse: (response: ValuationGemstoneDataParent): ValuationGemstoneData => {
         if (response.isSuccess) {
-          return response.data // Return the data object as defined in your ValuationGemstoneData interface
+          return response.data
         } else {
           throw new Error(response.message || 'Error creating final valuation')
         }
@@ -60,10 +77,13 @@ export const createFinal = createApi({
   })
 })
 
-// Export các hooks cho việc sử dụng trong component
 export const {
   useGetKeyCharacteristicsQuery,
   useGetCategoriesQuery,
   useCreateFinalValuationMutation,
-  useGetArtistQuery
+  useGetArtistQuery,
+  useGetEnumColorShapphiesQuery,
+  useGetEnumColorDiamondsQuery,
+  useGetEnumCutsQuery,
+  useGetEnumClaritiesQuery
 } = createFinal
