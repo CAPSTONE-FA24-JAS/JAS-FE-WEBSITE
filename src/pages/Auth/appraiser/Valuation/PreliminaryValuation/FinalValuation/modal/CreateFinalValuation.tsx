@@ -55,88 +55,10 @@ export default function CreateFinalValuation() {
       details: (MainDiamond | SecondaryDiamond | MainShaphy | SecondaryShaphy)[]
     }[]
   >([
-    {
-      type: 'mainDiamonds',
-      details: [
-        {
-          id: 0,
-          name: '',
-          color: '',
-          cut: '',
-          clarity: '',
-          quantity: 0,
-          settingType: '',
-          dimension: '',
-          shape: '',
-          certificate: '',
-          fluorescence: '',
-          lengthWidthRatio: '',
-          type: '',
-          jewelryId: 0,
-          documentDiamonds: [],
-          imageDiamonds: []
-        }
-      ]
-    },
-    {
-      type: 'secondaryDiamonds',
-      details: [
-        {
-          id: 0,
-          name: '',
-          color: '',
-          cut: '',
-          clarity: '',
-          quantity: 0,
-          settingType: '',
-          dimension: '',
-          shape: '',
-          certificate: '',
-          fluorescence: '',
-          lengthWidthRatio: '',
-          type: '',
-          jewelryId: 0,
-          documentDiamonds: [],
-          imageDiamonds: []
-        }
-      ]
-    },
-    {
-      type: 'mainShaphies',
-      details: [
-        {
-          id: 0,
-          name: '',
-          color: '',
-          carat: '',
-          enhancementType: '',
-          quantity: 0,
-          settingType: '',
-          dimension: '',
-          jewelryId: 0,
-          documentShaphies: [],
-          imageShaphies: []
-        }
-      ]
-    },
-    {
-      type: 'secondaryShaphies',
-      details: [
-        {
-          id: 0,
-          name: '',
-          color: '',
-          carat: '',
-          enhancementType: '',
-          quantity: 0,
-          settingType: '',
-          dimension: '',
-          jewelryId: 0,
-          documentShaphies: [],
-          imageShaphies: []
-        }
-      ]
-    }
+    { type: 'mainDiamonds', details: [] },
+    { type: 'secondaryDiamonds', details: [] },
+    { type: 'mainShaphies', details: [] },
+    { type: 'secondaryShaphies', details: [] }
   ])
 
   const [currentStep, setCurrentStep] = useState(0)
@@ -293,10 +215,23 @@ export default function CreateFinalValuation() {
       const updatedData = [...prevData]
       const gemstone = updatedData.find((gem) => gem.type === type)
 
-      if (gemstone && gemstone.details[index]) {
-        const currentValue = (gemstone.details[index] as any)[field]
-        if (value !== currentValue) {
-          ;(gemstone.details[index] as any)[field] = value || null
+      if (gemstone) {
+        if (!gemstone.details[index]) {
+          gemstone.details[index] = {} as any // Khởi tạo đối tượng nếu chưa tồn tại
+        }
+
+        gemstone.details[index] = {
+          ...gemstone.details[index],
+          [field]: value
+        }
+
+        // Kiểm tra nếu tất cả các trường đều rỗng
+        const isEmpty = Object.values(gemstone.details[index]).every(
+          (val) => val === '' || val === null || val === undefined
+        )
+
+        if (isEmpty) {
+          gemstone.details.splice(index, 1) // Xóa đối tượng nếu tất cả các trường đều rỗng
         }
       }
 

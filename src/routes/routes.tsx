@@ -40,6 +40,7 @@ import Dashboard from '../pages/Auth/admin/Dashboard/Dashboard'
 import BlogTable from '../pages/Auth/manager/Blog/BlogList'
 import CreateBlogPage from '../pages/Auth/manager/Blog/CreateBlog'
 import BlogDetail from '../pages/Auth/manager/Blog/BlogDetail'
+import WithdrawalRequests from '../pages/Auth/admin/Withdraw/WithdrawList'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -64,7 +65,7 @@ const managerRoutes: RouteProps[] = [
   { path: '/manager/ConsignList', component: RequestConsign, layout: ManagerLayout },
 
   { path: '/manager/manageinvoice', component: InvoiceTab, layout: ManagerLayout },
-
+  { path: '/manager/managewithdraw', component: WithdrawalRequests, layout: ManagerLayout },
   { path: '/manager/auctionlist', component: AuctionList, layout: ManagerLayout },
   { path: '/manager/requestfinal', component: RequestFinalValuation, layout: ManagerLayout },
   { path: '/manager/lotlist', component: LotList, layout: ManagerLayout },

@@ -2,52 +2,14 @@ import { Card, Carousel } from 'antd'
 import { useViewTopJewelryAuctionsQuery, useViewTopSellersQuery } from '../../../../../services/manageother.services'
 import './customdots.css'
 
-interface AccountDTO {
-  id: number
-  email: string
-  phoneNumber: string
-  roleId: number
-  roleName: string
-}
-
-interface CustomerDTO {
-  id: number
-  firstName: string
-  lastName: string
-  profilePicture: string
-  gender: string
-  dateOfBirth: string
-  address: string
-  citizenIdentificationCard: string
-  idIssuanceDate: string
-  idExpirationDate: string
-  priceLimit: number
-  expireDate: string
-  walletId: number
-  walletDTO: {
-    id: number
-    balance: number | null
-    availableBalance: number | null
-  }
-  accountDTO: AccountDTO
-}
-
-interface TopSeller {
-  customerDTO: CustomerDTO
-  totalSellerValuation: number
-}
-
 const TopProducts = () => {
-  // Fetch top jewelry and top seller data
   const { data: topJewelryData, isLoading: isLoadingJewelry } = useViewTopJewelryAuctionsQuery()
   const { data: topSellerData, isLoading: isLoadingSellers } = useViewTopSellersQuery()
 
-  // Show loading state if any of the data is being fetched
   if (isLoadingJewelry || isLoadingSellers) {
     return <div>Loading...</div>
   }
 
-  // Destructure the data arrays for top jewelry and top sellers
   const topJewelry = topJewelryData?.data || []
   const topSellers = topSellerData?.data || []
 
