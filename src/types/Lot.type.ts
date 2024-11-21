@@ -372,3 +372,33 @@ export interface PLayerInLot {
   bidPrice: number
   bidTime: string
 }
+
+export enum AuctionLotStatus {
+  Waiting = 1, // Lot is pending preparation or approval
+  Ready = 2, // Lot is ready for auction
+  Auctioning = 3, // Lot is currently being auctioned
+  Sold = 4, // Lot has been sold
+  Canceled = 5, // Lot has been canceled
+  Passed = 6, // Lot remains unsold after the auction
+  Pause = 7 // Lot auctioning is temporarily paused
+}
+
+export interface WinnerForLotMethod4 {
+  currentPrice: number
+  isDeposit: boolean
+  customerId: number
+  lotId: number
+  priceLimit: number
+  isWinner: boolean
+  isRefunded: boolean
+  isInvoiced: boolean
+  expireDateOfBidLimit: string
+  customer: {
+    id: number
+    firstName: string
+    lastName: string
+    profilePicture: string
+    gender: string
+    address: string
+  }
+}
