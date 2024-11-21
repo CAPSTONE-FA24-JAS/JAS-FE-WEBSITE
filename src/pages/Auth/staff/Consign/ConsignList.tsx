@@ -149,6 +149,7 @@ const RequestConsignList = () => {
         dataSource={filteredDataSource}
         columns={columns}
         rowKey='id'
+        bordered
         pagination={{
           total: data?.totalItemRepsone,
           current: pageIndex,

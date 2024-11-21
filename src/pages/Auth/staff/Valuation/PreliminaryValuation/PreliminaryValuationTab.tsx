@@ -100,7 +100,13 @@ const PreliminaryValuationTab = () => {
 
   return (
     <div>
-      <Table dataSource={preliminaryData} columns={preliminaryColumns} rowKey='id' pagination={{ pageSize: 6 }} />
+      <Table
+        dataSource={preliminaryData}
+        columns={preliminaryColumns}
+        rowKey='id'
+        bordered
+        pagination={{ pageSize: 6 }}
+      />
 
       {selectedRecord && (
         <PreliminaryValuationDetail

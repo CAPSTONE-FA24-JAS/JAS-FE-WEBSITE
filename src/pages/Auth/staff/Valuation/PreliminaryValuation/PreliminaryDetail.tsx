@@ -32,18 +32,23 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
   const openModal = () => setIsModalVisible(true)
   const closeModal = () => setIsModalVisible(false)
   const handleReceiptLinkClick = () => {
-    // Check if valuationDocuments is an array and contains at least one document
-    if (record?.valuationDocuments?.length > 0) {
-      // Assuming you want to open the first document's link
-      const receiptLink = record.valuationDocuments[0]?.documentLink
+    // Kiểm tra nếu trạng thái là "RecivedJewelry"
+    if (record?.status === 'RecivedJewelry') {
+      // Kiểm tra nếu valuationDocuments là một mảng và chứa ít nhất một tài liệu
+      if (record?.valuationDocuments?.length > 0) {
+        // Giả sử bạn muốn mở liên kết của tài liệu đầu tiên
+        const receiptLink = record.valuationDocuments[0]?.documentLink
 
-      if (receiptLink) {
-        window.open(receiptLink, '_blank')
+        if (receiptLink) {
+          window.open(receiptLink, '_blank')
+        } else {
+          console.error('No document link found.')
+        }
       } else {
-        console.error('No document link found.')
+        console.error('No valuation documents found.')
       }
     } else {
-      console.error('No valuation documents found.')
+      console.error('Access denied: Status is not RecivedJewelry.')
     }
   }
 
@@ -132,7 +137,13 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
           <div className='flex mb-4'>
             <strong className='w-1/3'>Estimate Price:</strong>
             <span className='font-bold text-red-800'>
-              {record?.estimatePriceMin} - {record?.estimatePriceMax} VND
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                record?.estimatePriceMin || 0
+              )}{' '}
+              -{' '}
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                record?.estimatePriceMax || 0
+              )}
             </span>
           </div>
 
@@ -140,13 +151,17 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
             <strong className='w-1/3'>Status:</strong>
             <span className='font-bold text-red-800'>{record?.status}</span>
           </div>
+          {record?.status === 'RecivedJewelry' && (
+            <div className='flex mb-4'>
+              <strong className='w-1/3'>Receipt:</strong>
+              <p className='italic text-blue-500 cursor-pointer' onClick={handleReceiptLinkClick}>
+                Receipt Link
+              </p>
+            </div>
+          )}
         </div>
       </div>
-      <div className='mt-6'>
-        <p className='italic text-blue-500 cursor-pointer' onClick={handleReceiptLinkClick}>
-          Receipt Link
-        </p>
-      </div>
+
       {/* Note Section */}
       <div className='mt-6'>
         <p className='italic font-bold text-red-500'>

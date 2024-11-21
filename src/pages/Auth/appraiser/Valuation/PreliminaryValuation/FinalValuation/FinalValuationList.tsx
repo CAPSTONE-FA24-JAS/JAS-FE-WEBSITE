@@ -89,6 +89,7 @@ const FinalValuationList = () => {
           columns={finalColumns}
           rowKey='id'
           loading={isLoading}
+          bordered
           pagination={{ pageSize: 6 }}
         />
 
