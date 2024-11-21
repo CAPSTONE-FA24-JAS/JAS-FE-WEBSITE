@@ -132,6 +132,7 @@ const RequestPreliminaryList = () => {
           dataSource={filteredDataSource}
           columns={columns}
           rowKey='id'
+          bordered
           pagination={{
             total: data?.data?.totalItemRepsone,
             current: pageIndex,

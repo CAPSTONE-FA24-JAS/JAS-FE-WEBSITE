@@ -112,16 +112,32 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
           <div className='flex mb-4'>
             <strong className='w-1/3'>Estimated Price:</strong>
             <span>
-              {record?.jewelry?.estimatePriceMin} - {record?.jewelry?.estimatePriceMax} VND
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                record?.jewelry?.estimatePriceMin || 0
+              )}{' '}
+              -
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                record?.jewelry?.estimatePriceMax || 0
+              )}
             </span>
           </div>
+
           <div className='flex mb-4'>
             <strong className='w-1/3'>Starting Price:</strong>
-            <span>{record?.jewelry?.startingPrice} VND</span>
+            <span>
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                record?.jewelry?.startingPrice || 0
+              )}
+            </span>
           </div>
+
           <div className='flex mb-4'>
             <strong className='w-1/3'>Final Price:</strong>
-            <span className='font-bold text-red-800'>{record?.jewelry?.specificPrice} VND</span>
+            <span className='font-bold text-red-800'>
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                record?.jewelry?.specificPrice || 0
+              )}
+            </span>
           </div>
 
           <div>

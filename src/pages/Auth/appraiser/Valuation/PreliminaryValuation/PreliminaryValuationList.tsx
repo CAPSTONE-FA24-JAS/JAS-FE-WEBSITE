@@ -136,7 +136,7 @@ const PreliminaryValuationList = () => {
       <div className='mb-4' style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Search placeholder='Search by customer name' enterButton onSearch={handleSearch} style={{ width: 300 }} />
       </div>
-      <Table dataSource={filteredPreliminaryData} columns={columns} rowKey='id' />
+      <Table dataSource={filteredPreliminaryData} columns={columns} rowKey='id' bordered />
       <PreliminaryDetailsModal
         isVisible={isModalVisible}
         onUpdate={handleUpdate}
