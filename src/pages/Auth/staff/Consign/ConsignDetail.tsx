@@ -3,21 +3,54 @@ import { Button, Modal, notification } from 'antd'
 import React, { useState } from 'react'
 import { useUpdatePreliminaryValuationStatusMutation } from '../../../../services/valuation.services'
 
+// Định nghĩa interface cho ImageValuation
+interface ImageValuation {
+  imageLink: string
+}
+
+// Định nghĩa interface cho Seller
+interface Seller {
+  firstName: string
+  lastName: string
+  accountDTO: {
+    email: string
+    phoneNumber: string
+  }
+}
+
+// Định nghĩa interface cho Record
+interface Record {
+  id: number
+  name: string
+  seller: Seller
+  width: number
+  height: number
+  depth: number
+  description: string
+  status: string | number
+  imageValuations: ImageValuation[]
+}
+
+// Sử dụng interface Record trong ConsignDetailProps
 interface ConsignDetailProps {
   isVisible: boolean
   onCancel: () => void
-  record: any
+  record: Record | null
   status: string
   setStatus: (status: string) => void
   refetch: () => void
 }
 
 const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, record, setStatus, refetch }) => {
+  if (!record) {
+    return null
+  }
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [updateStatus] = useUpdatePreliminaryValuationStatusMutation() // Use the mutation
   const [isLoading, setIsLoading] = useState(false) // Thêm state để quản lý loading
 
-  const images = record?.imageValuations?.map((img: any) => img.imageLink) || [
+  const images = record?.imageValuations?.map((img: ImageValuation) => img.imageLink) || [
     'https://via.placeholder.com/150?text=No+Image'
   ]
 
@@ -43,7 +76,7 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, reco
         message: 'Status Update Failed'
       })
     } finally {
-      setIsLoading(false) // Kết thúc loading
+      setIsLoading(false)
     }
   }
 
@@ -91,7 +124,7 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, reco
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Phone:</strong>
-            <span className='font-semibold '>{record?.seller?.phoneNumber}</span>
+            <span className='font-semibold '>{record?.seller?.accountDTO.phoneNumber}</span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Width:</strong>

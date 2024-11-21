@@ -127,7 +127,7 @@ const RequestConsignList = () => {
     <div className='p-4'>
       <Row justify='space-between' align='middle' className='mb-4'>
         <Col>
-          <h2 className='text-2xl font-bold'>Consign List</h2>
+          <h2 className='text-2xl font-bold'>Request Preliminary List</h2>
         </Col>
         <Col>
           <Row gutter={16} align='middle'>

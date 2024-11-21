@@ -29,7 +29,6 @@ import Overview from '../pages/Auth/manager/Overview'
 import RequestConsignList from '../pages/Auth/staff/Consign/ConsignList'
 import FinanceProofList from '../pages/Auth/staff/FinanceProof/FinanceProofList'
 import Index from '../pages/Auth/staff/Mission/LiveBidding'
-import MyMissionList from '../pages/Auth/staff/Mission/MyMission'
 import CreateAuthorization from '../pages/Auth/staff/Valuation/AuthorizationLetter'
 import ValuationTabs from '../pages/Auth/staff/Valuation/ValuationList'
 import LotDetail from '../pages/clientPages/DetailLot'
@@ -90,14 +89,12 @@ const adminRoutes: RouteProps[] = [
 ]
 
 const staffCRoutes: RouteProps[] = [
-  { path: '/staff', component: MyMissionList, layout: StaffLayout },
   { path: '/staff/requestPreliminary', component: RequestPreliminaryList, layout: StaffLayout },
   { path: '/staff/ConsignList', component: RequestConsignList, layout: StaffLayout },
   { path: '/staff/valuationList', component: ValuationTabs, layout: StaffLayout },
   { path: '/staff/financeproof', component: FinanceProofList, layout: StaffLayout },
   { path: '/staff/auctionlist', component: AuctionList, layout: StaffLayout },
   { path: '/staff/authorization', component: CreateAuthorization, layout: StaffLayout },
-  { path: '/staff/mymission', component: MyMissionList, layout: StaffLayout },
   { path: '/staff/lotdetailmanager/:id', component: Index, layout: StaffLayout },
   { path: '/staff/lotlist/:id', component: LotList, layout: StaffLayout }
 ]

@@ -76,7 +76,7 @@ export default function BillInVoiceList() {
     {
       title: 'Action',
       key: 'action',
-      render: (text: any, record: Invoice) => (
+      render: (record: Invoice) => (
         <div>
           <Tooltip title='View Details'>
             <Button type='link' icon={<EyeOutlined />} onClick={() => showDetails(record)} />

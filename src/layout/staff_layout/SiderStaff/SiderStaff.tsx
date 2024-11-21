@@ -44,11 +44,7 @@ export default function SiderStaff() {
 
   const getConditionalItems = (): MenuItem[] => {
     return [
-      getItem('My Mission', 'myMission', <AiOutlineBulb className='text-base' />, [
-        getItem('Mission List', 'mymission', <RiProductHuntLine className='text-base' />),
-        getItem('Live Bidding', 'livebidding', <AiOutlineClockCircle className='text-base' />)
-      ]),
-      getItem('View Request Consign', 'consign', <MdOutlineInventory2 className='text-base' />),
+      getItem('Request Preliminary', 'consign', <MdOutlineInventory2 className='text-base' />),
       getItem('Valuation Manage', 'manageValuation', <AiOutlineStar className='text-base' />, [
         getItem('Valuation List', 'valuation', <AiOutlineTable className='text-base' />)
       ]),
@@ -65,7 +61,6 @@ export default function SiderStaff() {
     .set('valuation', '/staff/valuationList')
     .set('financeProof', '/staff/financeproof')
     .set('auctionlistSub', '/staff/auctionlist')
-    .set('mymission', '/staff/mymission')
     .set('livebidding', '/staff/livebidding')
 
   return (
