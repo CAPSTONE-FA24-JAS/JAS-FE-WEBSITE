@@ -7,21 +7,17 @@ import { useGetWinnerForLotQuery, useUpdateStatusLotMutation } from '../../../..
 
 interface HeaderControlsProps {
   backgroundColor: string
-  status: AuctionLotStatus
+  status: string
   handlePause: () => void
   handleStart: () => void
   statusLot12?: string
 }
 
 const HeaderControls: React.FC<HeaderControlsProps> = ({ backgroundColor, status, handlePause, handleStart }) => {
-  console.log('statuslot', status)
+  console.log('status header', status)
 
   const isDiableBtn =
-    status === AuctionLotStatus.Canceled ||
-    status === AuctionLotStatus.Sold ||
-    status === AuctionLotStatus.Passed ||
-    status === AuctionLotStatus.Waiting ||
-    status === AuctionLotStatus.Ready
+    status === 'Canceled' || status === 'Sold' || status === 'Passed' || status === 'Waiting' || status === 'Ready'
   return (
     <div className='flex justify-between py-1'>
       <div className='flex gap-2'>
@@ -44,11 +40,11 @@ const HeaderControls: React.FC<HeaderControlsProps> = ({ backgroundColor, status
       </div>
       <div className='text-sm'>
         Status:{' '}
-        {status === AuctionLotStatus.Auctioning
+        {status.toLowerCase() === 'Auctioning'.toLowerCase()
           ? 'Running'
-          : status === AuctionLotStatus.Canceled
+          : status === 'Canceled'.toLowerCase()
           ? 'Canceled'
-          : status === AuctionLotStatus.Pause
+          : status === 'Pause'.toLowerCase()
           ? 'Pause'
           : 'Waiting'}
       </div>
@@ -77,7 +73,7 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
   winnerPrice,
   status
 }) => {
-  const [statusLot, setStatusLot] = useState<AuctionLotStatus>(Number(status) ? Number(status) : 9)
+  const [statusLot, setStatusLot] = useState<string>(() => status || '')
 
   const calculatePriceReduction = (startPrice: number, currentPrice: number): string => {
     const reduction = ((startPrice - currentPrice) / startPrice) * 100
@@ -89,7 +85,7 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
   const handlePause = () => {
     updateStatusLot({ lotid: itemLot.id, status: AuctionLotStatus.Pause }).then((res) => {
       if (res.data?.code === 200) {
-        setStatusLot(AuctionLotStatus.Pause)
+        setStatusLot('Pause')
       }
     })
   }
@@ -97,7 +93,7 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
   const handleStart = () => {
     updateStatusLot({ lotid: itemLot.id, status: AuctionLotStatus.Auctioning }).then((res) => {
       if (res.data?.code === 200) {
-        setStatusLot(AuctionLotStatus.Auctioning)
+        setStatusLot('Auctioning')
       }
     })
   }

@@ -119,7 +119,7 @@ export function useBidding(): UseBiddingResult {
     })
 
     connection.on('StatusBid', (status: string) => {
-      console.log('StatusBid', status)
+      console.log('StatusBid ////////////////////////////', status)
       setStatus(status)
     })
 
