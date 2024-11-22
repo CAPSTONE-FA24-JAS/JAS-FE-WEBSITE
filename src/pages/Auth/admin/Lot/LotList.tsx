@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Table, Button, Input, Space, Tag, notification } from 'antd'
+import { Table, Button, Input, Space, Tag, notification, Tooltip } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import type { TableProps } from 'antd'
 import AddLotModal from './modal/AddLotModal'
@@ -18,6 +18,16 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../../../../store'
 import { RoleType } from '../../../../slice/authLoginAPISlice'
 
+const getLotTypeConfig = (lotType: string): { label: string; color: string } => {
+  const config: Record<string, { label: string; color: string }> = {
+    Fixed_Price: { label: 'Fixed Price', color: 'green' },
+    Secret_Auction: { label: 'Secret Auction', color: 'blue' },
+    Public_Auction: { label: 'Public Auction', color: 'red' },
+    Auction_Price_GraduallyReduced: { label: 'Reverse Auction', color: 'purple' }
+  }
+  return config[lotType] || { label: lotType, color: 'default' }
+}
+
 const LotList = () => {
   const [searchText, setSearchText] = useState('')
   const [modalVisible, setModalVisible] = useState(false)
@@ -33,16 +43,25 @@ const LotList = () => {
   const [createPublic, { isLoading: loadingPublice }] = useCreateLotPublicAuctionMutation()
   const [createPriceGraduallyReduced, { isLoading: loadingReduce }] = useCreateLotAuctionPriceGraduallyReducedMutation()
 
-  console.log('lotsData:', lotsData)
-
   const roleId = useSelector((state: RootState) => state.authLoginAPI.roleId)
 
   const columns: TableProps<ListLot>['columns'] = [
-    { title: 'ID', dataIndex: 'id', key: 'id' },
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+      width: 60,
+      fixed: 'left'
+    },
     {
       title: 'Title',
       dataIndex: 'title',
       key: 'title',
+      width: 180,
+      fixed: 'left',
+      ellipsis: {
+        showTitle: true
+      },
       render: (text, record: ListLot) => {
         let linkPath = ''
         switch (roleId) {
@@ -55,65 +74,99 @@ const LotList = () => {
           default:
             linkPath = `/staff/lotdetailmanager/${record.id}`
         }
-        return <Link to={linkPath}>{text}</Link>
+        return (
+          <Tooltip title={text}>
+            <div className='whitespace-normal'>
+              <Link to={linkPath}>{text}</Link>
+            </div>
+          </Tooltip>
+        )
       }
     },
-    { title: 'Start Price', dataIndex: 'startPrice', key: 'startPrice', render: (value) => parsePriceVND(value) },
+    {
+      title: 'Start Price',
+      dataIndex: 'startPrice',
+      key: 'startPrice',
+      width: 100,
+      render: (value) => parsePriceVND(value)
+    },
     {
       title: 'Buy Now Price',
       dataIndex: 'finalPriceSold',
       key: 'finalPriceSold',
+      width: 100,
       render: (value) => parsePriceVND(value)
     },
-
     {
       title: 'Bid Increment',
       dataIndex: 'bidIncrement',
       key: 'bidIncrement',
+      width: 100,
       render: (value) => parsePriceVND(value)
     },
-    { title: 'Deposit', dataIndex: 'deposit', key: 'deposit', render: (value) => parsePriceVND(value) },
     {
-      title: 'Buy Now Price(for method 1)',
+      title: 'Deposit',
+      dataIndex: 'deposit',
+      key: 'deposit',
+      width: 100,
+      render: (value) => parsePriceVND(value)
+    },
+    {
+      title: 'Buy Now Price (M1)',
       dataIndex: 'buyNowPrice',
       key: 'buyNowPrice',
+      width: 120,
       render: (value) => parsePriceVND(value)
     },
-
     {
-      title: 'Actual End Time',
+      title: 'End Time',
       dataIndex: 'actualEndTime',
       key: 'actualEndTime',
-      render: (value) => parseDate(value, 'dd/mm/yyy hh/mm/ss')
+      width: 120,
+      render: (value) => parseDate(value, 'dd/mm/yyyy hh:mm:ss')
     },
     {
       title: 'Financial Proof',
       dataIndex: 'haveFinancialProof',
       key: 'haveFinancialProof',
+      width: 80,
+      align: 'center',
       render: (value) => (value ? 'Yes' : 'No')
     },
     {
-      title: 'Extend Time',
+      title: 'Extend',
       dataIndex: 'isExtend',
       key: 'isExtend',
+      width: 70,
+      align: 'center',
       render: (value) => (value ? 'Yes' : 'No')
     },
-    { title: 'Lot Type', dataIndex: 'lotType', key: 'lotType' },
+    {
+      title: 'Lot Type',
+      dataIndex: 'lotType',
+      key: 'lotType',
+      width: 100,
+      render: (lotType) => {
+        const { label, color } = getLotTypeConfig(lotType)
+        return <Tag color={color}>{label}</Tag>
+      }
+    },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      width: 90,
       render: (status) => {
         let color = 'default'
-        switch (status) {
+        switch (status.toUpperCase()) {
           case 'WAITING':
-            color = 'default'
+            color = 'yellow'
             break
           case 'AUCTION':
-            color = 'processing'
+            color = 'indigo'
             break
           case 'READY':
-            color = 'cyan'
+            color = 'green'
             break
           case 'SOLD':
             color = 'success'
@@ -121,8 +174,11 @@ const LotList = () => {
           case 'PASSED':
             color = 'error'
             break
+          case 'UPCOMING':
+            color = 'blue'
+            break
           default:
-            color = 'default'
+            color = 'gray'
         }
         return <Tag color={color}>{status}</Tag>
       }
@@ -130,21 +186,18 @@ const LotList = () => {
     {
       title: 'Action',
       key: 'action',
+      fixed: 'right',
+      width: 100,
       render: (_, record) =>
         auctionData?.data.status === 'Waiting' ||
         (auctionData?.data.status === 'UpComing' && (
-          <Space size='middle'>
-            <Button icon={<EditOutlined />} size='small' onClick={() => handleEdit(record)}>
-              Edit
-            </Button>
-            <Button icon={<DeleteOutlined />} size='small' danger>
-              Delete
-            </Button>
+          <Space size='small'>
+            <Button icon={<EditOutlined />} size='small' onClick={() => handleEdit(record)} />
+            <Button icon={<DeleteOutlined />} size='small' danger />
           </Space>
         ))
     }
   ]
-
   const handleAdd = () => {
     setEditingLot(null)
     setModalVisible(true)
@@ -294,11 +347,12 @@ const LotList = () => {
         <Table
           columns={columns}
           dataSource={filteredLots || []}
+          scroll={{ x: 'max-content' }}
           rowKey='id'
           pagination={{
             pageSize: 5
           }}
-          size='small'
+          size='middle'
           loading={isLoading}
         />
       </div>

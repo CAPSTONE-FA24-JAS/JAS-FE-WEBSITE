@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { Data } from '../types/Account.type'
 import baseUrl from '../utils/http'
-import { CreateLot, ListLot, LotDetail, PLayerInLot } from '../types/Lot.type'
+import { CreateLot, ListLot, LotDetail, PLayerInLot, WinnerForLotMethod4 } from '../types/Lot.type'
 import { Respone } from '../types/Respone.type'
 
 export const lotApi = createApi({
@@ -22,7 +22,7 @@ export const lotApi = createApi({
   refetchOnMountOrArgChange: true,
   endpoints: (build) => ({
     getLotsByAuctionId: build.query<Respone<ListLot[]>, number>({
-      query: (auctionId) => `/Lot/ViewListLotByAuction?auctionId=${auctionId}`,
+      query: (auctionId) => `Lot/ViewListLotByAuction?auctionId=${auctionId}`,
       providesTags: (result) => {
         if (result?.data !== null) {
           return result?.data
@@ -33,7 +33,7 @@ export const lotApi = createApi({
       }
     }),
     getLotDetailById: build.query<Respone<LotDetail>, number>({
-      query: (id) => `/Lot/ViewDetailLotById?Id=${id}`,
+      query: (id) => `Lot/ViewDetailLotById?Id=${id}`,
       providesTags: (result) => {
         if (result) {
           return [{ type: 'Lot', id: result.data.id }]
@@ -46,7 +46,7 @@ export const lotApi = createApi({
       query: (body) => (
         console.log(body),
         {
-          url: '/Lot/CreateLotFixedPrice',
+          url: 'Lot/CreateLotFixedPrice',
           method: 'POST',
           body: {
             title: body.title,
@@ -67,7 +67,7 @@ export const lotApi = createApi({
       query: (body) => (
         console.log(body),
         {
-          url: '/Lot/CreateLotPublicAuction',
+          url: 'Lot/CreateLotPublicAuction',
           method: 'POST',
           body: {
             title: body.title,
@@ -91,7 +91,7 @@ export const lotApi = createApi({
       query: (body) => (
         console.log(body),
         {
-          url: '/Lot/CreateLotSecretAuction',
+          url: 'Lot/CreateLotSecretAuction',
           method: 'POST',
           body: {
             title: body.title,
@@ -113,7 +113,7 @@ export const lotApi = createApi({
       query: (body) => (
         console.log(body),
         {
-          url: '/Lot/CreateLotAuctionPriceGraduallyReduced',
+          url: 'Lot/CreateLotAuctionPriceGraduallyReduced',
           method: 'POST',
           body: {
             title: body.title,
@@ -133,14 +133,24 @@ export const lotApi = createApi({
         return [{ type: 'Lot', id: 'LIST' }]
       }
     }),
-    UpdateStatusLot: build.mutation<Respone<ListLot>, number>({
-      query: (id) => ({
-        url: `BidPrices/CloseLot?lotId=${id}&status=6`,
+    openAndPauseLot: build.mutation<Respone<string>, { lotid: number; status: number }>({
+      query: ({ lotid, status }) => ({
+        url: `BidPrices/OpenAndPauseLot?lotId=${lotid}&status=${status}`,
         method: 'PUT'
       })
     }),
+    cancelLot: build.mutation<Respone<string>, number>({
+      query: (lotId) => ({
+        url: `BidPrices/CancelLot?lotId=${lotId}`,
+        method: 'PUT'
+      })
+    }),
+
     getPlayerInLot: build.query<Respone<PLayerInLot[]>, number>({
       query: (lotId) => `Lot/GetPlayerInLotFixedAndSercet?lotId=${lotId}`
+    }),
+    getWinnerForLot: build.query<Respone<WinnerForLotMethod4[]>, number>({
+      query: (lotId) => `CustomerLots/GetWinnerForLot?lotId=${lotId}`
     })
   })
 })
@@ -152,6 +162,8 @@ export const {
   useCreateLotAuctionPriceGraduallyReducedMutation,
   useCreateLotPublicAuctionMutation,
   useCreateLotSecretAuctionMutation,
-  useUpdateStatusLotMutation,
-  useGetPlayerInLotQuery
+  useGetPlayerInLotQuery,
+  useGetWinnerForLotQuery,
+  useOpenAndPauseLotMutation,
+  useCancelLotMutation
 } = lotApi

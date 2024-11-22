@@ -24,7 +24,7 @@ export const financeProofApi = createApi({
       query: () => 'BidLimit/ViewAllBidLimit',
 
       providesTags: (result) =>
-        result
+        Array.isArray(result) && result && result.data.length > 0
           ? [
               ...result.data.map(({ id }) => ({ type: 'FinanceProof' as const, id })),
               { type: 'FinanceProof', id: 'LIST' }
@@ -35,7 +35,7 @@ export const financeProofApi = createApi({
       query: (status) => `BidLimit/ViewBidLimtByStatus?statusValue=${status}`,
 
       providesTags: (result) =>
-        result
+        Array.isArray(result) && result && result.data.length > 0
           ? [
               ...result.data.map(({ id }) => ({ type: 'FinanceProof' as const, id })),
               { type: 'FinanceProof', id: 'LIST' }
