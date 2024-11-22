@@ -22,6 +22,7 @@ interface UseBiddingResult {
   error: string | null
   joinLiveBidding: (accountId: string | number, lotId: string | number) => Promise<void>
   disconnect: () => Promise<void>
+  status: string
 }
 
 export function useBidding(): UseBiddingResult {
@@ -30,6 +31,7 @@ export function useBidding(): UseBiddingResult {
   const [messages, setMessages] = useState<Message[]>([])
   const [endTime, setEndTime] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
+  const [status, setStatus] = useState<string>('')
 
   const connectionRef = useRef<HubConnection | null>(null)
 
@@ -112,8 +114,18 @@ export function useBidding(): UseBiddingResult {
     //get all history bid
 
     connection.on('sendhistorybiddingoflotofstaff', (bids: Message[]) => {
-      console.log(`All bids`, bids)
+      console.log(`sendhistorybiddingoflotofstaff All bids`, bids)
       setMessages(bids)
+    })
+
+    connection.on('StatusBid', (status: string) => {
+      console.log('StatusBid ////////////////////////////', status)
+      setStatus(status)
+    })
+
+    connection.on('UpdateStatusBid', (status: string) => {
+      console.log('UpdateStatusBid', status)
+      setStatus(status)
     })
   }, [])
 
@@ -208,6 +220,7 @@ export function useBidding(): UseBiddingResult {
     messages,
     error,
     joinLiveBidding,
-    disconnect
+    disconnect,
+    status
   }
 }

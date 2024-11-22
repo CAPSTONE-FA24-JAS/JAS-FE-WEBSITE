@@ -37,11 +37,13 @@ const RequestPreliminaryList = () => {
   }
 
   const filteredDataSource =
-    data?.data.dataResponse?.filter(
-      (item: any) =>
-        (item.seller.firstName || '').toLowerCase().includes(searchText.toLowerCase()) ||
-        (item.seller.lastName || '').toLowerCase().includes(searchText.toLowerCase())
-    ) || []
+    (Array.isArray(data?.data?.dataResponse) &&
+      data?.data.dataResponse?.filter(
+        (item: any) =>
+          (item.seller.firstName || '').toLowerCase().includes(searchText.toLowerCase()) ||
+          (item.seller.lastName || '').toLowerCase().includes(searchText.toLowerCase())
+      )) ||
+    []
 
   const columns = [
     {
