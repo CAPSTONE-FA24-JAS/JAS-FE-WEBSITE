@@ -162,7 +162,7 @@ const LotList = () => {
           case 'WAITING':
             color = 'yellow'
             break
-          case 'AUCTION':
+          case 'AUCTIONING':
             color = 'indigo'
             break
           case 'READY':
