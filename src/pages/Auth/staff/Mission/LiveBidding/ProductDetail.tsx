@@ -4,7 +4,7 @@ import { LotDetail } from '../../../../../types/Lot.type'
 import { Link } from 'react-router-dom'
 import { convertArrayImages } from '../../../../../utils/convertTypeDayjs'
 
-const { Title, Text } = Typography
+const { Title } = Typography
 const { Panel } = Collapse
 
 interface ProductDetailProps {

@@ -6,6 +6,8 @@ import { useGetFilterByRoleQuery } from '../../../../../services/account.service
 import { Jewelry } from '../../../../../types/Jewelry.type'
 import { Auction } from '../../../../../types/Auction.type'
 import dayjs from 'dayjs'
+import { log } from 'console'
+import { set } from 'react-hook-form'
 
 const { Option } = Select
 
@@ -41,13 +43,13 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
 
   const getBidTypeFromBidForm = (bidForm: string | undefined): string => {
     switch (bidForm) {
-      case 'Fixed_Price':
+      case 'Fixed Price':
         return '1'
-      case 'Secret_Auction':
+      case 'Secret Auction':
         return '2'
-      case 'Public_Auction':
+      case 'Public Auction':
         return '3'
-      case 'Auction_Price_GraduallyReduced':
+      case 'Auction Price GraduallyReduced':
         return '4'
       default:
         return ''
@@ -61,7 +63,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
       setJewelryData(selectedJewelry)
 
       const newAuctionType = getBidTypeFromBidForm(selectedJewelry?.bidForm)
-      console.log('ándasnd', selectedJewelry?.bidForm)
+      console.log('newAuctionType', newAuctionType)
 
       setAuctionType(newAuctionType)
       form.setFieldValue('type', newAuctionType)
@@ -71,6 +73,8 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
   useEffect(() => {
     if (visible) {
       form.resetFields()
+      setChooseJewelry(null)
+      setJewelryData(undefined)
 
       if (initialValues) {
         form.setFieldsValue(initialValues)
@@ -110,6 +114,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
   }
 
   const renderAuctionTypeSpecificFields = () => {
+    console.log('auctionType', auctionType)
     switch (auctionType) {
       case '1': // fixed price auction
         return (
@@ -353,6 +358,23 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
     }
   }
 
+  const JewelryOption: React.FC<{ jewelry: Jewelry }> = ({ jewelry }) => (
+    <div className='flex items-center gap-2'>
+      <div className='flex-shrink-0 w-8 h-8 overflow-hidden'>
+        <Image
+          width={32}
+          height={32}
+          src={jewelry.imageJewelries[0]?.imageLink || 'default-image-url'}
+          className='object-cover'
+          preview={false}
+        />
+      </div>
+      <span className='truncate'>
+        {jewelry.id} - {jewelry.name}
+      </span>
+    </div>
+  )
+
   return (
     <Modal
       forceRender
@@ -376,23 +398,36 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
         </Form.Item>
 
         <Form.Item name='jewelry' label='Jewelry' rules={[{ required: true, message: 'Please select the Jewelry' }]}>
-          <Select onChange={handleJewelryChange}>
+          <Select onChange={handleJewelryChange} optionLabelProp='label'>
             {data?.data.dataResponse.map((jewelry) => (
-              <Option key={jewelry.id} value={jewelry.id}>
-                {jewelry.id} - <Image width={30} src={jewelry.imageJewelries[0]?.imageLink || 'default-image-url'} />-{' '}
-                {jewelry.name}
+              <Option key={jewelry.id} value={jewelry.id} label={`${jewelry.id} - ${jewelry.name}`}>
+                <JewelryOption jewelry={jewelry} />
               </Option>
             ))}
           </Select>
         </Form.Item>
 
-        <Input
-          disabled
-          placeholder='Est price from jewelry'
-          value={
-            jewelryData ? `${jewelryData.estimatePriceMin} - ${jewelryData.estimatePriceMax}` : 'No jewelry selected'
-          }
-        />
+        {jewelryData && (
+          <div className='p-2 mb-4 border rounded'>
+            <div className='flex items-center gap-3'>
+              <div className='flex-shrink-0 w-12 h-12 overflow-hidden'>
+                <Image
+                  width={48}
+                  height={48}
+                  src={jewelryData.imageJewelries[0]?.imageLink || 'default-image-url'}
+                  className='object-cover'
+                  preview={false}
+                />
+              </div>
+              <div className='flex-grow'>
+                <div className='font-medium'>{jewelryData.name}</div>
+                <div className='text-sm text-gray-500'>
+                  Est. Price: {jewelryData.estimatePriceMin} - {jewelryData.estimatePriceMax}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <Form.Item name='deposit' label='Deposit' rules={[{ required: true, message: 'Please input the Deposit' }]}>
           <Input />

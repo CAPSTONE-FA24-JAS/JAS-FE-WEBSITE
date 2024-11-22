@@ -19,6 +19,7 @@ interface UseBiddingResult {
   resultBidding: string
   setResultBidding: React.Dispatch<React.SetStateAction<string>>
   isEndAuctionMethod4: boolean
+  status: string
 }
 
 export function useBiddingMethod4(): UseBiddingResult {
@@ -32,6 +33,7 @@ export function useBiddingMethod4(): UseBiddingResult {
   const [reducePrice, setReducePrice] = useState<number>(0)
   const [resultBidding, setResultBidding] = useState<string>('')
   const [isEndAuctionMethod4, setIsEndAuctionMethod4] = useState<boolean>(false)
+  const [status, setStatus] = useState<string>('')
 
   const connectionRef = useRef<HubConnection | null>(null)
 
@@ -82,6 +84,16 @@ export function useBiddingMethod4(): UseBiddingResult {
     connection.on('ReducePriceBidding', (mess: string, currentPrice: number, time: string) => {
       console.log(`${mess} currentPrice ${currentPrice} at ${time}`)
       setReducePrice(() => currentPrice)
+    })
+
+    connection.on('StatusBid', (status: string) => {
+      console.log('StatusBid ////////////////////////////', status)
+      setStatus(status)
+    })
+
+    connection.on('UpdateStatusBid', (status: string) => {
+      console.log('UpdateStatusBid', status)
+      setStatus(status)
     })
   }, [])
 
@@ -180,6 +192,7 @@ export function useBiddingMethod4(): UseBiddingResult {
     reducePrice,
     resultBidding,
     setResultBidding,
-    isEndAuctionMethod4
+    isEndAuctionMethod4,
+    status
   }
 }
