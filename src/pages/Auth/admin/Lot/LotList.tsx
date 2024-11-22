@@ -105,12 +105,12 @@ const LotList = () => {
       key: 'status',
       render: (status) => {
         let color = 'default'
-        switch (status) {
+        switch (status.toUpperCase()) {
           case 'WAITING':
             color = 'default'
             break
-          case 'AUCTION':
-            color = 'processing'
+          case 'AUCTIONING':
+            color = 'indigo'
             break
           case 'READY':
             color = 'cyan'
