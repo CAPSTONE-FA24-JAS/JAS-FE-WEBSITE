@@ -1,56 +1,13 @@
-import React, { useState } from 'react'
-import { CaretRightOutlined, PauseOutlined } from '@ant-design/icons'
+import React, { useEffect, useState } from 'react'
 import { Message } from '../../../../../hooks/useBidding'
 import { AuctionLotStatus, LotDetail, PLayerInLot } from '../../../../../types/Lot.type'
 import { parseDate } from '../../../../../utils/convertTypeDayjs'
-import { useGetWinnerForLotQuery, useUpdateStatusLotMutation } from '../../../../../services/lot.services'
-
-interface HeaderControlsProps {
-  backgroundColor: string
-  status: string
-  handlePause: () => void
-  handleStart: () => void
-  statusLot12?: string
-}
-
-const HeaderControls: React.FC<HeaderControlsProps> = ({ backgroundColor, status, handlePause, handleStart }) => {
-  console.log('status header', status)
-
-  const isDiableBtn =
-    status === 'Canceled' || status === 'Sold' || status === 'Passed' || status === 'Waiting' || status === 'Ready'
-  return (
-    <div className='flex justify-between py-1'>
-      <div className='flex gap-2'>
-        <button
-          disabled={isDiableBtn}
-          className={`flex items-center justify-center p-2 text-center ${backgroundColor} rounded-3xl`}
-          onClick={() => {
-            handlePause()
-          }}
-        >
-          <PauseOutlined style={{ fontSize: '20px' }} />
-        </button>
-        <button
-          disabled={isDiableBtn}
-          className={`flex items-center justify-center p-2 text-center ${backgroundColor} rounded-3xl `}
-          onClick={() => handleStart()}
-        >
-          <CaretRightOutlined style={{ fontSize: '20px' }} />
-        </button>
-      </div>
-      <div className='text-sm'>
-        Status:{' '}
-        {status.toLowerCase() === 'Auctioning'.toLowerCase()
-          ? 'Running'
-          : status === 'Canceled'.toLowerCase()
-          ? 'Canceled'
-          : status === 'Pause'.toLowerCase()
-          ? 'Pause'
-          : 'Waiting'}
-      </div>
-    </div>
-  )
-}
+import {
+  useCancelLotMutation,
+  useGetWinnerForLotQuery,
+  useOpenAndPauseLotMutation
+} from '../../../../../services/lot.services'
+import { HeaderControls } from './HeaderControls'
 
 interface LiveBiddingProps {
   bids: Message[]
@@ -80,7 +37,11 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
     return reduction.toFixed(1)
   }
 
-  const [updateStatusLot] = useUpdateStatusLotMutation()
+  useEffect(() => {
+    setStatusLot(status || '')
+  }, [status])
+  const [updateStatusLot, isLoadingBtn] = useOpenAndPauseLotMutation()
+  const [cancelLot] = useCancelLotMutation()
 
   const handlePause = () => {
     updateStatusLot({ lotid: itemLot.id, status: AuctionLotStatus.Pause }).then((res) => {
@@ -98,6 +59,14 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
     })
   }
 
+  const handleCancel = () => {
+    cancelLot(itemLot.id).then((res) => {
+      if (res.data?.code === 200) {
+        setStatusLot('Canceled')
+      }
+    })
+  }
+
   const sortBidsByTime =
     Array.isArray(bids) && bids.length > 0
       ? bids.sort((a, b) => {
@@ -110,6 +79,8 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
       : []
 
   const renderBiddingContent = () => {
+    console.log('itemLot type', itemLot.lotType)
+
     switch (itemLot.lotType) {
       case 'Public_Auction':
         const isAuctionEndSold = itemLot.status === 'Sold'
@@ -144,29 +115,32 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
                 status={statusLot}
                 handlePause={handlePause}
                 handleStart={handleStart}
+                handleCancel={handleCancel}
               />
             </div>
-            <div className='p-2 mt-4'>
+            <div className='p-4 bg-gray-100 rounded-b-lg'>
               {Array.isArray(sortBidsByTime) && sortBidsByTime.length > 0 ? (
-                bids.map((bid, index) => (
+                sortBidsByTime.map((bid, index) => (
                   <div
                     key={index}
-                    className={`flex justify-between p-2 mb-1 text-sm ${
+                    className={`flex justify-between items-center p-3 mb-2 rounded-lg shadow ${
                       bid.status === 'Processing'
                         ? 'bg-yellow-100'
                         : bid.status === 'Accepted'
                         ? 'bg-green-100'
                         : bid.status === 'Rejected'
                         ? 'bg-red-100'
-                        : ''
+                        : 'bg-white'
                     }`}
                   >
-                    <span>{parseDate(bid.bidTime, 'dd/mm/yyy hh/mm/ss')}</span>
-                    <span>
+                    <span className='flex-1 text-left text-gray-600'>
+                      {parseDate(bid.bidTime, 'dd/mm/yyyy hh:mm:ss')}
+                    </span>
+                    <span className='flex-1 font-medium text-left text-gray-700'>
                       {bid.customerId}: {bid.firstName} {bid.lastName}
                     </span>
-                    <span>${bid.currentPrice}</span>
-                    <span className='font-semibold'>
+                    <span className='flex-1 font-bold text-right text-green-600'>${bid.currentPrice}</span>
+                    <span className='flex-1 font-semibold text-center text-gray-700'>
                       {bid.status === 'Processing'
                         ? 'Pending'
                         : bid.status === 'Success'
@@ -199,6 +173,7 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
                 status={statusLot}
                 handlePause={handlePause}
                 handleStart={handleStart}
+                handleCancel={handleCancel}
               />
               <div className='grid grid-cols-2 gap-4 mt-2'>
                 <div className='p-3 bg-purple-500 rounded'>
@@ -250,6 +225,9 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
         )
 
       case 'Secret_Auction':
+        const { data: winnerMethod2, isLoading: loadingWinner2 } = useGetWinnerForLotQuery(itemLot.id, {
+          skip: itemLot.status !== 'Sold' && itemLot.status !== 'Passed'
+        })
         const secretBids = [...(playerInLot || [])].sort((a, b) => b.bidPrice - a.bidPrice)
         return (
           <>
@@ -260,6 +238,7 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
                 status={statusLot}
                 handlePause={handlePause}
                 handleStart={handleStart}
+                handleCancel={handleCancel}
               />
               <p className='mt-2 text-4xl font-bold'>
                 {secretBids?.[0]?.bidPrice
@@ -273,18 +252,38 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
             <div className='mt-4'>
               {secretBids.map((bid, index) => (
                 <div key={index} className='flex justify-between p-2 mb-2 text-sm rounded bg-gray-50'>
-                  <span>{parseDate(bid.bidTime, 'dd/mm/yyy hh/mm/ss')}</span>
+                  <span>{parseDate(bid.bidTime, 'dd/mm/yyyy hh:mm:ss')}</span>
                   <span>
                     {bid.customerId}: {bid.customerName}
                   </span>
                   <span>${bid.bidPrice}</span>
                 </div>
               ))}
+
+              {itemLot.status === 'Sold' && winnerMethod2 && !loadingWinner2 ? (
+                <div className='p-4 text-center bg-purple-100'>
+                  <h3 className='text-xl font-bold'>Auction Ended</h3>
+                  <p>
+                    Winner: {winnerMethod2.data[0].customer.firstName} {winnerMethod2.data[0].customer.lastName}
+                  </p>
+                  <p>Winning Price: ${winnerMethod2.data[0].currentPrice}</p>
+                </div>
+              ) : (
+                <div>
+                  <div className='p-4 text-center bg-purple-100'>
+                    <h3 className='text-xl font-bold'>Auction Ended</h3>
+                    <p>No winner for this auction.</p>
+                  </div>
+                </div>
+              )}
             </div>
           </>
         )
 
       case 'Fixed_Price':
+        const { data: winnerMethod1, isLoading: loadingWinner1 } = useGetWinnerForLotQuery(itemLot.id, {
+          skip: itemLot.status !== 'Sold' && itemLot.status !== 'Passed'
+        })
         const fixedPrice = [...(playerInLot || [])].sort((a, b) => +new Date(a.bidTime) - +new Date(b.bidTime))
         return (
           <>
@@ -295,6 +294,7 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
                 status={statusLot}
                 handlePause={handlePause}
                 handleStart={handleStart}
+                handleCancel={handleCancel}
               />
               <p className='mt-2 text-4xl font-bold'>
                 {itemLot.buyNowPrice
@@ -313,9 +313,26 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
                     <div className='font-medium'>{user.customerName}</div>
                     <div className='text-sm text-gray-500'>ID: {user.customerId}</div>
                   </div>
-                  <div className='text-sm text-gray-500'>{parseDate(user.bidTime, 'dd/mm/yyy hh/mm/ss')}</div>
+                  <div className='text-sm text-gray-500'>{parseDate(user.bidTime, 'dd/mm/yyyy hh:mm:ss')}</div>
                 </div>
               ))}
+
+              {itemLot.status === 'Sold' && winnerMethod1 && !loadingWinner1 ? (
+                <div className='p-4 text-center bg-purple-100'>
+                  <h3 className='text-xl font-bold'>Auction Ended</h3>
+                  <p>
+                    Winner: {winnerMethod1.data[0].customer.firstName} {winnerMethod1.data[0].customer.lastName}
+                  </p>
+                  <p>Winning Price: ${winnerMethod1.data[0].currentPrice}</p>
+                </div>
+              ) : (
+                <div>
+                  <div className='p-4 text-center bg-purple-100'>
+                    <h3 className='text-xl font-bold'>Auction Ended</h3>
+                    <p>No winner for this auction.</p>
+                  </div>
+                </div>
+              )}
             </div>
           </>
         )
