@@ -7,6 +7,8 @@ import {
   useUpdateFinanceProofMutation
 } from '../../../../../services/financeProof.services'
 import { RootState } from '../../../../../store'
+import { EyeOutlined } from '@ant-design/icons'
+import { parseDate } from '../../../../../utils/convertTypeDayjs'
 
 interface FinancialProofModalProps {
   visible: boolean
@@ -23,6 +25,11 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
   const [limitBid, setLimitBid] = useState<string>('')
   const [note, setNote] = useState<string>('')
   const staffId = useSelector((state: RootState) => state.authLoginAPI.staffId) ?? 0
+
+  // Mở tab mới để xem tài liệu
+  const handleOpenDocument = (fileUrl: string) => {
+    window.open(fileUrl, '_blank')
+  }
 
   const showSetLimitBidModal = () => {
     setModalVisible(false)
@@ -97,15 +104,22 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
         ) : financeProof ? (
           <div className='flex flex-col gap-4 mt-9'>
             <p>Customer Name: {financeProof.data.customerName}</p>
-            <p>Create Date: {financeProof.data.startDate}</p>
-            <p>Expired Date: {financeProof.data.expireDate}</p>
+            <p>Create Date: {parseDate(financeProof.data.startDate, 'dd/mm/yyyy hh:mm:ss')}</p>
+            <p>Expired Date: {parseDate(financeProof.data.expireDate, 'dd/mm/yyyy hh:mm:ss')}</p>
             {financeProof && financeProof.data.priceLimit ? (
               <Input placeholder='Limit Bid' value={financeProof.data.priceLimit} disabled prefix='$' />
             ) : null}
 
             <Divider />
 
-            <embed src={financeProof.data.file} width='300' height='200' />
+            <div className='flex flex-row items-start gap-4'>
+              <div className='flex-1'>
+                <embed src={financeProof.data.file} width='300' height='200' />
+              </div>
+              <Button type='primary' icon={<EyeOutlined />} onClick={() => handleOpenDocument(financeProof.data.file)}>
+                View Document
+              </Button>
+            </div>
           </div>
         ) : (
           <p>No data available</p>

@@ -28,6 +28,8 @@ import CreateAccount from '../pages/Auth/manager/ManageAccount/CreateAccount'
 import Overview from '../pages/Auth/manager/Overview'
 import RequestConsignList from '../pages/Auth/staff/Consign/ConsignList'
 import FinanceProofList from '../pages/Auth/staff/FinanceProof/FinanceProofList'
+import { JewelryDetail } from '../pages/Auth/staff/Jewelry/JewelryDetail'
+import JewelryList from '../pages/Auth/staff/Jewelry/JewelryList'
 import Index from '../pages/Auth/staff/Mission/LiveBidding'
 import CreateAuthorization from '../pages/Auth/staff/Valuation/AuthorizationLetter'
 import ValuationTabs from '../pages/Auth/staff/Valuation/ValuationList'
@@ -96,7 +98,10 @@ const staffCRoutes: RouteProps[] = [
   { path: '/staff/auctionlist', component: AuctionList, layout: StaffLayout },
   { path: '/staff/authorization', component: CreateAuthorization, layout: StaffLayout },
   { path: '/staff/lotdetailmanager/:id', component: Index, layout: StaffLayout },
-  { path: '/staff/lotlist/:id', component: LotList, layout: StaffLayout }
+  { path: '/staff/lotlist/:id', component: LotList, layout: StaffLayout },
+  { path: '/staff/jewelrylist', component: JewelryList, layout: StaffLayout },
+  { path: '/staff/jewelry/:id', component: JewelryDetail, layout: StaffLayout },
+  { path: '/staff/managewithdraw', component: WithdrawalRequests, layout: StaffLayout }
 ]
 
 export { adminRoutes, appraiserRoutes, managerRoutes, publicRoutes, staffCRoutes }
