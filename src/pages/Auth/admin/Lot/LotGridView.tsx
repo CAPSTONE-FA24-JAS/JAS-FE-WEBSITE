@@ -43,7 +43,7 @@ interface LotGridViewProps {
   roleId: number
 }
 
-const LotGridView: React.FC<LotGridViewProps> = ({ lots, onEdit }) => {
+const LotGridView: React.FC<LotGridViewProps> = ({ lots }) => {
   //roleid sau
   const getLotTypeConfig = (lotType: string): LotTypeConfig => {
     const config: Record<string, LotTypeConfig> = {
