@@ -2,11 +2,48 @@ import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { Button, Modal } from 'antd'
 import React, { useState } from 'react'
 
+// Định nghĩa interface cho ImageValuation
+interface ImageValuation {
+  imageLink: string
+}
+
+// Định nghĩa interface cho ValuationDocument
+interface ValuationDocument {
+  documentLink: string
+}
+
+// Định nghĩa interface cho Seller
+interface Seller {
+  firstName: string
+  lastName: string
+  accountDTO: {
+    email: string
+    phoneNumber: string
+  }
+}
+
+// Định nghĩa interface cho Record
+interface Record {
+  id: string
+  name: string
+  seller: Seller
+  height: number
+  width: number
+  depth: number
+  description: string
+  estimatePriceMin: number
+  estimatePriceMax: number
+  status: string
+  imageValuations: ImageValuation[]
+  valuationDocuments: ValuationDocument[]
+}
+
+// Sử dụng interface Record trong PreliminaryValuationDetailProps
 interface PreliminaryValuationDetailProps {
   isVisible: boolean
   onCancel: () => void
   onUpdate: () => void
-  record: any
+  record: Record
   status: string
 }
 
@@ -18,7 +55,7 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const images = record?.imageValuations?.map((img: any) => img.imageLink) || [
+  const images = record?.imageValuations?.map((img: ImageValuation) => img.imageLink) || [
     'https://via.placeholder.com/150?text=No+Image'
   ]
 
@@ -162,7 +199,6 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
         </div>
       </div>
 
-      {/* Note Section */}
       <div className='mt-6'>
         <p className='italic font-bold text-red-500'>
           Note: If customers accept this price, please send jewelry to the address below.

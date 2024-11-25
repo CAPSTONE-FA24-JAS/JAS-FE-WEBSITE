@@ -20,7 +20,7 @@ export default function ManageInvoiceModal({
 }: ManageInvoiceModalProps) {
   const { data: invoiceData, error, isLoading } = useGetInvoiceByIdQuery(invoiceId, { skip: !invoiceId })
   const [finishInvoice] = useFinishInvoiceMutation()
-  const [isImageModalVisible, setImageModalVisible] = useState(false) // State for the image modal
+  const [isImageModalVisible, setImageModalVisible] = useState(false)
 
   const handleFinish = async () => {
     if (invoiceData?.data?.status === 'Delivered') {
@@ -56,9 +56,25 @@ export default function ManageInvoiceModal({
   const winnerName = invoiceDetails.winnerName ?? 'N/A'
   const winnerPhone = invoiceDetails.winnerPhone ?? 'N/A'
   const winnerEmail = invoiceDetails.winnerEmail ?? 'N/A'
-
+  const winnerAddress = invoiceDetails.addressToShip ?? 'N/A'
+  const invoiceCode = invoiceDetails.id ?? 'N/A'
+  const lotCode = invoiceDetails.myBidDTO?.lotDTO?.id ?? 'N/A'
+  const customerLotCode = invoiceDetails.myBidDTO?.id ?? 'N/A'
+  const nameLot = invoiceDetails.myBidDTO?.lotDTO?.title ?? 'N/A'
+  const typeProduction = invoiceDetails.myBidDTO?.lotDTO?.typeProduction ?? 'N/A'
+  const bidPrice = invoiceDetails.myBidDTO?.yourMaxBidPrice ?? 'N/A'
+  const platformFee = invoiceDetails.free ?? 'N/A'
+  const shippingFee = invoiceDetails.feeShip ?? 'N/A'
+  const imageDelivery = invoiceDetails.statusInvoiceDTOs?.imageLink ?? '/default-image.png'
   const historyTimes = invoiceDetails.myBidDTO?.historyCustomerLots || []
+  const createinvoiceTimes = historyTimes
+    .filter((item: any) => item.status === 'CreateInvoice')
+    .map((item: any) => item.currentTime)
+  const pendingpaymentTimes = historyTimes
+    .filter((item: any) => item.status === 'PendingPayment')
+    .map((item: any) => item.currentTime)
   const paidTimes = historyTimes.filter((item: any) => item.status === 'Paid').map((item: any) => item.currentTime)
+
   const deliveringTimes = historyTimes
     .filter((item: any) => item.status === 'Delivering')
     .map((item: any) => item.currentTime)
@@ -72,6 +88,12 @@ export default function ManageInvoiceModal({
   console.log('Delivering Times:', deliveringTimes)
   console.log('Delivered Times:', deliveredTimes)
   console.log('Finished Times:', finishedTimes)
+
+  const receivedImageLink = invoiceDetails.statusInvoiceDTOs?.find((item: any) => item.status === 'Recieved')?.imageLink
+  const deliveredImageLink = invoiceDetails.statusInvoiceDTOs?.find(
+    (item: any) => item.status === 'Delivered'
+  )?.imageLink
+
   return (
     <>
       <Modal title={`Invoice Details: ${invoiceDetails.id}`} open={visible} onCancel={onCancel} footer={null}>
@@ -92,12 +114,6 @@ export default function ManageInvoiceModal({
 
             <div className='flex'>
               <p>
-                <strong>Total Price:</strong>
-              </p>
-              <p className='ml-4 font-bold text-gray-600'>{totalPrice.toLocaleString()}₫</p>
-            </div>
-            <div className='flex'>
-              <p>
                 <strong>Status:</strong>
               </p>
               <p className='font-bold text-red-700 ml-11'>{status}</p>
@@ -107,42 +123,143 @@ export default function ManageInvoiceModal({
 
         <div className='my-4 border-t border-gray-300'></div>
 
-        <p className='mt-4 mb-2 text-lg font-extrabold'>Winner Information:</p>
-
-        <div className='flex justify-between mb-4'>
+        <p className='mt-4 mb-2 text-lg font-extrabold uppercase'>Customer Information:</p>
+        <div className='my-4 border-t border-gray-300'></div>
+        <div className='flex justify-between mb-2'>
           <p>
             <strong>Customer Name:</strong>
           </p>
           <p className='font-bold text-gray-600'>{winnerName}</p>
         </div>
-        <div className='flex justify-between mb-4'>
+        <div className='flex justify-between mb-2'>
           <p>
             <strong>Phone:</strong>
           </p>
           <p className='font-bold text-gray-600'>{winnerPhone}</p>
         </div>
-        <div className='flex justify-between'>
+        <div className='flex justify-between mb-2'>
           <p>
             <strong>Email:</strong>
           </p>
           <p className='font-bold text-gray-600'>{winnerEmail}</p>
         </div>
 
+        <div className='flex justify-between'>
+          <p>
+            <strong>Address:</strong>
+          </p>
+          <p className='font-bold text-gray-600'>{winnerAddress}</p>
+        </div>
         <div className='my-4 border-t border-gray-300'></div>
 
-        <p className='mt-4 mb-2 text-lg font-extrabold'>Additional Information:</p>
+        <p className='mt-4 mb-2 text-lg font-extrabold uppercase'>Order Information:</p>
+        <div className='my-4 border-t border-gray-300'></div>
+        <div className='flex justify-between mb-2'>
+          <p>
+            <strong>Invoice Code:</strong>
+          </p>
+          <p className='font-bold text-gray-600'>#{invoiceCode}</p>
+        </div>
+        <div className='flex justify-between mb-2'>
+          <p>
+            <strong>Lot Code:</strong>
+          </p>
+          <p className='font-bold text-gray-600'>#{lotCode}</p>
+        </div>
+        <div className='flex justify-between mb-2'>
+          <p>
+            <strong>Customer Lot Code:</strong>
+          </p>
+          <p className='font-bold text-gray-600'>#{customerLotCode}</p>
+        </div>
+        <div className='flex justify-between mb-2'>
+          <p>
+            <strong>Name Lot:</strong>
+          </p>
+          <p className='font-bold text-gray-600'>{nameLot}</p>
+        </div>
+        <div className='flex justify-between mb-2'>
+          <p>
+            <strong>Type of production:</strong>
+          </p>
+          <p className='font-bold text-gray-600'></p>
+        </div>
+        <div className='flex justify-between mb-2'>
+          <p>
+            <strong>Bid Price:</strong>
+          </p>
+          <p className='font-bold text-gray-600'>{bidPrice.toLocaleString()}₫</p>
+        </div>
+        <div className='flex justify-between mb-2'>
+          <p>
+            <strong>Platform Fee:</strong>
+          </p>
+          <p className='font-bold text-gray-600'>{platformFee.toLocaleString()}₫</p>
+        </div>
+        <div className='flex justify-between mb-2'>
+          <p>
+            <strong>Shipping Fee:</strong>
+          </p>
+          <p className='font-bold text-gray-600'>{shippingFee.toLocaleString()}₫</p>
+        </div>
+        <div className='my-4 border-t border-gray-300'></div>
 
-        <div className='space-y-2'>
-          {/* Display times based on current status */}
-          {status === 'Paid' && paidTimes.length > 0 && (
+        <div className='flex justify-between mb-2 font-extrabold'>
+          <p>
+            <strong>Total Amount:</strong>
+          </p>
+          <p className='font-extrabold '>{totalPrice.toLocaleString()}₫</p>
+        </div>
+        <div className='space-y-2 mb-2'>
+          {status === 'CreateInvoice' && (
             <div className='flex justify-between'>
-              <strong>Payment Time:</strong>
-              <p>{stringToDate(paidTimes[0]).format('YYYY-MM-DD HH:mm:ss')}</p>
+              <strong>Create Invoice Time:</strong>
+              <p>{stringToDate(createinvoiceTimes[0]).format('YYYY-MM-DD HH:mm:ss')}</p>
             </div>
+          )}
+          {status === 'PendingPayment' && (
+            <>
+              {createinvoiceTimes.length > 0 && (
+                <div className='flex justify-between'>
+                  <strong>Create Invoice Time:</strong>
+                  <p>{stringToDate(createinvoiceTimes[0]).format('YYYY-MM-DD HH:mm:ss')}</p>
+                </div>
+              )}
+              {pendingpaymentTimes.length > 0 && (
+                <div className='flex justify-between'>
+                  <strong>Pending Payment Time:</strong>
+                  <p>{stringToDate(pendingpaymentTimes[0]).format('YYYY-MM-DD HH:mm:ss')}</p>
+                </div>
+              )}
+            </>
+          )}
+
+          {status === 'Paid' && (
+            <>
+              {pendingpaymentTimes.length > 0 && (
+                <div className='flex justify-between'>
+                  <strong>Pending Payment Time:</strong>
+                  <p>{stringToDate(pendingpaymentTimes[0]).format('YYYY-MM-DD HH:mm:ss')}</p>
+                </div>
+              )}
+              {paidTimes.length > 0 && (
+                <div className='flex justify-between'>
+                  <strong>Payment Time:</strong>
+                  <p>{stringToDate(paidTimes[0]).format('YYYY-MM-DD HH:mm:ss')}</p>
+                </div>
+              )}
+            </>
           )}
 
           {status === 'Delivering' && (
             <>
+              {pendingpaymentTimes.length > 0 && (
+                <div className='flex justify-between'>
+                  <strong>Pending Payment Time:</strong>
+                  <p>{stringToDate(pendingpaymentTimes[0]).format('YYYY-MM-DD HH:mm:ss')}</p>
+                </div>
+              )}
+
               {paidTimes.length > 0 && (
                 <div className='flex justify-between'>
                   <strong>Payment Time:</strong>
@@ -161,6 +278,13 @@ export default function ManageInvoiceModal({
 
           {status === 'Delivered' && (
             <>
+              {pendingpaymentTimes.length > 0 && (
+                <div className='flex justify-between'>
+                  <strong>Pending Payment Time:</strong>
+                  <p>{stringToDate(pendingpaymentTimes[0]).format('YYYY-MM-DD HH:mm:ss')}</p>
+                </div>
+              )}
+
               {paidTimes.length > 0 && (
                 <div className='flex justify-between'>
                   <strong>Payment Time:</strong>
@@ -184,6 +308,12 @@ export default function ManageInvoiceModal({
 
           {status === 'Finished' && (
             <>
+              {pendingpaymentTimes.length > 0 && (
+                <div className='flex justify-between'>
+                  <strong>Pending Payment Time:</strong>
+                  <p>{stringToDate(pendingpaymentTimes[0]).format('YYYY-MM-DD HH:mm:ss')}</p>
+                </div>
+              )}
               {paidTimes.length > 0 && (
                 <div className='flex justify-between'>
                   <strong>Payment Time:</strong>
@@ -212,9 +342,6 @@ export default function ManageInvoiceModal({
           )}
         </div>
 
-        <h3 className='mb-2 font-semibold'>Total Amount:</h3>
-        <p className='font-bold text-right'>₫{totalPrice.toLocaleString()}</p>
-
         {status === 'Delivered' && (
           <div className='flex justify-end' style={{ marginTop: 20 }}>
             <Button type='primary' onClick={handleFinish}>
@@ -222,6 +349,20 @@ export default function ManageInvoiceModal({
             </Button>
           </div>
         )}
+
+        <div className='flex justify-between mb-2'>
+          <p>
+            <strong>Received Image:</strong>
+          </p>
+          <img src={receivedImageLink} alt='Received' style={{ width: '100px', height: 'auto' }} />
+        </div>
+
+        <div className='flex justify-between mb-2'>
+          <p>
+            <strong>Delivered Image:</strong>
+          </p>
+          <img src={deliveredImageLink} alt='Delivered' style={{ width: '100px', height: 'auto' }} />
+        </div>
       </Modal>
 
       {/* Full-size Image Modal */}
