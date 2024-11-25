@@ -1,12 +1,12 @@
-import { Menu, MenuProps } from 'antd'
-import Sider from 'antd/es/layout/Sider'
 import React, { useEffect, useState } from 'react'
-import { AiOutlineStar, AiOutlineTable } from 'react-icons/ai'
-import { GiJewelCrown } from 'react-icons/gi' // Added for jewelry icon
-import { MdOutlineInventory2, MdOutlineMenu } from 'react-icons/md'
-import { RiAuctionLine, RiBillLine } from 'react-icons/ri'
-import { TbZoomMoney } from 'react-icons/tb'
+import { Menu, MenuProps } from 'antd'
 import { useNavigate } from 'react-router-dom'
+import Sider from 'antd/es/layout/Sider'
+import { RiAuctionLine, RiProductHuntLine } from 'react-icons/ri'
+import { MdOutlineInventory2, MdOutlineMenu } from 'react-icons/md'
+import { TbZoomMoney } from 'react-icons/tb'
+import { AiOutlineBulb, AiOutlineClockCircle, AiOutlineStar, AiOutlineTable } from 'react-icons/ai'
+import { cn } from '../../../utils/cn'
 
 export default function SiderStaff() {
   type MenuItem = Required<MenuProps>['items'][number]
@@ -48,8 +48,6 @@ export default function SiderStaff() {
       getItem('Valuation Manage', 'manageValuation', <AiOutlineStar className='text-base' />, [
         getItem('Valuation List', 'valuation', <AiOutlineTable className='text-base' />)
       ]),
-      getItem('Jewelry', 'jewelryList', <GiJewelCrown className='text-base' />),
-      getItem('Manage Withdraw', 'managewithdraw', <RiBillLine className='text-base' />),
       getItem('Finance Proof', 'financeProof', <TbZoomMoney className='text-base' />),
       getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
         getItem('Auction List', 'auctionlistSub', <AiOutlineTable className='text-base' />)
@@ -61,11 +59,9 @@ export default function SiderStaff() {
   navUrl
     .set('consign', '/staff/ConsignList')
     .set('valuation', '/staff/valuationList')
-    .set('jewelryList', '/staff/jewelrylist') // Added new route for jewelry list
     .set('financeProof', '/staff/financeproof')
     .set('auctionlistSub', '/staff/auctionlist')
     .set('livebidding', '/staff/livebidding')
-    .set('managewithdraw', '/staff/managewithdraw')
 
   return (
     <Sider
@@ -82,13 +78,30 @@ export default function SiderStaff() {
       width={256}
     >
       <div className='border-r-[1px] border-gray-200'>
+        {/* Add image here before the div */}
         <div className='flex justify-center mb-4'>
           <img
             src='https://firebasestorage.googleapis.com/v0/b/voguary.appspot.com/o/Logo_Website%2Fsnapedit_1731943467578.png?alt=media&token=aab5b0d7-a6d1-4309-a9bc-c1fe6ecd2f01'
             alt='Logo'
-            className='object-contain w-36 h-36'
+            className='w-36 h-36 object-contain' // Adjust size as needed
           />
         </div>
+
+        {/* <div
+          className={cn('mx-auto text-center mb-6 mt-6 pb-6', {
+            hidden: collapsed
+          })}
+        >
+          <div className='text-2xl font-bold text-black'>JAS</div>
+          <div className='text-lg font-normal text-black up'>Auctions</div>
+        </div>
+        <div
+          className={cn('mx-auto text-center mb-4 mt-4 pb-4', {
+            hidden: !collapsed
+          })}
+        >
+          <div className='py-2 text-xl font-bold text-black'>JAS</div>
+        </div> */}
       </div>
 
       <Menu

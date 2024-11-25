@@ -3,8 +3,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { Data } from '../types/Account.type'
 import baseUrl from '../utils/http'
-import { Respone } from '../types/Respone.type'
-import { WithDraw } from '../types/Withdraw.type'
 
 export const manageInvoice = createApi({
   reducerPath: 'manageInvoice',
@@ -52,27 +50,12 @@ export const manageInvoice = createApi({
     getInvoicesForCheckBill: build.query({
       query: () => `Invoices/GetListInvoiceForCheckBill`
     }),
-    viewListRequestWithdrawForManagement: build.query<Respone<WithDraw[]>, void>({
+    viewListRequestWithdrawForManagement: build.query({
       query: () => `Wallet/ViewListRequestWithdrawForManagerment`
     }),
     approveRequestNewWithdraw: build.mutation<{ message: string }, { requestId: number }>({
-      /// manager approve request withdraw
       query: ({ requestId }) => ({
         url: `Wallet/ApproveRequestNewWithdraw`,
-        method: 'PATCH',
-        params: { requestId }
-      })
-    }),
-    processWithdrawStaff: build.mutation<{ message: string }, { requestId: number }>({
-      query: ({ requestId }) => ({
-        url: `/Wallet/ProcessRequestNewWithdrawByStaff?requestId=${requestId}`,
-        method: 'PATCH',
-        params: { requestId }
-      })
-    }),
-    cancelWithdraw: build.mutation<{ message: string }, { requestId: number }>({
-      query: ({ requestId }) => ({
-        url: `/Wallet/CancelRequestNewWithdrawByStaff?requestId=${requestId}`,
         method: 'PATCH',
         params: { requestId }
       })
@@ -88,7 +71,5 @@ export const {
   useApprovePaymentByBankTransferMutation,
   useGetInvoicesForCheckBillQuery,
   useViewListRequestWithdrawForManagementQuery,
-  useApproveRequestNewWithdrawMutation,
-  useProcessWithdrawStaffMutation,
-  useCancelWithdrawMutation
+  useApproveRequestNewWithdrawMutation
 } = manageInvoice

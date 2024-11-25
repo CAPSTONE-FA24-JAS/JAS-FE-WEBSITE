@@ -118,8 +118,8 @@ const AuctionModal: React.FC<AuctionModalProps> = ({ visible, onCancel, id, setE
 
       const formData = new FormData()
       formData.append('Name', data.Name)
-      formData.append('StartTime', data.StartTime.second(0).toISOString())
-      formData.append('EndTime', data.EndTime.second(0).toISOString())
+      formData.append('StartTime', data.StartTime.toISOString())
+      formData.append('EndTime', data.EndTime.toISOString())
       formData.append('Description', data.Description)
 
       if (id) {
