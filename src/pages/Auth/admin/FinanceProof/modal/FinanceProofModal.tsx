@@ -5,6 +5,8 @@ import {
   useGetFinanceProofByIdQuery,
   useUpdateFinanceProofMutation
 } from '../../../../../services/financeProof.services'
+import { parseDate, parsePriceVND } from '../../../../../utils/convertTypeDayjs'
+import { EyeOutlined } from '@ant-design/icons'
 
 interface FinancialProofModalProps {
   visible: boolean
@@ -18,6 +20,11 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
   const [updateFinanceProof, { isLoading: isUpdating }] = useUpdateFinanceProofMutation()
   const [reasonReject, setReasonReject] = useState<boolean>(false)
   const [note, setNote] = useState<string>('')
+
+  // Mở tab mới để xem tài liệu
+  const handleOpenDocument = (fileUrl: string) => {
+    window.open(fileUrl, '_blank')
+  }
 
   const handleSetLimitBidOk = async () => {
     setModalVisible(false)
@@ -86,18 +93,27 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
         ) : financeProof ? (
           <div className='flex flex-col gap-4 mt-9'>
             <p>Customer Name: {financeProof.data.customerName}</p>
-            <p>Create Date: {financeProof.data.startDate}</p>
-            <p>Expired Date: {financeProof.data.expireDate}</p>
-            <InputNumber
-              className='w-[70%]'
-              placeholder='Limit Bid'
-              value={financeProof.data.priceLimit}
-              disabled
-              prefix='$'
-            />
+            <p>Create Date: {parseDate(financeProof.data.startDate, 'dd/mm/yyyy hh:mm:ss')}</p>
+            <p>Expired Date: {parseDate(financeProof.data.expireDate, 'dd/mm/yyyy hh:mm:ss')}</p>
+            <div>
+              <p className='mb-2'>Price Limit:</p>
+              <InputNumber
+                className='w-[70%]'
+                value={financeProof.data.priceLimit}
+                disabled
+                formatter={(value: number | undefined) => String(parsePriceVND(value ?? 0))}
+              />
+            </div>
             <p>Reason: {financeProof.data?.reason}</p>
             <Divider />
-            <embed src={financeProof.data.file} width='300' height='200' />
+            <div className='flex flex-row items-start gap-4'>
+              <div className='flex-1'>
+                <embed src={financeProof.data.file} width='300' height='200' />
+              </div>
+              <Button type='primary' icon={<EyeOutlined />} onClick={() => handleOpenDocument(financeProof.data.file)}>
+                View Document
+              </Button>
+            </div>
           </div>
         ) : (
           <p>No data available</p>
