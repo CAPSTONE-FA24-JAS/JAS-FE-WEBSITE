@@ -1,4 +1,5 @@
-import { Button, Divider, Input, InputNumber, Modal, Skeleton, Space, message } from 'antd'
+import { EyeOutlined } from '@ant-design/icons'
+import { Button, Divider, InputNumber, Modal, Skeleton, Space, message } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import React, { useState } from 'react'
 import {
@@ -6,7 +7,6 @@ import {
   useUpdateFinanceProofMutation
 } from '../../../../../services/financeProof.services'
 import { parseDate, parsePriceVND } from '../../../../../utils/convertTypeDayjs'
-import { EyeOutlined } from '@ant-design/icons'
 
 interface FinancialProofModalProps {
   visible: boolean

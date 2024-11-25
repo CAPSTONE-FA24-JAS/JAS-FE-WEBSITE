@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import { Table, Button, Image, Modal, Tooltip } from 'antd'
 import { DeleteOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons'
+import { Button, Image, Modal, Table, Tooltip } from 'antd'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import CreateBlogPage from './CreateBlog'
 import { useViewBlogsQuery } from '../../../../services/manageother.services'
+import CreateBlogPage from './CreateBlog'
 
 type Blog = {
   id: number
@@ -97,7 +97,7 @@ const BlogTable = () => {
   return (
     <div className='container mx-auto'>
       <p className='text-2xl font-bold'>Blog List</p>
-      <div className='text-right mb-4'>
+      <div className='mb-4 text-right'>
         <Tooltip title='Create Blog'>
           <Button type='primary' icon={<PlusOutlined />} onClick={handleCreate} />
         </Tooltip>

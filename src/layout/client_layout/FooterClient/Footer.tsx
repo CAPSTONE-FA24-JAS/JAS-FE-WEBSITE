@@ -1,6 +1,5 @@
-import React from 'react'
-import { Layout, Typography, Space } from 'antd'
-import { FacebookOutlined, TwitterOutlined, InstagramOutlined, GithubOutlined } from '@ant-design/icons'
+import { FacebookOutlined, GithubOutlined, InstagramOutlined, TwitterOutlined } from '@ant-design/icons'
+import { Layout, Space, Typography } from 'antd'
 
 const { Footer } = Layout
 const { Text } = Typography

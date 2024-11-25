@@ -1,12 +1,11 @@
-import { BellOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons'
-import { Avatar, Dropdown, MenuProps, Modal, Spin, Badge } from 'antd'
+import { LogoutOutlined, UserOutlined } from '@ant-design/icons'
+import { Avatar, Dropdown, MenuProps, Spin } from 'antd'
 import { Header } from 'antd/es/layout/layout'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { logoutUser, RoleType } from '../../../slice/authLoginAPISlice'
 import { RootState } from '../../../store'
-import { useEffect, useState } from 'react'
-import NotificationManager from './NotificationAdmin'
 import NotificationAdmin from './NotificationAdmin'
 // import { RootState } from 'store';
 

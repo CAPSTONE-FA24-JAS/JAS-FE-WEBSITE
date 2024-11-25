@@ -1,11 +1,10 @@
-import React, { useState } from 'react'
-import { Table, Button, Typography, Tag, Tooltip } from 'antd'
 import { EyeOutlined } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
-import FinalDetailModal from './FinalDetailModal'
-import { RootState } from '../../../../../../store'
+import { Button, Table, Tag, Tooltip, Typography } from 'antd'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useGetFinalValuationsOfAppraiserQuery } from '../../../../../../services/valuation.services'
+import { RootState } from '../../../../../../store'
+import FinalDetailModal from './FinalDetailModal'
 const { Title } = Typography
 const FinalValuationList = () => {
   const [finalModalVisible, setFinalModalVisible] = useState<boolean>(false)
@@ -59,7 +58,7 @@ const FinalValuationList = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: any, record: any) => (
+      render: (_text: any, record: any) => (
         <div>
           <Tooltip title='View Final Details'>
             <Button

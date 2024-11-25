@@ -95,7 +95,7 @@ export default function ManageWinList() {
     {
       title: 'Action',
       key: 'action',
-      render: (text: any, record: Invoice) => (
+      render: (_text: any, record: Invoice) => (
         <div>
           <Tooltip title='View Details'>
             <Button type='link' icon={<EyeOutlined />} onClick={() => showDetails(record)} />

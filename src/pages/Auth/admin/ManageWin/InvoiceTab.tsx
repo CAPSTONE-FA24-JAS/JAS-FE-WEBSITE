@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import { Tabs, Table, Avatar, Tag, Button, Tooltip } from 'antd'
 import { EyeOutlined } from '@ant-design/icons'
-import BillInVoiceList from './CheckBillInVoice/BillInvoiveList'
-import ManageWinList from './AssignDelivery/ManageWinList'
+import { Avatar, Button, Table, Tabs, Tag, Tooltip } from 'antd'
+import { useState } from 'react'
 import { useGetInvoicesForManagerQuery } from '../../../../services/invoice.services'
+import ManageWinList from './AssignDelivery/ManageWinList'
+import BillInVoiceList from './CheckBillInVoice/BillInvoiveList'
 import ManageInvoiceModal from './ManageInvoiceModal'
 
 // Define the structure of the data returned by the API
@@ -29,7 +29,7 @@ export default function InvoiceTab() {
   const { data, error, isLoading, refetch } = useGetInvoicesForManagerQuery({ pageSize: 10, pageIndex: 1 })
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(null)
-  const [status, setStatus] = useState<string>('')
+  const [_status, setStatus] = useState<string>('')
 
   const showDetails = (record: Invoice) => {
     if (record.id) {
@@ -109,7 +109,7 @@ export default function InvoiceTab() {
       label: 'All Invoices',
       children: (
         <div>
-          <h2 className='text-lg font-semibold mb-4'></h2>
+          <h2 className='mb-4 text-lg font-semibold'></h2>
           {isLoading ? (
             <p>Loading...</p>
           ) : error ? (
@@ -171,8 +171,8 @@ export default function InvoiceTab() {
   ]
 
   return (
-    <div className='invoice-tab-container p-6'>
-      <h1 className='text-2xl font-bold mb-4'>Invoice Management</h1>
+    <div className='p-6 invoice-tab-container'>
+      <h1 className='mb-4 text-2xl font-bold'>Invoice Management</h1>
       <Tabs defaultActiveKey='1' items={tabItems} />
     </div>
   )

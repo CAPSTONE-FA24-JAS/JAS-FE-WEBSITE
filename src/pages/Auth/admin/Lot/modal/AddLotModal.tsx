@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import { Modal, Form, Input, Select, DatePicker, InputNumber, Checkbox, Button, Image } from 'antd'
-import { CreateLot, ListLot } from '../../../../../types/Lot.type'
-import { useGetJewelriesNoSlotQuery } from '../../../../../services/jewelry.services'
-import { useGetFilterByRoleQuery } from '../../../../../services/account.services'
-import { Jewelry } from '../../../../../types/Jewelry.type'
-import { Auction } from '../../../../../types/Auction.type'
+import { Button, Checkbox, DatePicker, Form, Image, Input, InputNumber, Modal, Select } from 'antd'
 import dayjs from 'dayjs'
-import { log } from 'console'
-import { set } from 'react-hook-form'
+import React, { useEffect, useState } from 'react'
+import { useGetFilterByRoleQuery } from '../../../../../services/account.services'
+import { useGetJewelriesNoSlotQuery } from '../../../../../services/jewelry.services'
+import { Auction } from '../../../../../types/Auction.type'
+import { Jewelry } from '../../../../../types/Jewelry.type'
+import { CreateLot, ListLot } from '../../../../../types/Lot.type'
 
 const { Option } = Select
 

@@ -1,5 +1,5 @@
 import { ArrowLeftOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons'
-import { Button, Card, Descriptions, Form, Image, Input, InputNumber, Spin, Tag, message } from 'antd'
+import { Button, Card, Descriptions, Form, Image, Spin, Tag, message } from 'antd'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useGetJewelryByIdQuery, useUpdateJewelryMutation } from '../../../../services/jewelry.services'

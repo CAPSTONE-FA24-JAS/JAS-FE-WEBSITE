@@ -3,7 +3,6 @@ import baseUrl from '../utils/http'
 import { Data } from '../types/Account.type'
 import { Respone } from '../types/Respone.type'
 import { DataResponse, Jewelry, UpdateJewelryRequest } from '../types/Jewelry.type'
-import { get } from 'http'
 
 export const jewelryApi = createApi({
   reducerPath: 'jewelryApi',
@@ -55,7 +54,7 @@ export const jewelryApi = createApi({
     }),
     getJewelryById: builder.query<Respone<Jewelry>, number>({
       query: (id) => `/Jewelrys/GetDetailJewelry?jewelryId=${id}`,
-      providesTags: (result, error, id) => [{ type: 'Jewelry', id }]
+      providesTags: (_result, _error, id) => [{ type: 'Jewelry', id }]
     }),
 
     updateJewelry: builder.mutation<any, UpdateJewelryRequest>({

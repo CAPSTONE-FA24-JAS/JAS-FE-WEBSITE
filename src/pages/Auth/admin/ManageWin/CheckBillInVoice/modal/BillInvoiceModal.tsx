@@ -64,7 +64,6 @@ export default function BillInvoiceModal({
   const lotCode = invoiceDetails.myBidDTO?.lotDTO?.id ?? 'N/A'
   const customerLotCode = invoiceDetails.myBidDTO?.id ?? 'N/A'
   const nameLot = invoiceDetails.myBidDTO?.lotDTO?.title ?? 'N/A'
-  const typeProduction = invoiceDetails.myBidDTO?.lotDTO?.typeProduction ?? 'N/A'
   const bidPrice = invoiceDetails.myBidDTO?.yourMaxBidPrice ?? 'N/A'
   const platformFee = invoiceDetails.free ?? 'N/A'
   const shippingFee = invoiceDetails.feeShip ?? 'N/A'
@@ -80,7 +79,7 @@ export default function BillInvoiceModal({
     <>
       <Modal title={`Invoice Details: ${invoiceDetails.id}`} open={visible} onCancel={onCancel} footer={null}>
         <div className='flex space-x-4'>
-          <div className='w-1/3 flex justify-center mt-5 mb-5'>
+          <div className='flex justify-center w-1/3 mt-5 mb-5'>
             <Avatar
               size={128}
               src={imageLinkJewelry}
@@ -89,16 +88,16 @@ export default function BillInvoiceModal({
             />
           </div>
 
-          <div className='w-2/3 space-y-2 mt-5 mb-5'>
+          <div className='w-2/3 mt-5 mb-5 space-y-2'>
             <p>
-              <strong className='font-extrabold mt-4 mb-2 text-lg'>{productName}</strong>
+              <strong className='mt-4 mb-2 text-lg font-extrabold'>{productName}</strong>
             </p>
 
             <div className='flex'>
               <p>
                 <strong>Status:</strong>
               </p>
-              <p className='ml-11 font-bold text-red-700'>{status}</p>
+              <p className='font-bold text-red-700 ml-11'>{status}</p>
             </div>
           </div>
         </div>

@@ -31,7 +31,7 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
   status
 }) => {
   const [statusLot, setStatusLot] = useState<string>(() => status || '')
-  const [updateStatusLot, isLoadingBtn] = useOpenAndPauseLotMutation()
+  const [updateStatusLot, _isLoadingBtn] = useOpenAndPauseLotMutation()
   const [cancelLot] = useCancelLotMutation()
   const id = useId()
 
