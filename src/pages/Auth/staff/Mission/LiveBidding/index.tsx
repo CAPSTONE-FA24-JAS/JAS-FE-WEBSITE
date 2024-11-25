@@ -15,25 +15,21 @@ export interface Bid {
 }
 
 const Index = () => {
-  const { disconnect, endTime, error, highestPrice, isConnected, joinLiveBidding, messages, status } = useBidding()
+  const { disconnect, endTime, isConnected, joinLiveBidding, messages, status } = useBidding()
   const {
     joinLiveBiddingMethod4,
-    endTime: endTimeMethod4,
     messages: messagesMethod4,
-    error: errorMethod4,
     winnerCustomer,
     winnerPrice,
     reducePrice,
     isEndAuctionMethod4,
-    setResultBidding,
     disconnect: disconnectMethod4,
-    isConnected: isConnectedMethod4,
     status: statusMethod4
   } = useBiddingMethod4()
 
   const { id } = useParams<{ id: string }>()
-  const { data, isError, isLoading } = useGetLotDetailByIdQuery(Number(id))
-  const { data: playerInLot, isError: errorPlayer, isLoading: loadingPlayer } = useGetPlayerInLotQuery(Number(id))
+  const { data, isLoading } = useGetLotDetailByIdQuery(Number(id))
+  const { data: playerInLot } = useGetPlayerInLotQuery(Number(id))
 
   // Get user ID from localStorage
   const user = localStorage.getItem('userLogin')

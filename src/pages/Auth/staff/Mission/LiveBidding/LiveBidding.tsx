@@ -40,7 +40,7 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
   useEffect(() => {
     setStatusLot(status || '')
   }, [status])
-  const [updateStatusLot, isLoadingBtn] = useOpenAndPauseLotMutation()
+  const [updateStatusLot, _isLoadingBtn] = useOpenAndPauseLotMutation()
   const [cancelLot] = useCancelLotMutation()
 
   const handlePause = () => {
