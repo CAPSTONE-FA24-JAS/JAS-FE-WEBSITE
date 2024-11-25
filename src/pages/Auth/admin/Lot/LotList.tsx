@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Table, Button, Input, Space, Tag, notification, Tooltip, Radio } from 'antd'
-import { EditOutlined, DeleteOutlined, UnorderedListOutlined, AppstoreOutlined } from '@ant-design/icons'
+import { Table, Button, Input, Space, Tag, notification, Tooltip } from 'antd'
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import type { TableProps } from 'antd'
 import AddLotModal from './modal/AddLotModal'
 import { Link, useParams } from 'react-router-dom'
@@ -13,11 +13,10 @@ import {
 } from '../../../../services/lot.services'
 import { CreateLot, ListLot } from '../../../../types/Lot.type'
 import { useGetAuctionByIdQuery } from '../../../../services/auction.services'
-import { parsePriceVND } from '../../../../utils/convertTypeDayjs'
+import { parseDate, parsePriceVND } from '../../../../utils/convertTypeDayjs'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../../../store'
 import { RoleType } from '../../../../slice/authLoginAPISlice'
-import LotGridView from './LotGridView'
 
 const getLotTypeConfig = (lotType: string): { label: string; color: string } => {
   const config: Record<string, { label: string; color: string }> = {
@@ -43,7 +42,6 @@ const LotList = () => {
   const [createSerect, { isLoading: loadingSecret }] = useCreateLotSecretAuctionMutation()
   const [createPublic, { isLoading: loadingPublice }] = useCreateLotPublicAuctionMutation()
   const [createPriceGraduallyReduced, { isLoading: loadingReduce }] = useCreateLotAuctionPriceGraduallyReducedMutation()
-  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table')
 
   const roleId = useSelector((state: RootState) => state.authLoginAPI.roleId)
 
@@ -94,59 +92,17 @@ const LotList = () => {
     },
     {
       title: 'Buy Now Price',
+      dataIndex: 'finalPriceSold',
       key: 'finalPriceSold',
       width: 100,
-      render: (_value, record) => {
-        // Chỉ hiển thị nếu KHÔNG phải là Reverse Auction
-        if (record.lotType === 'Auction_Price_GraduallyReduced') {
-          return '-'
-        }
-        if (record.lotType === 'Fixed_Price') {
-          return parsePriceVND(record.buyNowPrice)
-        }
-        if (record.lotType === 'Secret_Auction') {
-          return '-'
-        }
-        return parsePriceVND(record.finalPriceSold)
-      }
-    },
-    {
-      title: 'Max Price',
-      key: 'finalPriceSold',
-      width: 100,
-      render: (_value, record) => {
-        // Chỉ hiển thị nếu KHÔNG phải là Reverse Auction
-
-        if (record.lotType === 'Secret_Auction') {
-          return parsePriceVND(record.finalPriceSold)
-        }
-        return '-'
-      }
-    },
-    {
-      title: 'Bid Decrease',
-      key: 'bidIncrement',
-      width: 200,
-      render: (_value, record) => {
-        if (record.lotType === 'Auction_Price_GraduallyReduced') {
-          return parsePriceVND(record.bidIncrement)
-        } else {
-          return '-'
-        }
-      }
+      render: (value) => parsePriceVND(value)
     },
     {
       title: 'Bid Increment',
       dataIndex: 'bidIncrement',
       key: 'bidIncrement',
-      width: 200,
-      render: (value, record) => {
-        if (record.lotType !== 'Auction_Price_GraduallyReduced') {
-          return parsePriceVND(value)
-        } else {
-          return '-'
-        }
-      }
+      width: 100,
+      render: (value) => parsePriceVND(value)
     },
     {
       title: 'Deposit',
@@ -155,25 +111,19 @@ const LotList = () => {
       width: 100,
       render: (value) => parsePriceVND(value)
     },
-    // {
-    //   title: 'Buy Now Price (M1)',
-    //   dataIndex: 'buyNowPrice',
-    //   key: 'buyNowPrice',
-    //   width: 120,
-    //   render: (value) => parsePriceVND(value)
-    // },
     {
-      title: 'Minimum Price (Reverse)',
-      dataIndex: 'finalPriceSold',
-      key: 'minimumPrice',
-      width: 140,
-      render: (value, record) => {
-        // Chỉ hiển thị cho Reverse Auction
-        if (record.lotType === 'Auction_Price_GraduallyReduced') {
-          return parsePriceVND(value)
-        }
-        return '-'
-      }
+      title: 'Buy Now Price (M1)',
+      dataIndex: 'buyNowPrice',
+      key: 'buyNowPrice',
+      width: 120,
+      render: (value) => parsePriceVND(value)
+    },
+    {
+      title: 'End Time',
+      dataIndex: 'actualEndTime',
+      key: 'actualEndTime',
+      width: 120,
+      render: (value) => parseDate(value, 'dd/mm/yyyy hh:mm:ss')
     },
     {
       title: 'Financial Proof',
@@ -382,14 +332,6 @@ const LotList = () => {
         <div className='flex items-center justify-between mb-4'>
           <h1 className='text-xl font-semibold'>{auctionData?.data.name} - Lots List</h1>
           <Space>
-            <Radio.Group value={viewMode} onChange={(e) => setViewMode(e.target.value)}>
-              <Radio.Button value='table'>
-                <UnorderedListOutlined /> Table
-              </Radio.Button>
-              <Radio.Button value='grid'>
-                <AppstoreOutlined /> Grid
-              </Radio.Button>
-            </Radio.Group>
             <Input.Search
               placeholder='Search lots'
               onChange={(e) => setSearchText(e.target.value)}
@@ -402,24 +344,18 @@ const LotList = () => {
             )}
           </Space>
         </div>
-
-        {viewMode === 'table' ? (
-          <Table
-            columns={columns}
-            dataSource={filteredLots || []}
-            scroll={{ x: 'max-content' }}
-            rowKey='id'
-            pagination={{
-              pageSize: 5
-            }}
-            size='middle'
-            loading={isLoading}
-          />
-        ) : (
-          <LotGridView lots={filteredLots} onEdit={handleEdit} roleId={roleId as unknown as number} />
-        )}
+        <Table
+          columns={columns}
+          dataSource={filteredLots || []}
+          scroll={{ x: 'max-content' }}
+          rowKey='id'
+          pagination={{
+            pageSize: 5
+          }}
+          size='middle'
+          loading={isLoading}
+        />
       </div>
-
       {auctionData && (
         <AddLotModal
           isLoading={loadingFixedPrice || loadingSecret || loadingPublice || loadingReduce}
