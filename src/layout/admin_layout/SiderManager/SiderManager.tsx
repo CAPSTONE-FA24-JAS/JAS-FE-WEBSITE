@@ -1,11 +1,12 @@
-import { Menu, MenuProps } from 'antd'
-import Sider from 'antd/es/layout/Sider'
 import React, { useEffect, useState } from 'react'
-import { HiOutlineDocument } from 'react-icons/hi'
-import { MdAssessment, MdFormatListBulleted, MdOutlineMenu } from 'react-icons/md'
-import { RiAuctionLine, RiBillLine, RiMoneyDollarCircleLine } from 'react-icons/ri'
-import { TbZoomMoney } from 'react-icons/tb'
+import { Menu, MenuProps } from 'antd'
 import { useNavigate } from 'react-router-dom'
+import Sider from 'antd/es/layout/Sider'
+import { RiAuctionLine, RiBillLine, RiCheckDoubleLine, RiMoneyDollarCircleLine } from 'react-icons/ri'
+import { HiOutlineDocument } from 'react-icons/hi'
+import { MdAssessment, MdLocalShipping, MdOutlineMenu, MdFormatListBulleted } from 'react-icons/md'
+import { TbZoomMoney } from 'react-icons/tb'
+import { cn } from '../../../utils/cn'
 
 export default function SiderManager() {
   type MenuItem = Required<MenuProps>['items'][number]
@@ -91,7 +92,7 @@ export default function SiderManager() {
           <img
             src='https://firebasestorage.googleapis.com/v0/b/voguary.appspot.com/o/Logo_Website%2Fsnapedit_1731943467578.png?alt=media&token=aab5b0d7-a6d1-4309-a9bc-c1fe6ecd2f01'
             alt='Logo'
-            className='object-contain w-36 h-36' // Adjust size as needed
+            className='w-36 h-36 object-contain' // Adjust size as needed
           />
         </div>
 
