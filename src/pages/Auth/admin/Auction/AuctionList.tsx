@@ -286,7 +286,7 @@ const AuctionList = () => {
             loading={isLoading}
             style={{ minHeight: '65vh' }}
             rowKey={(record) => record.id.toString()}
-            scroll={{ x: 768 }}
+            scroll={{ x: 1200 }}
           />
         </div>
       </div>
