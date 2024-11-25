@@ -116,14 +116,14 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
             />
           </div>
 
-          <div className='absolute top-56 left-0 flex items-center justify-center pl-3'>
+          <div className='absolute left-0 flex items-center justify-center pl-3 top-56'>
             <Button icon={<LeftOutlined />} onClick={prevImage} className='bg-gray-300 hover:bg-gray-400' />
           </div>
-          <div className='absolute top-56 right-0 flex items-center justify-center pr-3'>
+          <div className='absolute right-0 flex items-center justify-center pr-3 top-56'>
             <Button icon={<RightOutlined />} onClick={nextImage} className='bg-gray-300 hover:bg-gray-400' />
           </div>
 
-          <div className='flex ml-10 mt-10'>
+          <div className='flex mt-10 ml-10'>
             {images.map((image: string, index: number) => (
               <img
                 key={index}
@@ -136,7 +136,7 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
           </div>
         </div>
         <Modal open={isModalVisible} footer={null} onCancel={closeModal} width='40%'>
-          <img src={images[currentImageIndex]} alt='product zoomed' className='w-full h-auto object-contain' />
+          <img src={images[currentImageIndex]} alt='product zoomed' className='object-contain w-full h-auto' />
         </Modal>
         <div>
           <p className='mb-2 text-xl font-bold'>{record?.id}</p>

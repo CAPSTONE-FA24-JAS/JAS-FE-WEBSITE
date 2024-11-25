@@ -44,7 +44,7 @@ interface LotGridViewProps {
 }
 
 const LotGridView: React.FC<LotGridViewProps> = ({ lots, onEdit }) => {
-  /// roleid sau
+  //roleid sau
   const getLotTypeConfig = (lotType: string): LotTypeConfig => {
     const config: Record<string, LotTypeConfig> = {
       Fixed_Price: {
