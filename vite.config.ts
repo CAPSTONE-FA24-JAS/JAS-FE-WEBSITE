@@ -14,5 +14,8 @@ export default defineConfig({
     alias: {
       '~': path.resolve(__dirname, './src')
     }
+  },
+  build: {
+    outDir: 'build' // Change to 'build' to align with Netlify's expected directory
   }
 })
