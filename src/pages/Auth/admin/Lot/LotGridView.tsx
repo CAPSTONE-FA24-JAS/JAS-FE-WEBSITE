@@ -243,10 +243,10 @@ const LotGridView: React.FC<LotGridViewProps> = ({ lots, onEdit }) => {
           <Card
             hoverable
             actions={[
-              <Link to={`/manager/lotdetailmanager/${lot.id}`}>
+              <Link to={''}>
                 <EyeOutlined key='view' />
               </Link>,
-              <EditOutlined key='edit' onClick={() => onEdit(lot)} />,
+              <EditOutlined key='edit' />,
               <DeleteOutlined key='delete' />
             ]}
           >

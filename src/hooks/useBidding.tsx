@@ -91,7 +91,12 @@ export function useBidding(): UseBiddingResult {
 
           // Nếu đã có bid, cập nhật trạng thái của bid hiện tại
           return prev.map((message) =>
-            message.customerId === cusid && message.status === 'Processing' && message.currentPrice === price
+            message.customerId === cusid &&
+            message.firstName === firstname &&
+            message.lastName === lastName &&
+            message.status === 'Processing' &&
+            message.currentPrice === price &&
+            message.bidTime === bidtime
               ? { ...message, status: status }
               : message
           )

@@ -19,7 +19,7 @@ export const HeaderControls: React.FC<HeaderControlsProps> = ({
   // Map trạng thái hiển thị
   const statusMap = useMemo<Record<string, { display: string; color: string }>>(
     () => ({
-      auctioning: { display: 'Running', color: 'text-green-600' },
+      auctioning: { display: 'Auctioning', color: 'text-green-600' },
       canceled: { display: 'Canceled', color: 'text-red-600' },
       pause: { display: 'Paused', color: 'text-yellow-600' },
       sold: { display: 'Sold', color: 'text-blue-600' },
