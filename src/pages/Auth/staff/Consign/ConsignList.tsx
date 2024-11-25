@@ -6,14 +6,43 @@ import { useSelector } from 'react-redux'
 import ConsignDetail from './ConsignDetail' // Ensure this component is created
 import { RootState } from '../../../../store'
 import { useGetPreliminaryValuationsByStaffQuery } from '../../../../services/requestconsign.services'
+import { ColumnType } from 'antd/es/table' // Import kiểu ColumnType
 
 const { Search } = Input
+
+// Định nghĩa interface cho ImageValuation
+interface ImageValuation {
+  imageLink: string
+}
+
+// Định nghĩa interface cho Seller
+interface Seller {
+  firstName: string
+  lastName: string
+  accountDTO: {
+    email: string
+    phoneNumber: string
+  }
+}
+
+// Định nghĩa interface cho Record
+interface Record {
+  id: number
+  name: string
+  seller: Seller
+  status: string | number
+  width: number
+  height: number
+  depth: number
+  description: string
+  imageValuations: ImageValuation[]
+}
 
 const RequestConsignList = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const [isModalVisible, setIsModalVisible] = useState(false)
-  const [selectedRecord, setSelectedRecord] = useState<any>(null)
+  const [selectedRecord, setSelectedRecord] = useState<Record | null>(null)
   const [status, setStatus] = useState<number | string>('')
 
   const [searchText, setSearchText] = useState<string>('')
@@ -22,7 +51,6 @@ const RequestConsignList = () => {
 
   const staffId = useSelector((state: RootState) => state.authLoginAPI.staffId)
 
-  // Parsing query params to check if modal should be opened
   const queryParams = new URLSearchParams(location.search)
   const modalTrigger = queryParams.get('modal')
   const recordId = queryParams.get('recordId')
@@ -54,7 +82,7 @@ const RequestConsignList = () => {
     return <div>Error loading data</div>
   }
 
-  const showModal = (record: any) => {
+  const showModal = (record: Record) => {
     setSelectedRecord(record)
     setStatus(Number(record.status) || 0)
     setIsModalVisible(true)
@@ -70,12 +98,13 @@ const RequestConsignList = () => {
 
   const filteredDataSource =
     data?.dataResponse?.filter(
-      (item: any) =>
-        (item.seller.firstName || '').toLowerCase().includes(searchText.toLowerCase()) ||
-        (item.seller.lastName || '').toLowerCase().includes(searchText.toLowerCase())
+      (item: Record) =>
+        ((item.seller.firstName || '').toLowerCase().includes(searchText.toLowerCase()) ||
+          (item.seller.lastName || '').toLowerCase().includes(searchText.toLowerCase())) &&
+        (item.status === 'Assigned' || item.status === 'RequestedPreliminary')
     ) || []
 
-  const columns = [
+  const columns: ColumnType<Record>[] = [
     {
       title: 'ID',
       dataIndex: 'id',
@@ -90,13 +119,13 @@ const RequestConsignList = () => {
       title: 'Customer Name',
       dataIndex: ['seller', 'firstName'],
       key: 'customerName',
-      render: (text: any, record: any) => `${record.seller.firstName} ${record.seller.lastName}`
+      render: (text: string, record: Record) => `${record.seller.firstName} ${record.seller.lastName}`
     },
     {
       title: 'Contact',
       dataIndex: ['seller', 'email'],
       key: 'contact',
-      render: (text: any, record: any) => record.seller.accountDTO.email
+      render: (text: string, record: Record) => record.seller.accountDTO.email
     },
     {
       title: 'Status',
@@ -113,7 +142,7 @@ const RequestConsignList = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: any, record: any) => (
+      render: (text: string, record: Record) => (
         <Space>
           <Tooltip title='View Detail'>
             <Button icon={<EyeOutlined />} onClick={() => showModal(record)} />
@@ -161,14 +190,16 @@ const RequestConsignList = () => {
           }
         }}
       />
-      <ConsignDetail
-        isVisible={isModalVisible}
-        onCancel={handleCancel}
-        record={selectedRecord}
-        status={status.toString()}
-        setStatus={setStatus}
-        refetch={refetch}
-      />
+      {selectedRecord && (
+        <ConsignDetail
+          isVisible={isModalVisible}
+          onCancel={handleCancel}
+          record={selectedRecord}
+          status={status.toString()}
+          setStatus={setStatus}
+          refetch={refetch}
+        />
+      )}
     </div>
   )
 }
