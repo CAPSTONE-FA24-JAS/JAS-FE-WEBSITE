@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import { Button, Col, Input, Row, Space, Table, Tag, Tooltip } from 'antd'
 import { EyeOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons'
-import ValuationDetailsModal from './RequestPreliminaryDetailModal' // Adjust the import path as needed
-import { useGetRequestPreliminaryValuationQuery } from '../../../../services/valuation.services' // Adjust the import path as needed
+import { Button, Col, Input, Row, Space, Table, Tag, Tooltip } from 'antd'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useGetRequestPreliminaryValuationQuery } from '../../../../services/valuation.services' // Adjust the import path as needed
+import ValuationDetailsModal from './RequestPreliminaryDetailModal' // Adjust the import path as needed
 
 const { Search } = Input
 
@@ -60,13 +60,13 @@ const RequestPreliminaryList = () => {
       title: 'Customer Name',
       dataIndex: ['seller', 'firstName'],
       key: 'customerName',
-      render: (text: any, record: any) => `${record.seller.firstName} ${record.seller.lastName}`
+      render: (_text: any, record: any) => `${record.seller.firstName} ${record.seller.lastName}`
     },
     {
       title: 'Contact',
       dataIndex: ['seller', 'email'],
       key: 'contact',
-      render: (text: any, record: any) => record.seller.accountDTO.email
+      render: (_text: any, record: any) => record.seller.accountDTO.email
     },
     {
       title: 'Status',
@@ -83,7 +83,7 @@ const RequestPreliminaryList = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: any, record: any) => (
+      render: (_text: any, record: any) => (
         <Space>
           <Tooltip title='View Detail'>
             <Button icon={<EyeOutlined />} onClick={() => showModal(record)} />

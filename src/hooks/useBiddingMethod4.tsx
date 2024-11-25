@@ -64,7 +64,7 @@ export function useBiddingMethod4(): UseBiddingResult {
 
     //// sau khi mua xong thi het 1 chu ky giam gia la end lai nen can cap nhat lai
     connection.on('SendEndTimeForReduceBidding', (msg: string, newEndTime: string) => {
-      console.log(`End time updated for lot : ${newEndTime}`)
+      console.log(`End time updated for lot : ${msg} ${newEndTime}`)
       setEndTime(newEndTime)
     })
 

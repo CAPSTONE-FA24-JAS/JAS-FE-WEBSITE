@@ -1,12 +1,12 @@
+import { LogoutOutlined, UserOutlined } from '@ant-design/icons'
 import { Avatar, Dropdown, MenuProps, Spin } from 'antd'
-import { UserOutlined, LogoutOutlined } from '@ant-design/icons'
+import { Header } from 'antd/es/layout/layout'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { logoutUser, RoleType } from '../../../slice/authLoginAPISlice'
 import { RootState } from '../../../store'
 import NotificationMenu from './NotificationMenu'
-import { Header } from 'antd/es/layout/layout'
-import React, { useState, useEffect } from 'react'
 
 export default function HeaderStaff() {
   const navigate = useNavigate()

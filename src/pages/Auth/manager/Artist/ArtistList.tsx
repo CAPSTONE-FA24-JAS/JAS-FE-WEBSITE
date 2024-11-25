@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import { Table, Button, Modal, Form, Input, notification } from 'antd'
-import { useViewArtistsQuery, useCreateArtistMutation } from '../../../../services/manageother.services'
+import { Button, Form, Input, Modal, notification, Table } from 'antd'
+import { useState } from 'react'
+import { useCreateArtistMutation, useViewArtistsQuery } from '../../../../services/manageother.services'
 
 const ArtistList = () => {
   const { data, error, isLoading, refetch } = useViewArtistsQuery()
@@ -8,8 +8,8 @@ const ArtistList = () => {
   const [form] = Form.useForm()
   const [createArtist, { isLoading: isCreating }] = useCreateArtistMutation()
 
-  if (isLoading) return <p className='text-center text-lg py-4'>Loading artists...</p>
-  if (error) return <p className='text-center text-lg text-red-500 py-4'>Error loading artists.</p>
+  if (isLoading) return <p className='py-4 text-lg text-center'>Loading artists...</p>
+  if (error) return <p className='py-4 text-lg text-center text-red-500'>Error loading artists.</p>
 
   const artists = data?.data || []
 
@@ -66,7 +66,7 @@ const ArtistList = () => {
 
   return (
     <div className='p-4'>
-      <div className='flex justify-between items-center mb-6'>
+      <div className='flex items-center justify-between mb-6'>
         <h2 className='text-2xl font-bold'>Artists</h2>
         <Button type='primary' onClick={showModal}>
           Create Artist

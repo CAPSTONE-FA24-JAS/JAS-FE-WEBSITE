@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import { Table, Button, Modal, Form, Input, notification } from 'antd' // Import notification
-import { useViewCategoriesQuery, useCreateCategoryMutation } from '../../../../services/manageother.services'
+import { Button, Form, Input, Modal, notification, Table } from 'antd' // Import notification
+import { useState } from 'react'
+import { useCreateCategoryMutation, useViewCategoriesQuery } from '../../../../services/manageother.services'
 
 const CategoriesComponent = () => {
   const { data, error, isLoading, refetch } = useViewCategoriesQuery()
@@ -8,8 +8,8 @@ const CategoriesComponent = () => {
   const [form] = Form.useForm()
   const [createCategory, { isLoading: isCreating }] = useCreateCategoryMutation()
 
-  if (isLoading) return <p className='text-center text-lg py-4'>Loading categories...</p>
-  if (error) return <p className='text-center text-lg text-red-500 py-4'>Error loading categories.</p>
+  if (isLoading) return <p className='py-4 text-lg text-center'>Loading categories...</p>
+  if (error) return <p className='py-4 text-lg text-center text-red-500'>Error loading categories.</p>
 
   const categories = data?.data || []
 
@@ -69,7 +69,7 @@ const CategoriesComponent = () => {
 
   return (
     <div className='p-4'>
-      <div className='flex justify-between items-center mb-6'>
+      <div className='flex items-center justify-between mb-6'>
         <h2 className='text-2xl font-bold'>Categories</h2>
         <Button type='primary' onClick={showModal}>
           Create Category

@@ -65,7 +65,7 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, reco
   const handleUpdateStatus = async () => {
     setIsLoading(true) // Bắt đầu loading
     try {
-      const response = await updateStatus({ id: record.id, status: 2 }).unwrap()
+      await updateStatus({ id: record.id, status: 2 }).unwrap()
       notification.success({
         message: 'Has sent a request for appraisal!'
       })

@@ -53,7 +53,7 @@ const RequestFinalValuation = () => {
       title: 'Customer Name',
       dataIndex: ['seller', 'firstName'],
       key: 'customerName',
-      render: (text: string, record: any) => `${record.firstNameSeller || ''} ${record.lastNameSeller || ''}`
+      render: (_text: string, record: any) => `${record.firstNameSeller || ''} ${record.lastNameSeller || ''}`
     },
     {
       title: 'Status',
@@ -79,7 +79,7 @@ const RequestFinalValuation = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: any, record: Valuation) => (
+      render: (_text: any, record: Valuation) => (
         <Space>
           <Button
             type='primary'
@@ -141,7 +141,9 @@ const RequestFinalValuation = () => {
           <RequestFinalDetail
             recordId={selectedFinalRecord.id}
             isVisible={true}
-            setStatus={(status) => {}}
+            setStatus={(status) => {
+              console.log(status)
+            }}
             refetch={() => {}}
             onClose={() => setSelectedFinalRecord(null)}
           />

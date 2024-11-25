@@ -45,7 +45,7 @@ export const financeProofApi = createApi({
 
     getFinanceProofById: builder.query<Respone<FinanceProof>, number>({
       query: (id) => `BidLimit/ViewBidLimitById?Id=${id}`,
-      providesTags: (result, error, id) => [{ type: 'FinanceProof', id }]
+      providesTags: (_result, _error, id) => [{ type: 'FinanceProof', id }]
     }),
 
     updateFinanceProof: builder.mutation<Respone<FinanceProof>, UpdateFinanceProof>({
@@ -56,7 +56,7 @@ export const financeProofApi = createApi({
           body
         }
       },
-      invalidatesTags: (result, error, { id }) => [{ type: 'FinanceProof', id }]
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'FinanceProof', id }]
     })
   })
 })
