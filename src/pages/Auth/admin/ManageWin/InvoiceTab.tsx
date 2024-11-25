@@ -46,7 +46,17 @@ export default function InvoiceTab() {
   }
 
   const filteredData = data?.data?.dataResponse || []
-  const allowedStatuses = ['PendingPayment', 'Paid', 'Delivering', 'Delivered', 'Rejected', 'Finished']
+  const allowedStatuses = [
+    'CreateInvoice',
+    'PendingPayment',
+    'Paid',
+    'Delivering',
+    'Delivered',
+    'Rejected',
+    'Finished',
+    'Refunded',
+    'Cancelled'
+  ]
 
   const columns = [
     {
