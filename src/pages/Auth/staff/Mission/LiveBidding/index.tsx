@@ -145,6 +145,45 @@ const Index = () => {
     return <div>Loading...</div>
   }
 
+  const renderLiveBidding = () => {
+    if (!data?.data) return null
+
+    const lotType = data.data.lotType
+
+    if (lotType === 'Fixed_Price' || lotType === 'Secret_Auction') {
+      return (
+        <LiveBidding
+          key='fixed-secret-auction'
+          bids={messages}
+          itemLot={data.data}
+          playerInLot={playerInLot?.data}
+          status={data.data.status}
+        />
+      )
+    }
+
+    if (lotType === 'Auction_Price_GraduallyReduced') {
+      return (
+        <LiveBidding
+          key='reduced-price-auction'
+          bids={messagesMethod4}
+          itemLot={data.data}
+          currentPrice={reducePrice}
+          isEndAuction={isEndAuctionMethod4}
+          winnerCustomer={winnerCustomer}
+          winnerPrice={winnerPrice}
+          status={statusMethod4}
+        />
+      )
+    }
+
+    return <LiveBidding key='public-auction' bids={messages} itemLot={data.data} status={status} />
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
   return (
     <div className='space-y-4'>
       <div className='flex-col gap-4'>
@@ -161,30 +200,7 @@ const Index = () => {
         {canViewLiveBidding && (
           <div className='w-full'>
             <div className='text-lg font-bold text-center'>Time left: {formatTimeDisplay}</div>
-            {data?.data ? (
-              data.data.lotType === 'Fixed_Price' || data.data.lotType === 'Secret_Auction' ? (
-                <LiveBidding
-                  bids={messages}
-                  itemLot={data.data}
-                  playerInLot={playerInLot?.data}
-                  status={data.data.status}
-                />
-              ) : data.data.lotType === 'Auction_Price_GraduallyReduced' ? (
-                <LiveBidding
-                  bids={messagesMethod4}
-                  itemLot={data.data}
-                  currentPrice={reducePrice}
-                  isEndAuction={isEndAuctionMethod4}
-                  winnerCustomer={winnerCustomer}
-                  winnerPrice={winnerPrice}
-                  status={statusMethod4}
-                />
-              ) : (
-                <LiveBidding bids={messages} itemLot={data.data} status={status} />
-              )
-            ) : (
-              <div>No lot data available</div>
-            )}
+            {data?.data ? renderLiveBidding() : <div>No lot data available</div>}
           </div>
         )}
 
