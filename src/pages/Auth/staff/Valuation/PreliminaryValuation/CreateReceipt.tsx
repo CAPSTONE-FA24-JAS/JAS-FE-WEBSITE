@@ -13,6 +13,9 @@ interface Seller {
   idIssuanceDate: string
   idExpirationDate: string
   phoneNumber: string
+  accountDTO: {
+    phoneNumber: string
+  }
 }
 
 interface Record {
@@ -37,8 +40,10 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
     dateToString(dayjs(record?.seller?.idExpirationDate))
   )
   const [createReceipt] = useCreateReceiptMutation()
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleCreate = async () => {
+    setIsLoading(true)
     const requestData = {
       id: record?.id,
       actualStatusOfJewelry,
@@ -71,6 +76,8 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
       onCreate()
     } catch (error) {
       console.error('Failed to create receipt:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -84,6 +91,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
       width={800}
       className='modal-custom'
       onOk={handleCreate}
+      confirmLoading={isLoading}
     >
       <div className='p-0'>
         <Title level={4} className='text-xl font-bold text-center'>
@@ -218,7 +226,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
             </Text>
           </Col>
           <Col span={21}>
-            <Input className='w-full mb-2 font-bold' value={record?.seller?.phoneNumber} readOnly />
+            <Input className='w-full mb-2 font-bold' value={record?.seller?.accountDTO?.phoneNumber} readOnly />
           </Col>
         </Row>
 

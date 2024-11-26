@@ -58,7 +58,6 @@ const publicRoutes: RouteProps[] = [
 const managerRoutes: RouteProps[] = [
   { path: '/manager/dashboard', component: Dashboard, layout: ManagerLayout },
   { path: '/manager/ConsignList', component: RequestConsign, layout: ManagerLayout },
-
   { path: '/manager/manageinvoice', component: InvoiceTab, layout: ManagerLayout },
   { path: '/manager/managewithdraw', component: WithdrawalRequests, layout: ManagerLayout },
   { path: '/manager/auctionlist', component: AuctionList, layout: ManagerLayout },

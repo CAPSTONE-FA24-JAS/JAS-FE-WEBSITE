@@ -85,9 +85,9 @@ const RequestConsignDetail: React.FC<RequestConsignDetailProps> = ({ recordId, o
   }
 
   const handleClose = () => {
-    setAssignedStaff('') // Reset assigned staff if needed
-    setCurrentImageIndex(0) // Reset image index if needed
-    onClose() // Call the parent onClose function
+    setAssignedStaff('')
+    setCurrentImageIndex(0)
+    onClose()
   }
 
   if (valuationLoading) {
@@ -186,12 +186,15 @@ const RequestConsignDetail: React.FC<RequestConsignDetailProps> = ({ recordId, o
               )}
             </Select>
           </Form.Item>
-          <Button type='primary' onClick={handleUpdate}>
-            Assign Staff
-          </Button>
-          <Button onClick={handleClose} className='ml-2'>
-            Close
-          </Button>
+
+          <div className='flex justify-end'>
+            <Button onClick={handleClose} className='mr-2'>
+              Close
+            </Button>
+            <Button type='primary' onClick={handleUpdate}>
+              Assign Staff
+            </Button>
+          </div>
         </div>
       </div>
     </Modal>

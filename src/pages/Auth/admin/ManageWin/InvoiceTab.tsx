@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Tabs, Table, Avatar, Tag, Button, Tooltip } from 'antd'
 import { EyeOutlined } from '@ant-design/icons'
+import { useLocation, useNavigate } from 'react-router-dom'
 import BillInVoiceList from './CheckBillInVoice/BillInvoiveList'
 import ManageWinList from './AssignDelivery/ManageWinList'
 import { useGetInvoicesForManagerQuery } from '../../../../services/invoice.services'
@@ -30,6 +31,22 @@ export default function InvoiceTab() {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(null)
   const [status, setStatus] = useState<string>('')
+  const [activeTabKey, setActiveTabKey] = useState<string>('1')
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search)
+    const recordId = queryParams.get('recordId')
+    const tab = queryParams.get('tab') || '1'
+
+    if (recordId) {
+      setSelectedInvoiceId(parseInt(recordId))
+      setIsModalVisible(true)
+    }
+
+    setActiveTabKey(tab)
+  }, [location.search])
 
   const showDetails = (record: Invoice) => {
     if (record.id) {
@@ -43,6 +60,7 @@ export default function InvoiceTab() {
   const handleCancel = () => {
     setIsModalVisible(false)
     setSelectedInvoiceId(null)
+    navigate('/manager/manageinvoice', { replace: true })
   }
 
   const filteredData = data?.data?.dataResponse || []
@@ -173,7 +191,7 @@ export default function InvoiceTab() {
   return (
     <div className='invoice-tab-container p-6'>
       <h1 className='text-2xl font-bold mb-4'>Invoice Management</h1>
-      <Tabs defaultActiveKey='1' items={tabItems} />
+      <Tabs activeKey={activeTabKey} onChange={setActiveTabKey} items={tabItems} />
     </div>
   )
 }

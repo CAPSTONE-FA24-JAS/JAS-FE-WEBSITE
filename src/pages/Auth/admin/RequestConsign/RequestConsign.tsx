@@ -1,8 +1,9 @@
 import { EyeOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Col, Input, Row, Space, Table, Tag } from 'antd'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useGetValuationsQuery } from '../../../../services/requestconsign.services'
 import RequestConsignDetail from './RequestConsignDetail'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const { Search } = Input
 
@@ -10,6 +11,20 @@ export default function RequestConsign() {
   const [searchText, setSearchText] = useState<string>('')
   const { data, isLoading, error } = useGetValuationsQuery(undefined)
   const [selectedRecord, setSelectedRecord] = useState<any>(null)
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search)
+    const recordId = queryParams.get('recordId')
+
+    if (recordId) {
+      const record = data?.dataResponse.find((item: any) => item.id === parseInt(recordId))
+      if (record) {
+        setSelectedRecord(record)
+      }
+    }
+  }, [location.search, data])
 
   const handleSearch = (value: string) => {
     setSearchText(value)
@@ -43,7 +58,7 @@ export default function RequestConsign() {
     },
     {
       title: 'Contact',
-      dataIndex: ['seller', 'email'],
+      dataIndex: 'email',
       key: 'email'
     },
     {
@@ -74,6 +89,11 @@ export default function RequestConsign() {
       )
     }
   ]
+
+  const handleCloseModal = () => {
+    setSelectedRecord(null)
+    navigate('/manager/ConsignList', { replace: true })
+  }
 
   return (
     <div className='p-4'>
@@ -120,7 +140,7 @@ export default function RequestConsign() {
 
       {selectedRecord && (
         <div className='mt-4'>
-          <RequestConsignDetail recordId={selectedRecord.id} onClose={() => setSelectedRecord(null)} />
+          <RequestConsignDetail recordId={selectedRecord.id} onClose={handleCloseModal} />
         </div>
       )}
     </div>

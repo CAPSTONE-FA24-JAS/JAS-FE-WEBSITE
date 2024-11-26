@@ -1,12 +1,11 @@
-import React, { useState } from 'react'
-import { Button, Modal, Select, notification, Spin } from 'antd'
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
+import { Image as AntImage, Button, Modal, notification, Spin } from 'antd'
+import React, { useState } from 'react'
 import {
-  useUpdateJewelryStatusByManagerMutation,
-  useGetValuationByIdQuery
+  useGetValuationByIdQuery,
+  useRejectJewelryByManagerMutation,
+  useUpdateJewelryStatusByManagerMutation
 } from '../../../../services/valuation.services'
-import { Image as AntImage } from 'antd'
-const { Option } = Select
 
 interface RequestFinalDetailProps {
   recordId: number
@@ -25,7 +24,6 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [selectedStatus, setSelectedStatus] = useState<string>('')
 
   const {
     data: valuationData,
@@ -48,16 +46,8 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
   const openModal = () => setIsModalVisible(true)
   const closeModal = () => setIsModalVisible(false)
 
-  const statusOptions = [
-    { label: 'Final Valuated', value: 'FinalValuated' },
-    { label: 'Manager Approved', value: 'ManagerApproved' }
-  ]
-
   const [updateStatus, { isLoading }] = useUpdateJewelryStatusByManagerMutation()
-
-  const handleStatusChange = (value: string) => {
-    setSelectedStatus(value)
-  }
+  const [rejectStatus, { isLoading: isRejectLoading }] = useRejectJewelryByManagerMutation()
 
   const handleUpdateClick = async () => {
     const jewelryId = valuationData?.data?.jewelry?.id
@@ -92,6 +82,39 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
     }
   }
 
+  const handleRejectClick = async () => {
+    const jewelryId = valuationData?.data?.jewelry?.id
+    const status = 9
+
+    console.log('Rejecting status with:', { jewelryId, status })
+
+    if (!jewelryId) {
+      notification.error({
+        message: 'Reject Failed',
+        description: 'Invalid jewelry ID.'
+      })
+      return
+    }
+
+    try {
+      await rejectStatus({ jewelryId, status }).unwrap()
+      notification.success({
+        message: 'Status Rejected',
+        description: 'The status has been rejected.'
+      })
+      setStatus('Rejected')
+
+      refetch()
+      onClose()
+    } catch (error) {
+      console.error('Error rejecting status:', error)
+      notification.error({
+        message: 'Reject Failed',
+        description: 'There was an error rejecting the status.'
+      })
+    }
+  }
+
   if (valuationLoading) {
     return <Spin tip='Loading...' />
   }
@@ -106,11 +129,11 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
       open={isVisible}
       onCancel={onClose}
       footer={[
-        <Button key='cancel' onClick={onClose}>
-          Cancel
+        <Button key='reject' onClick={handleRejectClick} loading={isRejectLoading} danger>
+          Reject
         </Button>,
         <Button key='update' type='primary' onClick={handleUpdateClick} loading={isLoading}>
-          Update
+          Approve
         </Button>
       ]}
       width={1200}
@@ -150,7 +173,6 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
         <div>
           <p className='mb-2 text-xl font-bold'>{valuationData?.data?.id || 'N/A'}</p>
           <p className='mb-6 text-xl font-bold'>{valuationData?.data?.name || 'No Name Available'}</p>
-
           <div className='flex mb-4'>
             <strong className='w-1/3'>Customer Name:</strong>
             <span>
@@ -185,7 +207,6 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
               )}
             </span>
           </div>
-
           <div className='flex mb-4'>
             <strong className='w-1/3'>Starting Price:</strong>
             <span>
@@ -194,7 +215,6 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
               )}
             </span>
           </div>
-
           <div className='flex mb-4'>
             <strong className='w-1/3'>Final Price:</strong>
             <span className='text-red-700 font-bold'>
@@ -203,7 +223,6 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
               )}
             </span>
           </div>
-
           <div>
             <strong className='w-full block mb-4'>Key Characteristics</strong>
             {valuationData?.data?.jewelry?.keyCharacteristicDetails?.map((detail: any) => (
@@ -213,7 +232,6 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
               </div>
             ))}
           </div>
-
           {valuationData?.data?.jewelry?.mainDiamonds?.length > 0 && (
             <div>
               <span className='w-full block mb-4 font-bold'>Main Diamonds</span>
@@ -567,7 +585,6 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
               ))}
             </div>
           )}
-
           {/* Secondary Sapphires */}
           {valuationData?.data?.jewelry?.secondaryShaphies?.length > 0 && (
             <div>
@@ -662,17 +679,7 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
 
           <div className='mt-4 flex'>
             <strong className='w-1/3'>Status:</strong>
-            {valuationData?.data?.status === 'FinalValuated' ? (
-              <Select value={selectedStatus} onChange={handleStatusChange} style={{ width: 200 }}>
-                {statusOptions.map((option) => (
-                  <Option key={option.value} value={option.value}>
-                    {option.label}
-                  </Option>
-                ))}
-              </Select>
-            ) : (
-              <span className='text-red-700 font-bold'>{valuationData?.data?.status || 'Unknown Status'}</span>
-            )}
+            <span className='text-red-700 font-bold'>{valuationData?.data?.status || 'Unknown Status'}</span>
           </div>
         </div>
       </div>
