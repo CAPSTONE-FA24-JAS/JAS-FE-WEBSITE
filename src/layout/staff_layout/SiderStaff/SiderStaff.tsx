@@ -1,9 +1,10 @@
 import { Menu, MenuProps } from 'antd'
 import Sider from 'antd/es/layout/Sider'
+import { get } from 'http'
 import React, { useEffect, useState } from 'react'
 import { AiOutlineStar, AiOutlineTable } from 'react-icons/ai'
 import { MdOutlineInventory2, MdOutlineMenu } from 'react-icons/md'
-import { RiAuctionLine } from 'react-icons/ri'
+import { RiAuctionLine, RiBillLine } from 'react-icons/ri'
 import { TbZoomMoney } from 'react-icons/tb'
 import { useNavigate } from 'react-router-dom'
 
@@ -47,6 +48,7 @@ export default function SiderStaff() {
       getItem('Valuation Manage', 'manageValuation', <AiOutlineStar className='text-base' />, [
         getItem('Valuation List', 'valuation', <AiOutlineTable className='text-base' />)
       ]),
+      getItem('Manage Withdraw', 'managewithdraw', <RiBillLine className='text-base' />),
       getItem('Finance Proof', 'financeProof', <TbZoomMoney className='text-base' />),
       getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
         getItem('Auction List', 'auctionlistSub', <AiOutlineTable className='text-base' />)
@@ -61,6 +63,7 @@ export default function SiderStaff() {
     .set('financeProof', '/staff/financeproof')
     .set('auctionlistSub', '/staff/auctionlist')
     .set('livebidding', '/staff/livebidding')
+    .set('managewithdraw', '/staff/managewithdraw')
 
   return (
     <Sider
