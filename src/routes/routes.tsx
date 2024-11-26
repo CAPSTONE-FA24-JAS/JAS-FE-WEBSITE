@@ -95,7 +95,8 @@ const staffCRoutes: RouteProps[] = [
   { path: '/staff/auctionlist', component: AuctionList, layout: StaffLayout },
   { path: '/staff/authorization', component: CreateAuthorization, layout: StaffLayout },
   { path: '/staff/lotdetailmanager/:id', component: Index, layout: StaffLayout },
-  { path: '/staff/lotlist/:id', component: LotList, layout: StaffLayout }
+  { path: '/staff/lotlist/:id', component: LotList, layout: StaffLayout },
+  { path: '/staff/managewithdraw', component: WithdrawalRequests, layout: StaffLayout }
 ]
 
 export { adminRoutes, appraiserRoutes, managerRoutes, publicRoutes, staffCRoutes }
