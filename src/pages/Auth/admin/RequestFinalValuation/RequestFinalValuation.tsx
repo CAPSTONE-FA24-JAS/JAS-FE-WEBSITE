@@ -154,7 +154,9 @@ const RequestFinalValuation = () => {
           <RequestFinalDetail
             recordId={selectedFinalRecord.id}
             isVisible={true}
-            setStatus={(status) => {}}
+            setStatus={(status) => {
+              console.log(status)
+            }}
             refetch={refetch}
             onClose={handleCloseModal}
           />

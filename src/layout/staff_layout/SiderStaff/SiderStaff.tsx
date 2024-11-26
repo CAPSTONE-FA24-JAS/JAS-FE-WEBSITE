@@ -1,6 +1,5 @@
 import { Menu, MenuProps } from 'antd'
 import Sider from 'antd/es/layout/Sider'
-import { get } from 'http'
 import React, { useEffect, useState } from 'react'
 import { AiOutlineStar, AiOutlineTable } from 'react-icons/ai'
 import { MdOutlineInventory2, MdOutlineMenu } from 'react-icons/md'

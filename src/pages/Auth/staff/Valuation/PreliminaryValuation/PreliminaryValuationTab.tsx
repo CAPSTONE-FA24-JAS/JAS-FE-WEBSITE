@@ -130,7 +130,6 @@ const PreliminaryValuationTab = () => {
           refetch()
         }}
         record={selectedRecord}
-        refetch={refetch}
       />
     </div>
   )
