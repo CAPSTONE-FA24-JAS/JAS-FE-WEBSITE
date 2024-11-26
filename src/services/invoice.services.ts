@@ -59,21 +59,21 @@ export const manageInvoice = createApi({
       /// manager approve request withdraw
       query: ({ requestId }) => ({
         url: `Wallet/ApproveRequestNewWithdraw`,
-        method: 'PATCH',
+        method: 'put',
         params: { requestId }
       })
     }),
     processWithdrawStaff: build.mutation<{ message: string }, { requestId: number }>({
       query: ({ requestId }) => ({
         url: `/Wallet/ProcessRequestNewWithdrawByStaff?requestId=${requestId}`,
-        method: 'PATCH',
+        method: 'put',
         params: { requestId }
       })
     }),
     cancelWithdraw: build.mutation<{ message: string }, { requestId: number }>({
       query: ({ requestId }) => ({
         url: `/Wallet/CancelRequestNewWithdrawByStaff?requestId=${requestId}`,
-        method: 'PATCH',
+        method: 'put',
         params: { requestId }
       })
     })
