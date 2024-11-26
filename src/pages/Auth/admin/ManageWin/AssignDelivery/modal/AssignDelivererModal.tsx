@@ -29,6 +29,7 @@ const AssignDelivererModal: React.FC<AssignDelivererModalProps> = ({
   const { data: staffData, isLoading: staffLoading, error: staffError } = useGetFilterByRoleQuery(roleId)
 
   const [assignShipper, { isLoading: isAssigning }] = useAssignShipperMutation()
+  console.log('status', status)
 
   useEffect(() => {
     if (staffData && staffData.data) {

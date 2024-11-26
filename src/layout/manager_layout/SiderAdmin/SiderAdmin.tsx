@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import { AppstoreAddOutlined, BarChartOutlined, FileTextOutlined, SmileOutlined, UserOutlined } from '@ant-design/icons'
 import { Menu, MenuProps } from 'antd'
-import { useNavigate } from 'react-router-dom'
 import Sider from 'antd/es/layout/Sider'
+import React, { useEffect, useState } from 'react'
 import { MdOutlineMenu } from 'react-icons/md'
-import { BarChartOutlined, UserOutlined, AppstoreAddOutlined, SmileOutlined, FileTextOutlined } from '@ant-design/icons'
-import { cn } from '../../../utils/cn'
+import { useNavigate } from 'react-router-dom'
 
 export default function SiderAdmin() {
   type MenuItem = Required<MenuProps>['items'][number]
@@ -83,7 +82,7 @@ export default function SiderAdmin() {
           <img
             src='https://firebasestorage.googleapis.com/v0/b/voguary.appspot.com/o/Logo_Website%2Fsnapedit_1731943467578.png?alt=media&token=aab5b0d7-a6d1-4309-a9bc-c1fe6ecd2f01'
             alt='Logo'
-            className='w-36 h-36 object-contain' // Adjust size as needed
+            className='object-contain w-36 h-36' // Adjust size as needed
           />
         </div>
 

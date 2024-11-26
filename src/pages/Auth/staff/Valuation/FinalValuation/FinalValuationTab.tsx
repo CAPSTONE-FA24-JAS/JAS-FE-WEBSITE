@@ -2,16 +2,15 @@ import { EyeOutlined } from '@ant-design/icons'
 import { Button, Table, Tag, Tooltip } from 'antd'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import FinalDetail from './FinalDetail'
-import { RootState } from '../../../../../store'
 import { useGetFinalValuationsOfStaffQuery } from '../../../../../services/valuation.services'
+import { RootState } from '../../../../../store'
+import FinalDetail from './FinalDetail'
 
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 // FinalValuationTab component
 const FinalValuationTab = () => {
   const location = useLocation()
-  const navigate = useNavigate()
 
   // Extract recordId from URL
   const queryParams = new URLSearchParams(location.search)
@@ -76,7 +75,7 @@ const FinalValuationTab = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: any, record: any) => (
+      render: (_text: any, record: any) => (
         <div>
           <Tooltip title='View Final Details'>
             <Button

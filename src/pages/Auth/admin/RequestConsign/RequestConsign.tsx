@@ -54,7 +54,7 @@ export default function RequestConsign() {
       title: 'Customer Name',
       dataIndex: ['seller', 'firstName'],
       key: 'customerName',
-      render: (text: string, record: any) => `${record.firstNameSeller || ''} ${record.lastNameSeller || ''}`
+      render: (_text: string, record: any) => `${record.firstNameSeller || ''} ${record.lastNameSeller || ''}`
     },
     {
       title: 'Contact',
@@ -76,7 +76,7 @@ export default function RequestConsign() {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: any, record: any) => (
+      render: (_text: any, record: any) => (
         <Space>
           <Button
             type='primary'

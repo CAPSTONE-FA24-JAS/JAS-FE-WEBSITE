@@ -11,20 +11,21 @@ export const dateToString = (date: Dayjs): string => {
   return date.format('YYYY-MM-DD')
 }
 
-export const parseDate = (dateString: string, type: 'dd/mm/yyyy' | 'dd/mm/yyy hh/mm/ss'): string => {
+export const parseDate = (dateString: string, type: 'dd/mm/yyyy' | 'dd/mm/yyyy hh:mm:ss'): string => {
   if (!dateString) {
     return ''
   }
+
   const date = new Date(dateString)
-  const day = date.getDate()
-  const month = date.getMonth() + 1
+  const day = date.getDate().toString().padStart(2, '0') // Đảm bảo 2 chữ số
+  const month = (date.getMonth() + 1).toString().padStart(2, '0') // Đảm bảo 2 chữ số
   const year = date.getFullYear()
-  const hours = date.getHours()
-  const minutes = date.getMinutes()
-  const seconds = date.getSeconds()
-  const gmt = -(date.getTimezoneOffset() / 60)
-  if (type === 'dd/mm/yyy hh/mm/ss') {
-    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} GMT: ${gmt}`
+  const hours = date.getHours().toString().padStart(2, '0') // Đảm bảo 2 chữ số
+  const minutes = date.getMinutes().toString().padStart(2, '0') // Đảm bảo 2 chữ số
+  const seconds = date.getSeconds().toString().padStart(2, '0') // Đảm bảo 2 chữ số
+
+  if (type === 'dd/mm/yyyy hh:mm:ss') {
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
   }
 
   return `${day}/${month}/${year}`

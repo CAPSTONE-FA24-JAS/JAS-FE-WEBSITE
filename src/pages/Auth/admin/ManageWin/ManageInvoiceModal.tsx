@@ -67,7 +67,6 @@ export default function ManageInvoiceModal({
   const lotCode = invoiceDetails.myBidDTO?.lotDTO?.id ?? 'N/A'
   const customerLotCode = invoiceDetails.myBidDTO?.id ?? 'N/A'
   const nameLot = invoiceDetails.myBidDTO?.lotDTO?.title ?? 'N/A'
-  const typeProduction = invoiceDetails.myBidDTO?.lotDTO?.typeProduction ?? 'N/A'
   const bidPrice = invoiceDetails.myBidDTO?.yourMaxBidPrice ?? 'N/A'
   const platformFee = invoiceDetails.free ?? 'N/A'
   const shippingFee = invoiceDetails.feeShip ?? 'N/A'
@@ -216,8 +215,7 @@ export default function ManageInvoiceModal({
           </p>
           <p className='font-extrabold '>{totalPrice.toLocaleString()}₫</p>
         </div>
-
-        <div className='space-y-2 mb-2'>
+        <div className='mb-2 space-y-2'>
           {status === 'CreateInvoice' && (
             <div className='flex justify-between'>
               <strong>Create Invoice Time:</strong>

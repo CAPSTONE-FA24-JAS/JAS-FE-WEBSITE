@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import { Button, Modal, Select } from 'antd'
+import { Button, Modal } from 'antd'
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
-const { Option } = Select
 
 interface ValuationDetailsModalProps {
   isVisible: boolean

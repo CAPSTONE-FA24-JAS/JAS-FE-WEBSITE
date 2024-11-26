@@ -1,9 +1,7 @@
-import React, { useState } from 'react'
-import { Button, Modal, Select, Spin } from 'antd'
-import { useViewListLotTypeQuery } from '../../../../../../services/bidtype.services'
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
-import { Image as AntImage } from 'antd'
-const { Option } = Select
+import { Image as AntImage, Button, Modal, Spin } from 'antd'
+import React, { useState } from 'react'
+import { useViewListLotTypeQuery } from '../../../../../../services/bidtype.services'
 
 interface FinalDetailModalProps {
   isVisible: boolean
@@ -13,14 +11,14 @@ interface FinalDetailModalProps {
   setStatus: (status: any) => void
 }
 
-const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel, onUpdate, record, setStatus }) => {
+const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel, record }) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const images = record?.jewelry?.imageJewelries?.map((img: any) => img.imageLink) || [
     'https://via.placeholder.com/150?text=No+Image'
   ]
 
-  const { data: auctionMethods, isLoading, isError, refetch } = useViewListLotTypeQuery(undefined)
+  const { isLoading, isError } = useViewListLotTypeQuery(undefined)
 
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length)
@@ -33,8 +31,6 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
   const closeModal = () => setIsModalVisible(false)
   if (isLoading) return <Spin />
   if (isError) return <div>Error loading auction methods. Please try again later.</div>
-
-  const lotTypes = auctionMethods?.data || []
 
   return (
     <Modal
@@ -60,14 +56,14 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
             />
           </div>
 
-          <div className='absolute top-56 left-0 flex items-center justify-center pl-3'>
+          <div className='absolute left-0 flex items-center justify-center pl-3 top-56'>
             <Button icon={<LeftOutlined />} onClick={prevImage} className='bg-gray-300 hover:bg-gray-400' />
           </div>
-          <div className='absolute top-56 right-0 flex items-center justify-center pr-3'>
+          <div className='absolute right-0 flex items-center justify-center pr-3 top-56'>
             <Button icon={<RightOutlined />} onClick={nextImage} className='bg-gray-300 hover:bg-gray-400' />
           </div>
 
-          <div className='flex ml-10 mt-10'>
+          <div className='flex mt-10 ml-10'>
             {images.map((image: string, index: number) => (
               <img
                 key={index}
@@ -81,7 +77,7 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
         </div>
 
         <Modal open={isModalVisible} footer={null} onCancel={closeModal} width='40%'>
-          <img src={images[currentImageIndex]} alt='product zoomed' className='w-full h-auto object-contain' />
+          <img src={images[currentImageIndex]} alt='product zoomed' className='object-contain w-full h-auto' />
         </Modal>
         <div>
           <p className='mb-2 text-xl font-bold'>{record?.id}</p>
@@ -103,11 +99,11 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Artist:</strong>
-            <span className=' text-blue-800'>{record?.jewelry?.artist?.name}</span>
+            <span className='text-blue-800 '>{record?.jewelry?.artist?.name}</span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Category:</strong>
-            <span className=' text-blue-800'>{record?.jewelry?.category?.name}</span>
+            <span className='text-blue-800 '>{record?.jewelry?.category?.name}</span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Estimated Price:</strong>
@@ -141,7 +137,7 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
           </div>
 
           <div>
-            <strong className='w-full block mb-4'>Key Characteristics</strong>
+            <strong className='block w-full mb-4'>Key Characteristics</strong>
             {record?.jewelry?.keyCharacteristicDetails?.map((detail: any) => (
               <div key={detail.id} className='flex mb-2 ml-10'>
                 <div className='w-1/4 font-medium'>{detail.keyCharacteristic.name}:</div>
@@ -151,7 +147,7 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
           </div>
           {record?.jewelry?.mainDiamonds?.length > 0 && (
             <div>
-              <span className='w-full block mb-4 font-bold'>Main Diamonds</span>
+              <span className='block w-full mb-4 font-bold'>Main Diamonds</span>
 
               {record?.jewelry?.mainDiamonds.map((diamond: any) => (
                 <div key={diamond.id} className='mb-4 ml-10'>
@@ -288,7 +284,7 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
 
           {record?.jewelry?.secondaryDiamonds?.length > 0 && (
             <div>
-              <span className='w-full block mb-4 font-bold'>Secondary Diamonds</span>
+              <span className='block w-full mb-4 font-bold'>Secondary Diamonds</span>
               {record?.jewelry?.secondaryDiamonds.map((diamond: any) => (
                 <div key={diamond.id} className='mb-4 ml-10'>
                   {diamond.name && (
@@ -415,7 +411,7 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
 
           {record?.jewelry?.mainShaphies?.length > 0 && (
             <div>
-              <span className='w-full block mb-4 font-bold'>Main Sapphires</span>
+              <span className='block w-full mb-4 font-bold'>Main Sapphires</span>
               {record?.jewelry?.mainShaphies.map((sapphire: any) => (
                 <div key={sapphire.id} className='mb-4 ml-10'>
                   {sapphire.name && (
@@ -506,7 +502,7 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
 
           {record?.jewelry?.secondaryShaphies?.length > 0 && (
             <div>
-              <span className='w-full block mb-4 font-bold'>Secondary Sapphires</span>
+              <span className='block w-full mb-4 font-bold'>Secondary Sapphires</span>
               {record?.jewelry?.secondaryShaphies.map((sapphire: any) => (
                 <div key={sapphire.id} className='mb-4 ml-10'>
                   {sapphire.name && (

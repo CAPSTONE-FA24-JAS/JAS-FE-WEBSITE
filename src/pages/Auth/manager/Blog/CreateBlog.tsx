@@ -14,13 +14,15 @@ const CreateBlogPage = () => {
 
   // Handle image upload
   const handleImageUpload = (file: File) => {
-    const fileWithPreview = {
-      uid: file.name, // Unique ID for the file
-      name: file.name,
-      status: 'done', // Mark the file as uploaded
-      url: URL.createObjectURL(file), // Create a URL for previewing the image
-      originFileObj: file // Store the original file
-    }
+    console.log('File:', file)
+
+    // const _fileWithPreview = {
+    //   uid: file.name, // Unique ID for the file
+    //   name: file.name,
+    //   status: 'done', // Mark the file as uploaded
+    //   url: URL.createObjectURL(file), // Create a URL for previewing the image
+    //   originFileObj: file // Store the original file
+    // }
     // Prevent automatic upload and return false to manage upload manually
     return false
   }

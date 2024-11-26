@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 const testimonials = [
   {
@@ -32,20 +32,20 @@ export default function Testimonials() {
 
   return (
     <div className='relative p-12 mx-36'>
-      <h2 className='text-4xl text-center mb-20 uppercase'>Client Testimonials</h2> {/* Increased margin-bottom */}
+      <h2 className='mb-20 text-4xl text-center uppercase'>Client Testimonials</h2> {/* Increased margin-bottom */}
       <div className='flex flex-col items-center text-center mx-9'>
-        <p className='text-lg mb-4'>{testimonials[currentIndex].text}</p>
-        <p className='text-sm text-black font-bold uppercase'>{testimonials[currentIndex].name}</p>
+        <p className='mb-4 text-lg'>{testimonials[currentIndex].text}</p>
+        <p className='text-sm font-bold text-black uppercase'>{testimonials[currentIndex].name}</p>
       </div>
       <button
         onClick={handlePrevious}
-        className='absolute left-4 top-1/2 transform -translate-y-1/2 text-5xl text-gray-600 hover:text-black'
+        className='absolute text-5xl text-gray-600 transform -translate-y-1/2 left-4 top-1/2 hover:text-black'
       >
         &larr;
       </button>
       <button
         onClick={handleNext}
-        className='absolute right-4 top-1/2 transform -translate-y-1/2 text-5xl text-gray-600 hover:text-black'
+        className='absolute text-5xl text-gray-600 transform -translate-y-1/2 right-4 top-1/2 hover:text-black'
       >
         &rarr;
       </button>

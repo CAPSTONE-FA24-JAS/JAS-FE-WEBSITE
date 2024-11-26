@@ -1,56 +1,13 @@
-import React, { useState } from 'react'
-import { CaretRightOutlined, PauseOutlined } from '@ant-design/icons'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Message } from '../../../../../hooks/useBidding'
 import { AuctionLotStatus, LotDetail, PLayerInLot } from '../../../../../types/Lot.type'
-import { parseDate } from '../../../../../utils/convertTypeDayjs'
-import { useGetWinnerForLotQuery, useUpdateStatusLotMutation } from '../../../../../services/lot.services'
-
-interface HeaderControlsProps {
-  backgroundColor: string
-  status: string
-  handlePause: () => void
-  handleStart: () => void
-  statusLot12?: string
-}
-
-const HeaderControls: React.FC<HeaderControlsProps> = ({ backgroundColor, status, handlePause, handleStart }) => {
-  console.log('status header', status)
-
-  const isDiableBtn =
-    status === 'Canceled' || status === 'Sold' || status === 'Passed' || status === 'Waiting' || status === 'Ready'
-  return (
-    <div className='flex justify-between py-1'>
-      <div className='flex gap-2'>
-        <button
-          disabled={isDiableBtn}
-          className={`flex items-center justify-center p-2 text-center ${backgroundColor} rounded-3xl`}
-          onClick={() => {
-            handlePause()
-          }}
-        >
-          <PauseOutlined style={{ fontSize: '20px' }} />
-        </button>
-        <button
-          disabled={isDiableBtn}
-          className={`flex items-center justify-center p-2 text-center ${backgroundColor} rounded-3xl `}
-          onClick={() => handleStart()}
-        >
-          <CaretRightOutlined style={{ fontSize: '20px' }} />
-        </button>
-      </div>
-      <div className='text-sm'>
-        Status:{' '}
-        {status.toLowerCase() === 'Auctioning'.toLowerCase()
-          ? 'Running'
-          : status === 'Canceled'.toLowerCase()
-          ? 'Canceled'
-          : status === 'Pause'.toLowerCase()
-          ? 'Pause'
-          : 'Waiting'}
-      </div>
-    </div>
-  )
-}
+import { parseDate, parsePriceVND } from '../../../../../utils/convertTypeDayjs'
+import {
+  useCancelLotMutation,
+  useGetWinnerForLotQuery,
+  useOpenAndPauseLotMutation
+} from '../../../../../services/lot.services'
+import { HeaderControls } from './HeaderControls'
 
 interface LiveBiddingProps {
   bids: Message[]
@@ -73,253 +30,289 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
   winnerPrice,
   status
 }) => {
-  const [statusLot, setStatusLot] = useState<string>(() => status || '')
+  const [statusLot, setStatusLot] = useState<string>(status || '')
+  const [updateStatusLot] = useOpenAndPauseLotMutation()
+  const [cancelLot] = useCancelLotMutation()
+
+  const { data: winnerData } = useGetWinnerForLotQuery(itemLot.id, {
+    skip: itemLot.status !== 'Sold' && itemLot.status !== 'Passed'
+  })
+
+  useEffect(() => {
+    setStatusLot(status || '')
+  }, [status])
+
+  // Memoized sorted bids
+  const sortedBids = useMemo(() => {
+    if (!Array.isArray(bids) || bids.length === 0) return []
+
+    return [...bids].sort((a, b) => {
+      const timediff = +new Date(b.bidTime) - +new Date(a.bidTime)
+      return timediff === 0 ? b.currentPrice - a.currentPrice : timediff
+    })
+  }, [bids])
+
+  // Memoized sorted players for secret auction
+  const sortedSecretBids = useMemo(() => {
+    return [...(playerInLot || [])].sort((a, b) => b.bidPrice - a.bidPrice)
+  }, [playerInLot])
+
+  // Memoized sorted players for fixed price auction
+  const sortedFixedPriceBids = useMemo(() => {
+    return [...(playerInLot || [])].sort((a, b) => +new Date(a.bidTime) - +new Date(b.bidTime))
+  }, [playerInLot])
 
   const calculatePriceReduction = (startPrice: number, currentPrice: number): string => {
     const reduction = ((startPrice - currentPrice) / startPrice) * 100
     return reduction.toFixed(1)
   }
 
-  const [updateStatusLot] = useUpdateStatusLotMutation()
-
-  const handlePause = () => {
-    updateStatusLot({ lotid: itemLot.id, status: AuctionLotStatus.Pause }).then((res) => {
-      if (res.data?.code === 200) {
-        setStatusLot('Pause')
-      }
-    })
+  const handleStatusUpdate = async (status: AuctionLotStatus) => {
+    try {
+      await updateStatusLot({ lotid: itemLot.id, status }).unwrap()
+    } catch (error) {
+      console.error('Failed to update status:', error)
+    }
   }
 
-  const handleStart = () => {
-    updateStatusLot({ lotid: itemLot.id, status: AuctionLotStatus.Auctioning }).then((res) => {
-      if (res.data?.code === 200) {
-        setStatusLot('Auctioning')
+  const handleCancelAuction = async () => {
+    try {
+      const result = await cancelLot(itemLot.id).unwrap()
+      if (result?.code === 200) {
+        setStatusLot('Canceled')
       }
-    })
+    } catch (error) {
+      console.error('Failed to cancel auction:', error)
+    }
   }
 
-  const sortBidsByTime =
-    Array.isArray(bids) && bids.length > 0
-      ? bids.sort((a, b) => {
-          const timediff = +new Date(b.bidTime) - +new Date(a.bidTime)
-          if (timediff === 0) {
-            return b.currentPrice - a.currentPrice
-          }
-          return timediff
-        })
-      : []
+  const TopBidDisplay = ({ bid }: { bid: Message }) => (
+    <div className='p-4 bg-red-300 rounded-lg shadow-md'>
+      <div className='mb-2 text-lg font-semibold text-gray-700'>
+        <span className='text-red-500'>Id: {bid.customerId}</span>
+        <span className='ml-2'>
+          {bid.firstName} {bid.lastName}
+        </span>
+      </div>
+      <div className='text-xl font-bold text-green-600'>{parsePriceVND(bid.currentPrice)}</div>
+    </div>
+  )
+
+  const BidItem = ({ bid }: { bid: Message }) => {
+    const getBidStatusColor = () => {
+      switch (bid.status) {
+        case 'Processing':
+          return 'bg-yellow-100'
+        case 'Accepted':
+          return 'bg-green-100'
+        case 'Rejected':
+          return 'bg-red-100'
+        default:
+          return 'bg-white'
+      }
+    }
+
+    return (
+      <div
+        key={`${bid.customerId}-${bid.bidTime}-${bid.currentPrice}`}
+        className={`flex justify-between items-center p-3 mb-2 rounded-lg shadow ${getBidStatusColor()}`}
+      >
+        <span className='flex-1 text-left text-gray-600'>{parseDate(bid.bidTime, 'dd/mm/yyyy hh:mm:ss')}</span>
+        <span className='flex-1 font-medium text-left text-gray-700'>
+          {bid.customerId}: {bid.firstName} {bid.lastName}
+        </span>
+        <span className='flex-1 font-bold text-right text-green-600'>{parsePriceVND(bid.currentPrice)}</span>
+        <span className='flex-1 font-semibold text-center text-gray-700'>
+          {bid.status === 'Processing' ? 'Pending' : bid.status}
+        </span>
+      </div>
+    )
+  }
+
+  const AuctionEndStatus = () => {
+    if (isEndAuction) {
+      return (
+        <div className='p-4 text-center bg-purple-100'>
+          <h3 className='text-xl font-bold'>Auction Ended</h3>
+          <p>Winner: {winnerCustomer}</p>
+          <p>Winning Price: {winnerPrice}</p>
+        </div>
+      )
+    }
+
+    if (itemLot.status === 'Sold' && winnerData?.data?.[0]) {
+      const winner = winnerData.data[0]
+      return (
+        <div className='p-4 text-center bg-purple-100'>
+          <h3 className='text-xl font-bold'>Auction Ended</h3>
+          <p>
+            Winner: {winner.customer.firstName} {winner.customer.lastName}
+          </p>
+          <p>Winning Price: {parsePriceVND(winner.currentPrice)}</p>
+        </div>
+      )
+    }
+
+    if (itemLot.status === 'Passed') {
+      return (
+        <div className='p-4 text-center bg-purple-100'>
+          <h3 className='text-xl font-bold'>Auction Ended</h3>
+          <p>No winner for this auction.</p>
+        </div>
+      )
+    }
+
+    return null
+  }
+
+  const PublicAuction = () => {
+    const isAuctionEndSold = itemLot.status === 'Sold'
+    const isAuctionEndPassed = itemLot.status === 'Passed'
+    const topBid = sortedBids.find((bid) => bid.status === 'Success') || sortedBids[0]
+
+    return (
+      <>
+        <div className='p-4 text-white bg-red-600 rounded-t-lg'>
+          <h2 className='mb-4 text-2xl font-bold text-gray-800'>
+            {isAuctionEndSold ? 'The winner is:' : isAuctionEndPassed ? 'No winner' : 'Top bid:'}
+          </h2>
+          {!isAuctionEndPassed && topBid && <TopBidDisplay bid={topBid} />}
+          <HeaderControls
+            backgroundColor='bg-red-500'
+            status={statusLot}
+            handlePause={() => handleStatusUpdate(AuctionLotStatus.Pause)}
+            handleStart={() => handleStatusUpdate(AuctionLotStatus.Auctioning)}
+            handleCancel={handleCancelAuction}
+          />
+        </div>
+        <div className='p-4 bg-gray-100 rounded-b-lg'>
+          {sortedBids.length > 0 ? (
+            sortedBids.map((bid) => <BidItem key={`${bid.customerId}-${bid.bidTime}`} bid={bid} />)
+          ) : (
+            <div className='text-center text-gray-500'>No bids yet</div>
+          )}
+        </div>
+      </>
+    )
+  }
+
+  const GraduallyReducedAuction = () => {
+    const startPrice = itemLot.startPrice || 0
+
+    return (
+      <>
+        <div className='p-4 text-white bg-purple-600 rounded-t-lg'>
+          <HeaderControls
+            backgroundColor='bg-purple-500'
+            status={statusLot}
+            handlePause={() => handleStatusUpdate(AuctionLotStatus.Pause)}
+            handleStart={() => handleStatusUpdate(AuctionLotStatus.Auctioning)}
+            handleCancel={handleCancelAuction}
+          />
+          <div className='grid grid-cols-2 gap-4 mt-2'>
+            <div className='p-3 bg-purple-500 rounded'>
+              <div className='text-sm opacity-80'>Starting Price</div>
+              <div className='text-2xl font-bold'>{parsePriceVND(startPrice)}</div>
+            </div>
+            <div className='p-3 bg-purple-500 rounded'>
+              <div className='text-sm opacity-80'>Reduce Price</div>
+              <div className='text-2xl font-bold'>{currentPrice ? parsePriceVND(currentPrice) : 'N/A'}</div>
+            </div>
+          </div>
+          <div className='p-2 mt-4 text-center bg-purple-500 rounded'>
+            <span className='text-lg'>
+              Price Reduction: {calculatePriceReduction(startPrice, currentPrice || startPrice)}%
+            </span>
+          </div>
+        </div>
+        <AuctionEndStatus />
+      </>
+    )
+  }
+
+  const SecretAuction = () => {
+    return (
+      <>
+        <div className='p-4 text-white bg-blue-600 rounded-t-lg'>
+          <h2 className='mb-2 text-2xl font-bold'>PRIVATE TOP BID</h2>
+          <HeaderControls
+            backgroundColor='bg-blue-500'
+            status={statusLot}
+            handlePause={() => handleStatusUpdate(AuctionLotStatus.Pause)}
+            handleStart={() => handleStatusUpdate(AuctionLotStatus.Auctioning)}
+            handleCancel={handleCancelAuction}
+          />
+          <p className='mt-2 text-4xl font-bold'>
+            {sortedSecretBids[0]?.bidPrice ? (
+              parsePriceVND(sortedSecretBids[0].bidPrice)
+            ) : (
+              <b className='text-xl'>No participants yet</b>
+            )}
+          </p>
+        </div>
+        <div className='mt-4'>
+          {sortedSecretBids.map((bid) => (
+            <div
+              key={`${bid.customerId}-${bid.bidTime}`}
+              className='flex justify-between p-2 mb-2 text-sm rounded bg-gray-50'
+            >
+              <span>{parseDate(bid.bidTime, 'dd/mm/yyyy hh:mm:ss')}</span>
+              <span>
+                {bid.customerId}: {bid.customerName}
+              </span>
+              <span>{parsePriceVND(bid.bidPrice)}</span>
+            </div>
+          ))}
+          <AuctionEndStatus />
+        </div>
+      </>
+    )
+  }
+
+  const FixedPriceAuction = () => {
+    return (
+      <>
+        <div className='p-4 text-white bg-green-600 rounded-t-lg'>
+          <h2 className='mb-2 text-2xl font-bold'>FIXED PRICE</h2>
+          <HeaderControls
+            backgroundColor='bg-green-500'
+            status={statusLot}
+            handlePause={() => handleStatusUpdate(AuctionLotStatus.Pause)}
+            handleStart={() => handleStatusUpdate(AuctionLotStatus.Auctioning)}
+            handleCancel={handleCancelAuction}
+          />
+          <p className='mt-2 text-4xl font-bold'>{itemLot.buyNowPrice ? parsePriceVND(itemLot.buyNowPrice) : 'N/A'}</p>
+        </div>
+        <div className='mt-4'>
+          <h3 className='mb-2 text-lg font-semibold'>Interested Buyers</h3>
+          {sortedFixedPriceBids.map((user) => (
+            <div
+              key={`${user.customerId}-${user.bidTime}`}
+              className='flex items-center gap-3 p-3 mb-2 rounded bg-gray-50'
+            >
+              <div className='flex-1'>
+                <div className='font-medium'>{user.customerName}</div>
+                <div className='text-sm text-gray-500'>ID: {user.customerId}</div>
+              </div>
+              <div className='text-sm text-gray-500'>{parseDate(user.bidTime, 'dd/mm/yyyy hh:mm:ss')}</div>
+            </div>
+          ))}
+          <AuctionEndStatus />
+        </div>
+      </>
+    )
+  }
 
   const renderBiddingContent = () => {
     switch (itemLot.lotType) {
       case 'Public_Auction':
-        const isAuctionEndSold = itemLot.status === 'Sold'
-        const isAuctionEndPassed = itemLot.status === 'Passed'
-
-        const topBid =
-          Array.isArray(sortBidsByTime) && sortBidsByTime.length
-            ? sortBidsByTime.filter((bid) => bid.status === 'Success')[0] || sortBidsByTime[0]
-            : null
-        return (
-          <>
-            <div className='p-4 text-white bg-red-600 rounded-t-lg'>
-              <h2 className='mb-4 text-2xl font-bold text-gray-800'>
-                {isAuctionEndSold ? 'The winner is:' : isAuctionEndPassed ? 'No winner' : 'Top bid:'}
-              </h2>
-              {!isAuctionEndPassed && Array.isArray(sortBidsByTime) && sortBidsByTime.length ? (
-                <div className='p-4 bg-red-300 rounded-lg shadow-md'>
-                  <div className='mb-2 text-lg font-semibold text-gray-700'>
-                    <span className='text-red-500'>Id: {topBid?.customerId}</span>
-                    <span className='ml-2'>
-                      {topBid?.firstName} {topBid?.lastName}
-                    </span>
-                  </div>
-                  <div className='text-xl font-bold text-green-600'>${topBid?.currentPrice}</div>
-                </div>
-              ) : (
-                ''
-              )}
-
-              <HeaderControls
-                backgroundColor='bg-red-500'
-                status={statusLot}
-                handlePause={handlePause}
-                handleStart={handleStart}
-              />
-            </div>
-            <div className='p-2 mt-4'>
-              {Array.isArray(sortBidsByTime) && sortBidsByTime.length > 0 ? (
-                bids.map((bid, index) => (
-                  <div
-                    key={index}
-                    className={`flex justify-between p-2 mb-1 text-sm ${
-                      bid.status === 'Processing'
-                        ? 'bg-yellow-100'
-                        : bid.status === 'Accepted'
-                        ? 'bg-green-100'
-                        : bid.status === 'Rejected'
-                        ? 'bg-red-100'
-                        : ''
-                    }`}
-                  >
-                    <span>{parseDate(bid.bidTime, 'dd/mm/yyy hh/mm/ss')}</span>
-                    <span>
-                      {bid.customerId}: {bid.firstName} {bid.lastName}
-                    </span>
-                    <span>${bid.currentPrice}</span>
-                    <span className='font-semibold'>
-                      {bid.status === 'Processing'
-                        ? 'Pending'
-                        : bid.status === 'Success'
-                        ? 'Success'
-                        : bid.status === 'Failed'
-                        ? 'Failed'
-                        : bid.status}
-                    </span>
-                  </div>
-                ))
-              ) : (
-                <div className='text-center text-gray-500'>No bids yet</div>
-              )}
-            </div>
-          </>
-        )
-
+        return <PublicAuction />
       case 'Auction_Price_GraduallyReduced':
-        const { data } = useGetWinnerForLotQuery(itemLot.id, {
-          skip: itemLot.status !== 'Sold' && itemLot.status !== 'Passed'
-        })
-        const startPrice = itemLot.startPrice || 0
-        console.log('current price', currentPrice)
-
-        return (
-          <>
-            <div className='p-4 text-white bg-purple-600 rounded-t-lg'>
-              <HeaderControls
-                backgroundColor='bg-purple-500'
-                status={statusLot}
-                handlePause={handlePause}
-                handleStart={handleStart}
-              />
-              <div className='grid grid-cols-2 gap-4 mt-2'>
-                <div className='p-3 bg-purple-500 rounded'>
-                  <div className='text-sm opacity-80'>Starting Price</div>
-                  <div className='text-2xl font-bold'>${startPrice}</div>
-                </div>
-                <div className='p-3 bg-purple-500 rounded'>
-                  <div className='text-sm opacity-80'>Reduce Price</div>
-                  <div className='text-2xl font-bold'>
-                    {currentPrice?.toLocaleString('vn-vi', {
-                      style: 'currency',
-                      currency: 'VND'
-                    }) || 'N/A'}
-                  </div>
-                </div>
-              </div>
-              <div className='p-2 mt-4 text-center bg-purple-500 rounded'>
-                <span className='text-lg'>
-                  Price Reduction: {calculatePriceReduction(startPrice, currentPrice || startPrice)}%
-                </span>
-              </div>
-            </div>
-
-            {isEndAuction && (
-              <div className='p-4 text-center bg-purple-100'>
-                <h3 className='text-xl font-bold'>Auction Ended</h3>
-                <p>Winner: {winnerCustomer}</p>
-                <p>Winning Price: ${winnerPrice}</p>
-              </div>
-            )}
-
-            {itemLot.status === 'Sold' && data ? (
-              <div className='p-4 text-center bg-purple-100'>
-                <h3 className='text-xl font-bold'>Auction Ended</h3>
-                <p>
-                  Winner: {data.data[0].customer.firstName} {data.data[0].customer.lastName}
-                </p>
-                <p>Winning Price: ${data.data[0].currentPrice}</p>
-              </div>
-            ) : (
-              <div>
-                <div className='p-4 text-center bg-purple-100'>
-                  <h3 className='text-xl font-bold'>Auction Ended</h3>
-                  <p>No winner for this auction.</p>
-                </div>
-              </div>
-            )}
-          </>
-        )
-
+        return <GraduallyReducedAuction />
       case 'Secret_Auction':
-        const secretBids = [...(playerInLot || [])].sort((a, b) => b.bidPrice - a.bidPrice)
-        return (
-          <>
-            <div className='p-4 text-white bg-blue-600 rounded-t-lg'>
-              <h2 className='mb-2 text-2xl font-bold'>PRIVATE TOP BID</h2>
-              <HeaderControls
-                backgroundColor='bg-blue-500'
-                status={statusLot}
-                handlePause={handlePause}
-                handleStart={handleStart}
-              />
-              <p className='mt-2 text-4xl font-bold'>
-                {secretBids?.[0]?.bidPrice
-                  ? secretBids[0].bidPrice.toLocaleString('vn-vi', {
-                      style: 'currency',
-                      currency: 'VND'
-                    })
-                  : 'N/A'}
-              </p>
-            </div>
-            <div className='mt-4'>
-              {secretBids.map((bid, index) => (
-                <div key={index} className='flex justify-between p-2 mb-2 text-sm rounded bg-gray-50'>
-                  <span>{parseDate(bid.bidTime, 'dd/mm/yyy hh/mm/ss')}</span>
-                  <span>
-                    {bid.customerId}: {bid.customerName}
-                  </span>
-                  <span>${bid.bidPrice}</span>
-                </div>
-              ))}
-            </div>
-          </>
-        )
-
+        return <SecretAuction />
       case 'Fixed_Price':
-        const fixedPrice = [...(playerInLot || [])].sort((a, b) => +new Date(a.bidTime) - +new Date(b.bidTime))
-        return (
-          <>
-            <div className='p-4 text-white bg-green-600 rounded-t-lg'>
-              <h2 className='mb-2 text-2xl font-bold'>FIXED PRICE</h2>
-              <HeaderControls
-                backgroundColor='bg-green-500'
-                status={statusLot}
-                handlePause={handlePause}
-                handleStart={handleStart}
-              />
-              <p className='mt-2 text-4xl font-bold'>
-                {itemLot.buyNowPrice
-                  ? itemLot.buyNowPrice.toLocaleString('vn-vi', {
-                      style: 'currency',
-                      currency: 'VND'
-                    })
-                  : 'N/A'}
-              </p>
-            </div>
-            <div className='mt-4'>
-              <h3 className='mb-2 text-lg font-semibold'>Interested Buyers</h3>
-              {fixedPrice.map((user, index) => (
-                <div key={index} className='flex items-center gap-3 p-3 mb-2 rounded bg-gray-50'>
-                  <div className='flex-1'>
-                    <div className='font-medium'>{user.customerName}</div>
-                    <div className='text-sm text-gray-500'>ID: {user.customerId}</div>
-                  </div>
-                  <div className='text-sm text-gray-500'>{parseDate(user.bidTime, 'dd/mm/yyy hh/mm/ss')}</div>
-                </div>
-              ))}
-            </div>
-          </>
-        )
-
+        return <FixedPriceAuction />
       default:
         return null
     }

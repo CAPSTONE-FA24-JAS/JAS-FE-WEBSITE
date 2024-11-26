@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function LeadingPage() {
   // Replace these URLs with your actual image URLs
   const imageUrl2 =
@@ -11,35 +9,35 @@ export default function LeadingPage() {
 
   return (
     <div className='p-6 mx-28'>
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+      <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
         {/* Text and button section */}
-        <div className='flex flex-col items-center p-4 col-span-1'>
-          <p className='text-center text-2xl mb-4 uppercase'>The Leading Boutique Jewelry and Watch Auction House</p>
-          <button className='bg-white text-black border border-black py-2 px-4 rounded-lg text-sm hover:bg-black hover:text-white'>
+        <div className='flex flex-col items-center col-span-1 p-4'>
+          <p className='mb-4 text-2xl text-center uppercase'>The Leading Boutique Jewelry and Watch Auction House</p>
+          <button className='px-4 py-2 text-sm text-black bg-white border border-black rounded-lg hover:bg-black hover:text-white'>
             LEARN MORE
           </button>
         </div>
         {/* Remaining sections */}
         <div className='flex flex-col items-center p-4 border border-gray-300 rounded-lg shadow-lg'>
-          <img src={imageUrl2} alt='Image 2' className='w-full h-52 object-cover mb-2 rounded-md' />
-          <p className='text-center text-lg font-semibold mb-1'>BUYING AT AUCTION</p>
-          <p className='text-center text-sm text-gray-600'>
+          <img src={imageUrl2} alt='Image 2' className='object-cover w-full mb-2 rounded-md h-52' />
+          <p className='mb-1 text-lg font-semibold text-center'>BUYING AT AUCTION</p>
+          <p className='text-sm text-center text-gray-600'>
             Bid from anywhere in the world. Auctions are all live + online and are held twice per month. Shop and bid on
             fine, vintage, antique, luxury brand jewelry, gemstones, and watches.
           </p>
         </div>
         <div className='flex flex-col items-center p-4 border border-gray-300 rounded-lg shadow-lg'>
-          <img src={imageUrl3} alt='Image 3' className='w-full h-52 object-cover mb-2 rounded-md' />
-          <p className='text-center text-lg font-semibold mb-1'>Schedule A Preview</p>
-          <p className='text-center text-sm text-gray-600'>
+          <img src={imageUrl3} alt='Image 3' className='object-cover w-full mb-2 rounded-md h-52' />
+          <p className='mb-1 text-lg font-semibold text-center'>Schedule A Preview</p>
+          <p className='text-sm text-center text-gray-600'>
             See something in one of our auctions that you would like to bid on? Schedule a private virtual preview to
             view the lot and talk with one of our senior specialists.
           </p>
         </div>
         <div className='flex flex-col items-center p-4 border border-gray-300 rounded-lg shadow-lg'>
-          <img src={imageUrl4} alt='Image 4' className='w-full h-52 object-cover mb-2 rounded-md' />
-          <p className='text-center text-lg font-semibold mb-1'>Selling At Auction</p>
-          <p className='text-center text-sm text-gray-600'>
+          <img src={imageUrl4} alt='Image 4' className='object-cover w-full mb-2 rounded-md h-52' />
+          <p className='mb-1 text-lg font-semibold text-center'>Selling At Auction</p>
+          <p className='text-sm text-center text-gray-600'>
             Maximize your results—have bidders in over 100 countries compete for your jewelry and watches. No upfront or
             hidden fees. Fully-insured shipping covered by us. If we can't sell for the prices you agree to, you owe us
             nothing.

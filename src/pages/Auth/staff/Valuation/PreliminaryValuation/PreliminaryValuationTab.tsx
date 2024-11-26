@@ -67,7 +67,7 @@ const PreliminaryValuationTab = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: any, record: any) => (
+      render: (_text: any, record: any) => (
         <div>
           <Tooltip title='View Details'>
             <Button

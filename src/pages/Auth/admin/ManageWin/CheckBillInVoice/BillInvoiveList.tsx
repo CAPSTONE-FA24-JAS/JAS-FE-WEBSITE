@@ -1,4 +1,4 @@
-import { DeliveredProcedureOutlined, EyeOutlined } from '@ant-design/icons'
+import { EyeOutlined } from '@ant-design/icons'
 import { Avatar, Button, Table, Tag, Tooltip } from 'antd'
 import { useState } from 'react'
 import { useGetInvoicesForManagerQuery } from '../../../../../services/invoice.services'
@@ -24,7 +24,7 @@ export interface Invoice {
 
 export default function BillInVoiceList() {
   const { data, refetch } = useGetInvoicesForManagerQuery({ pageSize: 10, pageIndex: 1 })
-  const [status, setStatus] = useState<string>('')
+  const [_status, setStatus] = useState<string>('')
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(null)
 

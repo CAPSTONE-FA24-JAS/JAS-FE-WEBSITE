@@ -127,7 +127,7 @@ export default function InvoiceTab() {
       label: 'All Invoices',
       children: (
         <div>
-          <h2 className='text-lg font-semibold mb-4'></h2>
+          <h2 className='mb-4 text-lg font-semibold'></h2>
           {isLoading ? (
             <p>Loading...</p>
           ) : error ? (
@@ -189,9 +189,9 @@ export default function InvoiceTab() {
   ]
 
   return (
-    <div className='invoice-tab-container p-6'>
-      <h1 className='text-2xl font-bold mb-4'>Invoice Management</h1>
-      <Tabs activeKey={activeTabKey} onChange={setActiveTabKey} items={tabItems} />
+    <div className='p-6 invoice-tab-container'>
+      <h1 className='mb-4 text-2xl font-bold'>Invoice Management</h1>
+      <Tabs defaultActiveKey='1' items={tabItems} />
     </div>
   )
 }

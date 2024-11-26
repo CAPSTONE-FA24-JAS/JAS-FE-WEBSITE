@@ -1,14 +1,13 @@
-import { Button, Image, message, Table, TableProps, Tabs, Tag } from 'antd'
+import { Button, Image, message, Space, Table, TableProps, Tabs, Tag, Tooltip } from 'antd'
 import { useState } from 'react'
-import AddAuctionModal from './modal/AddAuctionModal'
+import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { useApproveAuctionMutation, useGetAuctionsQuery } from '../../../../services/auction.services'
-import { Auction } from '../../../../types/Auction.type'
-import { Input } from 'antd'
-import { RootState } from '../../../../store'
-import { useSelector } from 'react-redux'
 import { RoleType } from '../../../../slice/authLoginAPISlice'
+import { RootState } from '../../../../store'
+import { Auction } from '../../../../types/Auction.type'
 import { parseDate } from '../../../../utils/convertTypeDayjs'
+import AddAuctionModal from './modal/AddAuctionModal'
 
 const AuctionList = () => {
   const [searchText, setSearchText] = useState<string>('')
@@ -45,6 +44,8 @@ const AuctionList = () => {
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
+      width: 60,
+      fixed: 'left',
       align: 'center',
       sorter: (a, b) => a.id - b.id,
       defaultSortOrder: 'ascend'
@@ -53,14 +54,26 @@ const AuctionList = () => {
       title: 'Image',
       dataIndex: 'imageLink',
       key: 'imageLink',
+      width: 120,
+      fixed: 'left',
       render: (text) => (
-        <Image src={text ? text : 'https://www.w3schools.com/w3images/lights.jpg'} alt='Auction' width={100} />
+        <Image
+          src={text ? text : 'https://www.w3schools.com/w3images/lights.jpg'}
+          alt='Auction'
+          width={100}
+          height={75}
+          style={{ objectFit: 'cover' }}
+        />
       )
     },
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      width: 180,
+      ellipsis: {
+        showTitle: true
+      },
       render: (text, record: Auction) => {
         let linkPath = ''
         switch (roleId) {
@@ -74,37 +87,48 @@ const AuctionList = () => {
             linkPath = '#'
             break
         }
-        return <Link to={linkPath}>{text}</Link>
+        return (
+          <Tooltip title={text}>
+            <Link to={linkPath}>{text}</Link>
+          </Tooltip>
+        )
       }
     },
     {
       title: 'Description',
       dataIndex: 'description',
       key: 'location',
-      align: 'center',
       width: 200,
-      render: (text) => <Input.TextArea value={text} autoSize={{ minRows: 2, maxRows: 4 }} readOnly />
+      align: 'left',
+      render: (text) => (
+        <Tooltip title={text}>
+          <div className='text-sm line-clamp-2'>{text}</div>
+        </Tooltip>
+      )
     },
     {
       title: 'Auction Time',
       children: [
         {
-          title: 'Start Date',
+          title: 'Start',
           dataIndex: 'startTime',
           key: 'createDate',
-          render: (text) => (text ? parseDate(text, 'dd/mm/yyy hh/mm/ss') : 'N/A')
+          width: 150,
+          render: (text) => (text ? parseDate(text, 'dd/mm/yyyy hh:mm:ss') : 'N/A')
         },
         {
-          title: 'End Date',
+          title: 'End',
           dataIndex: 'endTime',
           key: 'expiredDate',
-          render: (text) => (text ? parseDate(text, 'dd/mm/yyy hh/mm/ss') : 'N/A')
+          width: 150,
+          render: (text) => (text ? parseDate(text, 'dd/mm/yyyy hh:mm:ss') : 'N/A')
         },
         {
-          title: 'Actual End Date',
+          title: 'Actual End',
           dataIndex: 'actualEndTime',
           key: 'actualEndTime',
-          render: (text) => (text ? parseDate(text, 'dd/mm/yyy hh/mm/ss') : 'N/A')
+          width: 150,
+          render: (text) => (text ? parseDate(text, 'dd/mm/yyyy hh:mm:ss') : 'N/A')
         }
       ]
     },
@@ -112,11 +136,13 @@ const AuctionList = () => {
       title: 'Total Lot',
       dataIndex: 'totalLot',
       key: 'totalLot',
+      width: 80,
       align: 'center'
     },
     {
       title: 'Status',
       key: 'status',
+      width: 120,
       align: 'center',
       render: (_, record) => {
         let color = ''
@@ -148,9 +174,9 @@ const AuctionList = () => {
         }
 
         return (
-          <div className='flex items-center gap-2'>
+          <div className='flex items-center justify-center gap-2'>
             {record.status === 'Waiting' ? (
-              <Button onClick={handleApprove(record.id)} type='primary'>
+              <Button onClick={handleApprove(record.id)} type='primary' size='small'>
                 Approve
               </Button>
             ) : (
@@ -163,27 +189,36 @@ const AuctionList = () => {
     {
       title: 'Action',
       key: 'action',
+      fixed: 'right',
+      width: 100,
       align: 'center',
       render: (_, record) => (
         <div className='flex items-center justify-center gap-2'>
           {record.status === 'Waiting' && (
-            <>
-              <Button onClick={handleEdit(record.id)} type='primary'>
+            <Space size='small'>
+              <Button onClick={handleEdit(record.id)} type='primary' size='small'>
                 Edit
               </Button>
-              <Button danger>Delete</Button>
-            </>
+              <Button danger size='small'>
+                Delete
+              </Button>
+            </Space>
           )}
         </div>
       )
     }
   ]
 
-  const auctionFiltered = data?.data.filter((item) => {
-    const matchSearch = item.description.toLowerCase().includes(searchText.toLowerCase())
-    if (tabKey === 'all') return matchSearch
-    return item.status === tabKey && matchSearch
-  })
+  const auctionFiltered =
+    Array.isArray(data?.data) && data?.data.length > 0
+      ? data?.data.filter((item) => {
+          const matchSearch =
+            (item.description?.toLowerCase().includes(searchText.toLowerCase()) ?? false) ||
+            (item.name?.toLowerCase().includes(searchText.toLowerCase()) ?? false)
+          if (tabKey === 'all') return matchSearch
+          return item.status === tabKey && matchSearch
+        })
+      : []
 
   const handleAddAuction = () => {
     setIsModalVisible(true)

@@ -1,5 +1,3 @@
-import React from 'react'
-
 const recentPosts = [
   {
     imageUrl:
@@ -26,14 +24,14 @@ const recentPosts = [
 export default function RecentPosts() {
   return (
     <div className='mx-56'>
-      <h2 className='text-4xl text-center mb-20 uppercase'>Recent Posts</h2>
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
+      <h2 className='mb-20 text-4xl text-center uppercase'>Recent Posts</h2>
+      <div className='grid grid-cols-1 gap-8 md:grid-cols-3'>
         {recentPosts.map((post, index) => (
           <div key={index} className='flex flex-col items-center '>
-            <img src={post.imageUrl} alt={post.title} className='w-72 h-48 object-cover mb-4' />
-            <div className='w-full px-4 flex flex-col items-center'>
-              <h3 className='text-lg text-center mb-4'>{post.title}</h3>
-              <button className='bg-white text-black border border-black py-2 px-4 rounded-lg hover:bg-black hover:text-white uppercase'>
+            <img src={post.imageUrl} alt={post.title} className='object-cover h-48 mb-4 w-72' />
+            <div className='flex flex-col items-center w-full px-4'>
+              <h3 className='mb-4 text-lg text-center'>{post.title}</h3>
+              <button className='px-4 py-2 text-black uppercase bg-white border border-black rounded-lg hover:bg-black hover:text-white'>
                 {post.buttonText}
               </button>
             </div>

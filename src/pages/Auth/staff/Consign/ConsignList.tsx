@@ -1,12 +1,12 @@
 import { EyeOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Col, Input, Row, Space, Table, Tag, Tooltip } from 'antd'
-import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import ConsignDetail from './ConsignDetail' // Ensure this component is created
-import { RootState } from '../../../../store'
-import { useGetPreliminaryValuationsByStaffQuery } from '../../../../services/requestconsign.services'
 import { ColumnType } from 'antd/es/table' // Import kiểu ColumnType
+import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useLocation } from 'react-router-dom'
+import { useGetPreliminaryValuationsByStaffQuery } from '../../../../services/requestconsign.services'
+import { RootState } from '../../../../store'
+import ConsignDetail from './ConsignDetail' // Ensure this component is created
 
 const { Search } = Input
 
@@ -40,7 +40,6 @@ interface Record {
 
 const RequestConsignList = () => {
   const location = useLocation()
-  const navigate = useNavigate()
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null)
   const [status, setStatus] = useState<number | string>('')
@@ -119,13 +118,13 @@ const RequestConsignList = () => {
       title: 'Customer Name',
       dataIndex: ['seller', 'firstName'],
       key: 'customerName',
-      render: (text: string, record: Record) => `${record.seller.firstName} ${record.seller.lastName}`
+      render: (_text: string, record: Record) => `${record.seller.firstName} ${record.seller.lastName}`
     },
     {
       title: 'Contact',
       dataIndex: ['seller', 'email'],
       key: 'contact',
-      render: (text: string, record: Record) => record.seller.accountDTO.email
+      render: (_text: string, record: Record) => record.seller.accountDTO.email
     },
     {
       title: 'Status',
@@ -142,7 +141,7 @@ const RequestConsignList = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: string, record: Record) => (
+      render: (_text: string, record: Record) => (
         <Space>
           <Tooltip title='View Detail'>
             <Button icon={<EyeOutlined />} onClick={() => showModal(record)} />
