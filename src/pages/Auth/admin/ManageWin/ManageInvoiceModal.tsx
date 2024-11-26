@@ -21,6 +21,7 @@ export default function ManageInvoiceModal({
   const { data: invoiceData, error, isLoading } = useGetInvoiceByIdQuery(invoiceId, { skip: !invoiceId })
   const [finishInvoice] = useFinishInvoiceMutation()
   const [isImageModalVisible, setImageModalVisible] = useState(false)
+  const [currentImage, setCurrentImage] = useState('')
 
   const handleFinish = async () => {
     if (invoiceData?.data?.status === 'Delivered') {
@@ -44,6 +45,11 @@ export default function ManageInvoiceModal({
     }
   }
 
+  const handleImageClick = (imageLink: string) => {
+    setCurrentImage(imageLink)
+    setImageModalVisible(true)
+  }
+
   if (isLoading) return <p>Loading invoice data...</p>
   if (error) return <p>Error loading invoice data.</p>
   if (!invoiceData?.data) return <p>No invoice data available.</p>
@@ -64,6 +70,7 @@ export default function ManageInvoiceModal({
   const bidPrice = invoiceDetails.myBidDTO?.yourMaxBidPrice ?? 'N/A'
   const platformFee = invoiceDetails.free ?? 'N/A'
   const shippingFee = invoiceDetails.feeShip ?? 'N/A'
+  const linkBillTransaction = invoiceDetails.linkBillTransaction ?? 'N/A'
   const historyTimes = invoiceDetails.myBidDTO?.historyCustomerLots || []
   const createinvoiceTimes = historyTimes
     .filter((item: any) => item.status === 'CreateInvoice')
@@ -100,7 +107,7 @@ export default function ManageInvoiceModal({
             <Avatar
               size={128}
               src={imageLinkJewelry}
-              onClick={() => setImageModalVisible(true)}
+              onClick={() => handleImageClick(imageLinkJewelry)}
               style={{ cursor: 'pointer' }}
             />
           </div>
@@ -339,6 +346,47 @@ export default function ManageInvoiceModal({
             </>
           )}
         </div>
+        <div className='space-y-2 mb-2'>
+          {status === 'PendingPayment' && (
+            <div className='flex justify-between'>
+              <strong>Bill Transaction:</strong>
+              <img
+                src={linkBillTransaction}
+                alt='Received'
+                style={{ width: '100px', height: 'auto', cursor: 'pointer' }}
+                onClick={() => handleImageClick(linkBillTransaction)}
+              />
+            </div>
+          )}
+        </div>
+        <div className='space-y-2 mb-2'>
+          {(status === 'Delivering' || status === 'Delivered') && (
+            <div className='flex justify-between mb-2'>
+              <p>
+                <strong>Received Image:</strong>
+              </p>
+              <img
+                src={receivedImageLink}
+                alt='Received'
+                style={{ width: '100px', height: 'auto', cursor: 'pointer' }}
+                onClick={() => handleImageClick(receivedImageLink)}
+              />
+            </div>
+          )}
+          {status === 'Delivered' && (
+            <div className='flex justify-between mb-2'>
+              <p>
+                <strong>Delivered Image:</strong>
+              </p>
+              <img
+                src={deliveredImageLink}
+                alt='Delivered'
+                style={{ width: '100px', height: 'auto', cursor: 'pointer' }}
+                onClick={() => handleImageClick(deliveredImageLink)}
+              />
+            </div>
+          )}
+        </div>
 
         {status === 'Delivered' && (
           <div className='flex justify-end' style={{ marginTop: 20 }}>
@@ -347,25 +395,10 @@ export default function ManageInvoiceModal({
             </Button>
           </div>
         )}
-
-        <div className='flex justify-between mb-2'>
-          <p>
-            <strong>Received Image:</strong>
-          </p>
-          <img src={receivedImageLink} alt='Received' style={{ width: '100px', height: 'auto' }} />
-        </div>
-
-        <div className='flex justify-between mb-2'>
-          <p>
-            <strong>Delivered Image:</strong>
-          </p>
-          <img src={deliveredImageLink} alt='Delivered' style={{ width: '100px', height: 'auto' }} />
-        </div>
       </Modal>
 
-      {/* Full-size Image Modal */}
       <Modal open={isImageModalVisible} onCancel={() => setImageModalVisible(false)} footer={null} centered width={800}>
-        <img src={imageLinkJewelry} alt='Full-Size Jewelry' style={{ width: '100%', height: 'auto' }} />
+        <img src={currentImage} alt='Full-Size' style={{ width: '100%', height: 'auto' }} />
       </Modal>
     </>
   )

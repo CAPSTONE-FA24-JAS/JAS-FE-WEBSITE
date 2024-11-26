@@ -113,10 +113,15 @@ export const valuationApi = createApi({
       })
     }),
 
-    // New endpoint for updating jewelry status by manager
     updateJewelryStatusByManager: build.mutation<void, { jewelryId: number; status: number }>({
       query: ({ jewelryId, status }) => ({
         url: `Jewelrys/UpdateStatusByManager?jewelryId=${jewelryId}&status=${status}`,
+        method: 'PUT'
+      })
+    }),
+    rejectJewelryByManager: build.mutation<void, { jewelryId: number; status: number }>({
+      query: ({ jewelryId, status }) => ({
+        url: `Jewelrys/RejectByManager?jewelryId=${jewelryId}&status=${status}`,
         method: 'PUT'
       })
     })
@@ -135,5 +140,6 @@ export const {
   useGetFinalValuationsOfAppraiserQuery,
   useRequestFinalValuationForManagerMutation,
   useGetValuationsQuery,
-  useUpdateJewelryStatusByManagerMutation
+  useUpdateJewelryStatusByManagerMutation,
+  useRejectJewelryByManagerMutation
 } = valuationApi

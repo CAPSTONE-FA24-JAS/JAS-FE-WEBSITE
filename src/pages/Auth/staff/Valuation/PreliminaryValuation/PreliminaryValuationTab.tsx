@@ -14,7 +14,7 @@ const PreliminaryValuationTab = () => {
   const [preliminaryData, setPreliminaryData] = useState<any[]>([])
   const staffId = useSelector((state: RootState) => state.authLoginAPI.staffId)
 
-  const { data, error, isLoading } = useGetPreliminaryValuationsByStaffQuery({
+  const { data, error, isLoading, refetch } = useGetPreliminaryValuationsByStaffQuery({
     staffId: staffId || '',
     status: [3, 4, 5],
     pageSize: 10,
@@ -127,8 +127,10 @@ const PreliminaryValuationTab = () => {
         onCreate={() => {
           console.log('Creating confirmation receipt for:', selectedRecord)
           setConfirmationVisible(false)
+          refetch()
         }}
         record={selectedRecord}
+        refetch={refetch}
       />
     </div>
   )

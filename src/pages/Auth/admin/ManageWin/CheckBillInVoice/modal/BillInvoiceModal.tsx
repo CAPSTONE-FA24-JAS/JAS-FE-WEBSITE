@@ -24,6 +24,7 @@ export default function BillInvoiceModal({
   const { data: invoiceData, error, isLoading } = useGetInvoiceByIdQuery(invoiceId, { skip: !invoiceId })
   const [approvePayment, { isLoading: isApproving }] = useApprovePaymentByBankTransferMutation()
   const [isImageModalVisible, setImageModalVisible] = useState(false)
+  const [currentImage, setCurrentImage] = useState('')
 
   const handleApprovePayment = async () => {
     if (invoiceId && invoiceDetails.status === 'PendingPayment') {
@@ -47,6 +48,11 @@ export default function BillInvoiceModal({
     }
   }
 
+  const handleImageClick = (imageLink: string) => {
+    setCurrentImage(imageLink)
+    setImageModalVisible(true)
+  }
+
   if (isLoading) return <p>Loading invoice data...</p>
   if (error) return <p>Error loading invoice data.</p>
   if (!invoiceData?.data) return <p>No invoice data available.</p>
@@ -67,6 +73,7 @@ export default function BillInvoiceModal({
   const bidPrice = invoiceDetails.myBidDTO?.yourMaxBidPrice ?? 'N/A'
   const platformFee = invoiceDetails.free ?? 'N/A'
   const shippingFee = invoiceDetails.feeShip ?? 'N/A'
+  const linkBillTransaction = invoiceDetails.linkBillTransaction ?? 'N/A'
   const historyTimes = invoiceDetails.myBidDTO?.historyCustomerLots || []
   const createinvoiceTimes = historyTimes
     .filter((item: any) => item.status === 'CreateInvoice')
@@ -192,7 +199,8 @@ export default function BillInvoiceModal({
           </p>
           <p className='font-extrabold '>{totalPrice.toLocaleString()}₫</p>
         </div>
-        <div className='space-y-2'>
+
+        <div className='space-y-2 mb-2'>
           {status === 'CreateInvoice' && (
             <div className='flex justify-between'>
               <strong>Create Invoice Time:</strong>
@@ -216,6 +224,19 @@ export default function BillInvoiceModal({
             </>
           )}
         </div>
+        <div className='space-y-2 mb-2'>
+          {status === 'PendingPayment' && (
+            <div className='flex justify-between'>
+              <strong>Bill Transaction:</strong>
+              <img
+                src={linkBillTransaction}
+                alt='Received'
+                style={{ width: '100px', height: 'auto', cursor: 'pointer' }}
+                onClick={() => handleImageClick(linkBillTransaction)}
+              />
+            </div>
+          )}
+        </div>
         {status === 'PendingPayment' && (
           <div className='flex justify-end mt-4'>
             <Button type='primary' loading={isApproving} onClick={handleApprovePayment}>
@@ -226,7 +247,7 @@ export default function BillInvoiceModal({
       </Modal>
 
       <Modal open={isImageModalVisible} onCancel={() => setImageModalVisible(false)} footer={null} centered width={800}>
-        <img src={imageLinkJewelry} alt='Full-Size Jewelry' style={{ width: '100%', height: 'auto' }} />
+        <img src={currentImage} alt='Full-Size' style={{ width: '100%', height: 'auto' }} />
       </Modal>
     </>
   )

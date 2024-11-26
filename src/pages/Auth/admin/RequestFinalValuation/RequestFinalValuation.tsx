@@ -1,8 +1,9 @@
 import { EyeOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Col, Input, Row, Space, Table, Tag } from 'antd'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import RequestFinalDetail from './RequestFinalDetail'
 import { useGetValuationsQuery } from '../../../../services/valuation.services'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 interface Valuation {
   id: number
@@ -19,23 +20,35 @@ const { Search } = Input
 const RequestFinalValuation = () => {
   const [selectedFinalRecord, setSelectedFinalRecord] = useState<Valuation | null>(null)
   const [searchText, setSearchText] = useState<string>('')
+  const location = useLocation()
+  const navigate = useNavigate()
 
-  const { data, error, isLoading } = useGetValuationsQuery()
+  const { data, error, isLoading, refetch } = useGetValuationsQuery()
 
   const finalValuationData: Valuation[] =
     data?.dataResponse?.filter((valuation: Valuation) =>
-      ['FinalValuated', 'ManagerApproved', 'Authorized', 'RejectedPreliminary'].includes(valuation.status)
+      ['FinalValuated', 'ManagerApproved', 'Authorized', 'Rejected'].includes(valuation.status)
     ) || []
-  // const handleUpdate = () => {
-  //   // Logic to handle what happens after the status update.
-  //   // This could be a refetch of the valuations or any other logic needed.
-  //   console.log('Update function triggered')
-  //   // For example, you can refetch the valuations here if needed
-  //   // refetch(); // Uncomment this if you have a refetch function defined
-  // }
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search)
+    const recordId = queryParams.get('recordId')
+
+    if (recordId) {
+      const record = finalValuationData.find((valuation) => valuation.id === parseInt(recordId))
+      if (record) {
+        setSelectedFinalRecord(record)
+      }
+    }
+  }, [location.search, finalValuationData])
 
   const handleSearch = (value: string) => {
     setSearchText(value)
+  }
+
+  const handleCloseModal = () => {
+    setSelectedFinalRecord(null)
+    navigate('/manager/requestfinal', { replace: true })
   }
 
   const finalColumns = [
@@ -69,8 +82,8 @@ const RequestFinalValuation = () => {
           color = 'blue'
         } else if (status === 'Authorized') {
           color = 'green'
-        } else if (status === 'RejectedPreliminary') {
-          color = 'orange'
+        } else if (status === 'Rejected') {
+          color = 'gray'
         }
 
         return <Tag color={color}>{label}</Tag>
@@ -141,11 +154,9 @@ const RequestFinalValuation = () => {
           <RequestFinalDetail
             recordId={selectedFinalRecord.id}
             isVisible={true}
-            setStatus={(status) => {
-              console.log(status)
-            }}
-            refetch={() => {}}
-            onClose={() => setSelectedFinalRecord(null)}
+            setStatus={(status) => {}}
+            refetch={refetch}
+            onClose={handleCloseModal}
           />
         </div>
       )}
