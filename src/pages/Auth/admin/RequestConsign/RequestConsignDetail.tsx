@@ -10,9 +10,10 @@ import { AdminGetFilterByRoleChildrenResponse } from '../../../../types/Account.
 interface RequestConsignDetailProps {
   recordId: number
   onClose: () => void // Prop to close modal
+  refetch: () => void // Prop to refetch data
 }
 
-const RequestConsignDetail: React.FC<RequestConsignDetailProps> = ({ recordId, onClose }) => {
+const RequestConsignDetail: React.FC<RequestConsignDetailProps> = ({ recordId, onClose, refetch }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [assignedStaff, setAssignedStaff] = useState<string>('')
   const [staffOptions, setStaffOptions] = useState<AdminGetFilterByRoleChildrenResponse[]>([])
@@ -65,6 +66,8 @@ const RequestConsignDetail: React.FC<RequestConsignDetailProps> = ({ recordId, o
             message: 'Assigned Staff Successfully',
             description: response.message
           })
+          refetch() // Refetch data after successful assignment
+          onClose()
         })
         .catch(() => {
           notification.error({
