@@ -1,5 +1,8 @@
+import { MainDiamond, MainShaphy, SecondaryDiamond, SecondaryShaphy } from './Gemstones.type'
+
 export interface DataResponse<T> {
   dataResponse: T[]
+  totalItemRepsone: number
 }
 
 export interface Jewelry {
@@ -22,11 +25,13 @@ export interface Jewelry {
   category: Category
   imageJewelries: ImageJewelry[]
   keyCharacteristicDetails: KeyCharacteristicDetail[]
-  mainDiamonds: any[]
-  secondaryDiamonds: any[]
-  mainShaphies: any[]
-  secondaryShaphies: any[]
+  mainDiamonds: MainDiamond[]
+  secondaryDiamonds: SecondaryDiamond[]
+  mainShaphies: MainShaphy[]
+  secondaryShaphies: SecondaryShaphy[]
   valuation: Valuation
+  staffId?: number
+  status: string
 }
 
 interface Artist {
@@ -136,4 +141,105 @@ interface ValuationDocument {
   signatureCode: string | null
   creationDate: string
   createdBy: number
+}
+/////////////////////////////// update
+
+// Interfaces for Images
+export interface UpdateImageJewelryDTO {
+  id: number
+  imageLink: string
+  title: string
+  thumbnailImage: string
+}
+
+// Interfaces for Characteristics
+export interface UpdateKeyCharacteristicDetailDTO {
+  id: number
+  description: string
+  keyCharacteristicId: number
+}
+
+// Interfaces for Documents and Images
+export interface UpdateDocumentDTO {
+  id: number
+  documentLink: string
+  documentTitle: string
+}
+
+export interface UpdateImageDTO {
+  id: number
+  imageLink: string
+}
+
+// Interfaces for Diamonds
+export interface UpdateMainDiamondDTO {
+  id: number
+  name: string
+  color: string
+  cut: string
+  clarity: string
+  quantity: number
+  settingType: string
+  dimension: string
+  shape: string
+  certificate: string
+  fluorescence: string
+  lengthWidthRatio: string
+  type: string
+  updateDocumentMainDiamondDTOs: UpdateDocumentDTO[]
+  updateImageMainDiamondDTOs: UpdateImageDTO[]
+}
+
+export interface UpdateSecondaryDiamondDTO
+  extends Omit<UpdateMainDiamondDTO, 'updateDocumentMainDiamondDTOs' | 'updateImageMainDiamondDTOs'> {
+  totalCarat: number
+  updateDocumentSecondaryDiamondDTOs: UpdateDocumentDTO[]
+  updateImageSecondaryDiamondDTOs: UpdateImageDTO[]
+}
+
+// Interfaces for Shaphies
+export interface BaseShaphieDTO {
+  id: number
+  name: string
+  color: string
+  carat: number
+  enhancementType: string
+  quantity: number
+  settingType: string
+  dimension: string
+}
+
+export interface UpdateMainShaphieDTO extends BaseShaphieDTO {
+  updateeDocumentMainShaphieDTOs: UpdateDocumentDTO[]
+  updateImageMainShaphieDTOs: UpdateImageDTO[]
+}
+
+export interface UpdateSecondaryShaphieDTO extends BaseShaphieDTO {
+  totalCarat: number
+  updateDocumentSecondaryShaphieDTOs: UpdateDocumentDTO[]
+  updateImageSecondaryShaphieDTOs: UpdateImageDTO[]
+}
+
+// Main Update Request Interface
+export interface UpdateJewelryRequest {
+  id: number
+  name: string
+  description: string
+  estimatePriceMin: number
+  estimatePriceMax: number
+  startingPrice: number
+  specificPrice: number
+  videoLink: string
+  forGender: string
+  title: string
+  bidForm: string
+  time_Bidding: string
+  artistId: number
+  categoryId: number
+  updateImageJewelryDTOs: UpdateImageJewelryDTO[]
+  updateKeyCharacteristicDetailDTOs: UpdateKeyCharacteristicDetailDTO[]
+  updateMainDiamondDTOs: UpdateMainDiamondDTO[]
+  updateSecondaryDiamondDTOs: UpdateSecondaryDiamondDTO[]
+  updateMainShaphieDTOs: UpdateMainShaphieDTO[]
+  updateSecondaryShaphieDTOs: UpdateSecondaryShaphieDTO[]
 }

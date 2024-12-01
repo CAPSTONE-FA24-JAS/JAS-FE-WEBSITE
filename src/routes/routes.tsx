@@ -28,6 +28,8 @@ import CreateAccount from '../pages/Auth/manager/ManageAccount/CreateAccount'
 import Overview from '../pages/Auth/manager/Overview'
 import RequestConsignList from '../pages/Auth/staff/Consign/ConsignList'
 import FinanceProofList from '../pages/Auth/staff/FinanceProof/FinanceProofList'
+import { JewelryDetail } from '../pages/Auth/staff/Jewelry/JewelryDetail'
+import JewelryList from '../pages/Auth/staff/Jewelry/JewelryList'
 import Index from '../pages/Auth/staff/Mission/LiveBidding'
 import CreateAuthorization from '../pages/Auth/staff/Valuation/AuthorizationLetter'
 import ValuationTabs from '../pages/Auth/staff/Valuation/ValuationList'
@@ -66,7 +68,9 @@ const managerRoutes: RouteProps[] = [
   { path: '/manager/lotlist/:id', component: LotList, layout: ManagerLayout },
   { path: '/manager/financeProofManager', component: FinanceProofListManager, layout: ManagerLayout },
   { path: '/manager/transaction', component: TransactionsComponent, layout: ManagerLayout },
-  { path: '/manager/lotdetailmanager/:id', component: Index, layout: ManagerLayout }
+  { path: '/manager/lotdetailmanager/:id', component: Index, layout: ManagerLayout },
+  { path: '/manager/jewelrys', component: JewelryList, layout: ManagerLayout },
+  { path: '/manager/jewelry/:id', component: JewelryDetail, layout: ManagerLayout }
 ]
 const appraiserRoutes: RouteProps[] = [
   { path: '/appraiser/requestConsign', component: RequestPreliminaryList, layout: AppraiserLayout },
@@ -96,7 +100,9 @@ const staffCRoutes: RouteProps[] = [
   { path: '/staff/authorization', component: CreateAuthorization, layout: StaffLayout },
   { path: '/staff/lotdetailmanager/:id', component: Index, layout: StaffLayout },
   { path: '/staff/lotlist/:id', component: LotList, layout: StaffLayout },
-  { path: '/staff/managewithdraw', component: WithdrawalRequests, layout: StaffLayout }
+  { path: '/staff/managewithdraw', component: WithdrawalRequests, layout: StaffLayout },
+  { path: '/staff/jewelrys', component: JewelryList, layout: StaffLayout },
+  { path: '/staff/jewelry/:id', component: JewelryDetail, layout: StaffLayout }
 ]
 
 export { adminRoutes, appraiserRoutes, managerRoutes, publicRoutes, staffCRoutes }

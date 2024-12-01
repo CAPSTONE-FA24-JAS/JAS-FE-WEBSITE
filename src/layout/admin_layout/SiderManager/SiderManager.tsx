@@ -1,6 +1,7 @@
 import { Menu, MenuProps } from 'antd'
 import Sider from 'antd/es/layout/Sider'
 import React, { useEffect, useState } from 'react'
+import { GiJewelCrown } from 'react-icons/gi'
 import { HiOutlineDocument } from 'react-icons/hi'
 import { MdAssessment, MdFormatListBulleted, MdOutlineMenu } from 'react-icons/md'
 import { RiAuctionLine, RiBillLine, RiMoneyDollarCircleLine } from 'react-icons/ri'
@@ -50,6 +51,8 @@ export default function SiderManager() {
       getItem('Valuation Manage', 'manageValuation', <MdAssessment className='text-base' />, [
         getItem('Valuation List', 'requestvaluation', <MdFormatListBulleted className='text-base' />)
       ]),
+      getItem('Jewelry', 'jewelrys', <GiJewelCrown className='text-base' />),
+
       getItem('Manage Invoice', 'managewin', <RiBillLine className='text-base' />),
       getItem('Manage Withdraw', 'managewithdraw', <RiBillLine className='text-base' />),
       getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
@@ -70,6 +73,7 @@ export default function SiderManager() {
     .set('managecheckinvoice', '/manager/checkinvoice')
     .set('auctionListSub', '/manager/auctionlist')
     .set('financeProof', '/manager/financeProofManager')
+    .set('jewelrys', '/manager/jewelrys')
 
   return (
     <Sider

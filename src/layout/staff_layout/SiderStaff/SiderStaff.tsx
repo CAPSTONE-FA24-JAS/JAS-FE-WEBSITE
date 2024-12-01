@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { AiOutlineStar, AiOutlineTable } from 'react-icons/ai'
 import { MdOutlineInventory2, MdOutlineMenu } from 'react-icons/md'
 import { RiAuctionLine, RiBillLine } from 'react-icons/ri'
+import { GiJewelCrown } from 'react-icons/gi' // Added for jewelry icon
 import { TbZoomMoney } from 'react-icons/tb'
 import { useNavigate } from 'react-router-dom'
 
@@ -47,6 +48,7 @@ export default function SiderStaff() {
       getItem('Valuation Manage', 'manageValuation', <AiOutlineStar className='text-base' />, [
         getItem('Valuation List', 'valuation', <AiOutlineTable className='text-base' />)
       ]),
+      getItem('Jewelry', 'jewelrys', <GiJewelCrown className='text-base' />),
       getItem('Manage Withdraw', 'managewithdraw', <RiBillLine className='text-base' />),
       getItem('Finance Proof', 'financeProof', <TbZoomMoney className='text-base' />),
       getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
@@ -59,6 +61,7 @@ export default function SiderStaff() {
   navUrl
     .set('consign', '/staff/ConsignList')
     .set('valuation', '/staff/valuationList')
+    .set('jewelrys', '/staff/jewelrys') // Added new route for jewelry list
     .set('financeProof', '/staff/financeproof')
     .set('auctionlistSub', '/staff/auctionlist')
     .set('livebidding', '/staff/livebidding')
