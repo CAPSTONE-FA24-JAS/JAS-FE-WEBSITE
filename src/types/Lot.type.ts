@@ -36,6 +36,8 @@ export interface CreateLot {
   bidIncrement: number
   lotTypeValue: number
   bidIncrementTime: number
+  round: number
+  isHaveFinalPrice: boolean
 }
 
 export interface LotDetail {

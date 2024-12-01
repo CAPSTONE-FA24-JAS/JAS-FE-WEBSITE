@@ -295,7 +295,6 @@ const LotList = () => {
             await createSerect({
               title: values.title,
               startPrice: values.startPrice,
-              finalPriceSold: values.finalPriceSold,
               deposit: values.deposit,
               isExtend: values.isExtend,
               haveFinancialProof: values.haveFinancialProof,
@@ -310,6 +309,7 @@ const LotList = () => {
             break
           case 3:
             console.log('Public Auction')
+
             await createPublic({
               title: values.title,
               startPrice: values.startPrice,
@@ -320,7 +320,9 @@ const LotList = () => {
               haveFinancialProof: values.haveFinancialProof,
               staffId: values.staffId,
               jewelryId: values.jewelryId,
-              auctionId: values.auctionId
+              auctionId: values.auctionId,
+              round: values.round,
+              isHaveFinalPrice: values.isHaveFinalPrice
             }).unwrap()
             notification.success({
               message: 'Success',

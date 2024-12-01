@@ -78,7 +78,7 @@ export const parsePriceVND = (price: number) => {
     return price
   }
   if (typeof price === 'string') {
-    return Number(price).toLocaleString('en-US', { style: 'currency', currency: 'VND' })
+    return Number(price).toLocaleString('vi-vn', { style: 'currency', currency: 'VND' })
   }
-  return price.toLocaleString('en-US', { style: 'currency', currency: 'VND' })
+  return price.toLocaleString('vi-vn', { style: 'currency', currency: 'VND' })
 }
