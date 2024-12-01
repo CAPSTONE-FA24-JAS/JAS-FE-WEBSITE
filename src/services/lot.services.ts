@@ -74,7 +74,9 @@ export const lotApi = createApi({
           haveFinancialProof: body.haveFinancialProof,
           staffId: body.staffId,
           jewelryId: body.jewelryId,
-          auctionId: body.auctionId
+          auctionId: body.auctionId,
+          round: body.round,
+          isHaveFinalPrice: body.isHaveFinalPrice
         }
       }),
       invalidatesTags() {
@@ -90,7 +92,6 @@ export const lotApi = createApi({
           body: {
             title: body.title,
             startPrice: Number(body.startPrice),
-            finalPriceSold: Number(body.finalPriceSold),
             deposit: Number(body.deposit),
             haveFinancialProof: body.haveFinancialProof,
             staffId: body.staffId,

@@ -6,6 +6,7 @@ import { useGetJewelriesNoSlotQuery } from '../../../../../services/jewelry.serv
 import { Auction } from '../../../../../types/Auction.type'
 import { Jewelry } from '../../../../../types/Jewelry.type'
 import { CreateLot, ListLot } from '../../../../../types/Lot.type'
+import { parsePriceVND } from '../../../../../utils/convertTypeDayjs'
 
 const { Option } = Select
 
@@ -34,6 +35,8 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
   const { data, isFetching: jewelryLoading } = useGetJewelriesNoSlotQuery(undefined, { skip: !visible })
   const [chooseJewelry, setChooseJewelry] = useState<number | null>(null)
   const [jewelryData, setJewelryData] = useState<Jewelry>()
+  const [isExtendTimeEnabled, setIsExtendTimeEnabled] = useState(true)
+  const [selectedPercentage, setSelectedPercentage] = useState<number>(0)
 
   const { data: listStaff, isFetching: staffLoading } = useGetFilterByRoleQuery(3, {
     skip: !visible
@@ -59,6 +62,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
       form.setFieldValue('type', null)
       const selectedJewelry = data.data.dataResponse.find((jewelry) => jewelry.id === chooseJewelry)
       setJewelryData(selectedJewelry)
+      form.setFieldValue('staffCare', selectedJewelry?.staffId)
 
       const newAuctionType = getBidTypeFromBidForm(selectedJewelry?.bidForm)
       console.log('newAuctionType', newAuctionType)
@@ -73,6 +77,9 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
       form.resetFields()
       setChooseJewelry(null)
       setJewelryData(undefined)
+      setIsExtendTimeEnabled(true)
+      setSelectedPercentage(0)
+      setAuctionType('')
 
       if (initialValues) {
         form.setFieldsValue(initialValues)
@@ -100,7 +107,9 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
         finalPriceSold: values.finalPriceSold,
         bidIncrement: values.priceStep,
         lotTypeValue: Number(auctionType),
-        bidIncrementTime: values.bidIncrementTime
+        bidIncrementTime: values.bidIncrementTime,
+        round: values.round,
+        isHaveFinalPrice: values.finalPriceSold != 0 || values.finalPriceSold ? true : false
       }
       onSubmit(FormatValues)
       form.resetFields()
@@ -109,6 +118,19 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
 
   const handleJewelryChange = (value: number) => {
     setChooseJewelry(value)
+  }
+
+  const handleExtendTimeChange = (e: any) => {
+    setIsExtendTimeEnabled(e.target.checked)
+  }
+
+  const calculatePercentage = (depositAmount: number, startingPrice: number): number => {
+    if (!startingPrice) return 0
+    return Math.round((depositAmount / startingPrice) * 100)
+  }
+
+  const calculateDepositAmount = (percentage: number, startingPrice: number): number => {
+    return Math.floor((percentage / 100) * startingPrice)
   }
 
   const renderAuctionTypeSpecificFields = () => {
@@ -121,8 +143,17 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
             label='buyNowPrice'
             rules={[{ required: true, message: 'Please input the price' }]}
             className='w-full'
+            initialValue={jewelryData?.startingPrice ? jewelryData.startingPrice : 0}
           >
-            <InputNumber className='w-full' />
+            <InputNumber
+              className='w-full'
+              defaultValue={jewelryData?.startingPrice ? jewelryData.startingPrice : 0}
+              formatter={(value) => parsePriceVND(Number(value) ?? 0).toString()}
+              parser={(value) => {
+                const numberValue = value?.replace(/\D/g, '')
+                return Number(numberValue) as unknown as 1
+              }}
+            />
           </Form.Item>
         )
       case '2': // secret auction
@@ -149,41 +180,18 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
                 })
               ]}
               className='w-[48%]'
+              initialValue={jewelryData?.startingPrice ? jewelryData.startingPrice : 0}
             >
-              <Input
-                type='number'
+              <InputNumber
+                className='w-full'
+                defaultValue={jewelryData?.startingPrice ? jewelryData.startingPrice : 0}
                 onBlur={() => {
                   form.validateFields(['finalPriceSold'])
                 }}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name='finalPriceSold'
-              label='Price Max'
-              validateFirst={true}
-              rules={[
-                { required: true, message: 'Please input the maximum price' },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    const minPrice = getFieldValue('startPrice')
-                    if (!value || !minPrice) {
-                      return Promise.resolve()
-                    }
-                    const maxValue = Number(value)
-                    const minValue = Number(minPrice)
-                    return maxValue > minValue
-                      ? Promise.resolve()
-                      : Promise.reject(new Error('Maximum price must be greater than minimum price'))
-                  }
-                })
-              ]}
-              className='w-[48%]'
-            >
-              <Input
-                type='number'
-                onBlur={() => {
-                  form.validateFields(['startPrice'])
+                formatter={(value) => parsePriceVND(Number(value) ?? 0).toString()}
+                parser={(value) => {
+                  const numberValue = value?.replace(/\D/g, '')
+                  return Number(numberValue) as unknown as 1
                 }}
               />
             </Form.Item>
@@ -215,21 +223,27 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
                   })
                 ]}
                 className='w-[48%]'
+                initialValue={jewelryData?.startingPrice ? jewelryData.startingPrice : 0}
               >
-                <Input
-                  type='number'
+                <InputNumber
+                  className='w-full'
+                  defaultValue={jewelryData?.startingPrice ? jewelryData.startingPrice : 0}
                   onBlur={() => {
                     form.validateFields(['finalPriceSold'])
+                  }}
+                  formatter={(value) => parsePriceVND(Number(value) ?? 0).toString()}
+                  parser={(value) => {
+                    const numberValue = value?.replace(/\D/g, '')
+                    return Number(numberValue) as unknown as 1
                   }}
                 />
               </Form.Item>
 
               <Form.Item
                 name='finalPriceSold'
-                label='Price Max'
+                label='Buy now price (Optional) = 0 if not use'
                 validateFirst={true}
                 rules={[
-                  { required: true, message: 'Please input the maximum price' },
                   ({ getFieldValue }) => ({
                     validator(_, value) {
                       const minPrice = getFieldValue('startPrice')
@@ -246,10 +260,15 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
                 ]}
                 className='w-[48%]'
               >
-                <Input
-                  type='number'
+                <InputNumber
+                  className='w-full'
                   onBlur={() => {
                     form.validateFields(['startPrice'])
+                  }}
+                  formatter={(value) => parsePriceVND(Number(value) ?? 0).toString()}
+                  parser={(value) => {
+                    const numberValue = value?.replace(/\D/g, '')
+                    return Number(numberValue) as unknown as 1
                   }}
                 />
               </Form.Item>
@@ -260,7 +279,14 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
               rules={[{ required: true, message: 'Please input the start price' }]}
               className='w-[48%]'
             >
-              <InputNumber className='w-full' />
+              <InputNumber
+                className='w-full'
+                formatter={(value) => parsePriceVND(Number(value) ?? 0).toString()}
+                parser={(value) => {
+                  const numberValue = value?.replace(/\D/g, '')
+                  return Number(numberValue) as unknown as 1
+                }}
+              />
             </Form.Item>
           </div>
         )
@@ -290,11 +316,17 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
                     })
                   ]}
                   className='w-[48%]'
+                  initialValue={jewelryData?.startingPrice ? jewelryData.startingPrice : 0}
                 >
-                  <Input
-                    type='number'
+                  <InputNumber
+                    className='w-full'
                     onBlur={() => {
                       form.validateFields(['finalPriceSold'])
+                    }}
+                    formatter={(value) => parsePriceVND(Number(value) ?? 0).toString()}
+                    parser={(value) => {
+                      const numberValue = value?.replace(/\D/g, '')
+                      return Number(numberValue) as unknown as 1
                     }}
                   />
                 </Form.Item>
@@ -321,10 +353,15 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
                   ]}
                   className='w-[48%]'
                 >
-                  <Input
-                    type='number'
+                  <InputNumber
+                    className='w-full'
                     onBlur={() => {
                       form.validateFields(['startPrice'])
+                    }}
+                    formatter={(value) => parsePriceVND(Number(value) ?? 0).toString()}
+                    parser={(value) => {
+                      const numberValue = value?.replace(/\D/g, '')
+                      return Number(numberValue) as unknown as 1
                     }}
                   />
                 </Form.Item>
@@ -336,7 +373,14 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
                   rules={[{ required: true, message: 'Please input the decreate amout' }]}
                   className='w-[48%]'
                 >
-                  <InputNumber className='w-full' />
+                  <InputNumber
+                    className='w-full'
+                    formatter={(value) => parsePriceVND(Number(value) ?? 0).toString()}
+                    parser={(value) => {
+                      const numberValue = value?.replace(/\D/g, '')
+                      return Number(numberValue) as unknown as 1
+                    }}
+                  />
                 </Form.Item>
 
                 <Form.Item
@@ -377,7 +421,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
     <Modal
       forceRender
       open={visible}
-      title={isEditing ? 'Edit Lot Auction' : 'Add Lot Auction'}
+      title={!isEditing ? 'Edit Lot Auction' : 'Add Lot Auction'}
       onCancel={onCancel}
       loading={jewelryLoading && staffLoading}
       footer={[
@@ -406,35 +450,93 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
         </Form.Item>
 
         {jewelryData && (
-          <div className='p-2 mb-4 border rounded'>
-            <div className='flex items-center gap-3'>
-              <div className='flex-shrink-0 w-12 h-12 overflow-hidden'>
-                <Image
-                  width={48}
-                  height={48}
-                  src={jewelryData.imageJewelries[0]?.imageLink || 'default-image-url'}
-                  className='object-cover'
-                  preview={false}
-                />
-              </div>
-              <div className='flex-grow'>
-                <div className='font-medium'>{jewelryData.name}</div>
-                <div className='text-sm text-gray-500'>
-                  Est. Price: {jewelryData.estimatePriceMin} - {jewelryData.estimatePriceMax}
+          <>
+            {' '}
+            <div className='p-2 mb-4 border rounded'>
+              <div className='flex items-center gap-3'>
+                <div className='flex-shrink-0 w-12 h-12 overflow-hidden'>
+                  <Image
+                    width={48}
+                    height={48}
+                    src={jewelryData.imageJewelries[0]?.imageLink || 'default-image-url'}
+                    className='object-cover'
+                    preview={false}
+                  />
+                </div>
+                <div className='flex-grow'>
+                  <div className='font-medium'>{jewelryData.name}</div>
+                  <div className='text-sm text-gray-500'>
+                    Est. Price: {jewelryData.estimatePriceMin ? parsePriceVND(jewelryData.estimatePriceMin) : 0} -
+                    {jewelryData.estimatePriceMax ? parsePriceVND(jewelryData.estimatePriceMax) : 0}
+                  </div>
+                  <div className='text-sm text-gray-500'>
+                    Start price: {jewelryData.startingPrice ? parsePriceVND(jewelryData.startingPrice) : 0} - Specific
+                    price: {jewelryData.specificPrice ? parsePriceVND(jewelryData.specificPrice) : 0}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+            <div className='flex flex-col gap-2'>
+              <div className='flex flex-col gap-2'>
+                <Form.Item label='Deposit' className='mb-0'>
+                  <div className='flex gap-2 mb-2'>
+                    {[10, 20, 30, 40, 50].map((percentage) => {
+                      const startingPrice = jewelryData?.startingPrice || 0
+                      return (
+                        <Button
+                          key={percentage}
+                          type={selectedPercentage === percentage ? 'primary' : 'default'}
+                          onClick={() => {
+                            setSelectedPercentage(percentage)
+                            const depositAmount = calculateDepositAmount(percentage, startingPrice)
+                            form.setFieldValue('deposit', depositAmount)
+                          }}
+                          className='min-w-[60px]'
+                        >
+                          {percentage}%
+                        </Button>
+                      )
+                    })}
+                  </div>
 
-        <Form.Item name='deposit' label='Deposit' rules={[{ required: true, message: 'Please input the Deposit' }]}>
-          <Input />
-        </Form.Item>
+                  <Form.Item
+                    name='deposit'
+                    rules={[{ required: true, message: 'Please input deposit amount' }]}
+                    className='mb-0'
+                  >
+                    <InputNumber
+                      className='w-1/3'
+                      formatter={(value) => parsePriceVND(Number(value)).toString()}
+                      parser={(value) => {
+                        const numberValue = value?.replace(/\D/g, '')
+                        return Number(numberValue) as unknown as 1
+                      }}
+                      min={1}
+                      onChange={(value) => {
+                        if (value) {
+                          const startingPrice = jewelryData?.startingPrice || 0
+                          const currentPercentage = calculatePercentage(Number(value), startingPrice)
+
+                          // Update percentage selection
+                          if ([10, 20, 30, 40, 50].includes(currentPercentage)) {
+                            setSelectedPercentage(currentPercentage)
+                          } else {
+                            setSelectedPercentage(0)
+                          }
+                        }
+                      }}
+                    />
+                  </Form.Item>
+                </Form.Item>
+              </div>
+            </div>
+          </>
+        )}
 
         <div className='flex justify-between'>
           <Form.Item
             name='startTime'
-            label='Start Time(expected):'
+            label='Start Time:'
             initialValue={dayjs(auctionData.startTime)}
             rules={[{ required: true, message: 'Please select the start time' }]}
             className='w-[48%]'
@@ -471,9 +573,25 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
         {auctionType ? (
           <div className='flex justify-start gap-5 mb-4'>
             {auctionType === '3' ? (
-              <Form.Item initialValue={true} name='extendTime' valuePropName='checked' className='mb-0'>
-                <Checkbox defaultChecked>Extend time</Checkbox>
-              </Form.Item>
+              <>
+                <div className='flex-col'>
+                  <Form.Item initialValue={true} name='extendTime' valuePropName='checked' className='mb-0'>
+                    <Checkbox defaultChecked onChange={handleExtendTimeChange}>
+                      Extend time
+                    </Checkbox>
+                  </Form.Item>
+                  {isExtendTimeEnabled && (
+                    <Form.Item
+                      name='round'
+                      label='Extend Rounds'
+                      rules={[{ required: true, message: 'Please input the number of rounds', type: 'number' }]}
+                      className='mb-0'
+                    >
+                      <InputNumber min={1} className='w-24' />
+                    </Form.Item>
+                  )}
+                </div>
+              </>
             ) : (
               ''
             )}
@@ -491,6 +609,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
           label='Staff care'
           rules={[{ required: true, message: 'Please select the staff' }]}
           className='w-full'
+          initialValue={jewelryData?.staffId}
         >
           <Select>
             {listStaff?.data.map((staff) => (
