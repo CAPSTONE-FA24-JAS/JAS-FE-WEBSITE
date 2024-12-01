@@ -9,7 +9,7 @@ const { Search } = Input
 
 export default function RequestConsign() {
   const [searchText, setSearchText] = useState<string>('')
-  const { data, isLoading, error } = useGetValuationsQuery(undefined)
+  const { data, isLoading, error, refetch } = useGetValuationsQuery(undefined)
   const [selectedRecord, setSelectedRecord] = useState<any>(null)
   const location = useLocation()
   const navigate = useNavigate()
@@ -131,6 +131,7 @@ export default function RequestConsign() {
               dataSource={filteredDataSource}
               columns={columns}
               rowKey='id'
+              bordered
               pagination={{ pageSize: 6 }}
               loading={isLoading}
             />
@@ -140,7 +141,7 @@ export default function RequestConsign() {
 
       {selectedRecord && (
         <div className='mt-4'>
-          <RequestConsignDetail recordId={selectedRecord.id} onClose={handleCloseModal} />
+          <RequestConsignDetail recordId={selectedRecord.id} onClose={handleCloseModal} refetch={refetch} />
         </div>
       )}
     </div>

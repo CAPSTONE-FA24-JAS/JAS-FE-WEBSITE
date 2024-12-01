@@ -45,8 +45,6 @@ const RequestConsignList = () => {
   const [status, setStatus] = useState<number | string>('')
 
   const [searchText, setSearchText] = useState<string>('')
-  const [pageIndex, setPageIndex] = useState<number>(1)
-  const [pageSize, setPageSize] = useState<number>(5)
 
   const staffId = useSelector((state: RootState) => state.authLoginAPI.staffId)
 
@@ -56,9 +54,7 @@ const RequestConsignList = () => {
 
   // Fetch preliminary valuations by staffId
   const { data, error, isLoading, refetch } = useGetPreliminaryValuationsByStaffQuery({
-    staffId: staffId || '',
-    pageIndex,
-    pageSize
+    staffId: staffId || ''
   })
 
   useEffect(() => {
@@ -89,6 +85,7 @@ const RequestConsignList = () => {
 
   const handleCancel = () => {
     setIsModalVisible(false)
+    refetch()
   }
 
   const handleSearch = (value: string) => {
@@ -173,22 +170,7 @@ const RequestConsignList = () => {
           </Row>
         </Col>
       </Row>
-      <Table
-        dataSource={filteredDataSource}
-        columns={columns}
-        rowKey='id'
-        bordered
-        pagination={{
-          total: data?.totalItemRepsone,
-          current: pageIndex,
-          pageSize: pageSize,
-          onChange: (page, pageSize) => {
-            setPageIndex(page)
-            setPageSize(pageSize)
-            refetch()
-          }
-        }}
-      />
+      <Table dataSource={filteredDataSource} columns={columns} rowKey='id' bordered pagination={{ pageSize: 5 }} />
       {selectedRecord && (
         <ConsignDetail
           isVisible={isModalVisible}

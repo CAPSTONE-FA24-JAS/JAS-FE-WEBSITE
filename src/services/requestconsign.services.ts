@@ -28,8 +28,7 @@ export const consignApi = createApi({
       })
     }),
     getPreliminaryValuationsByStaff: build.query({
-      query: ({ staffId, pageSize, pageIndex }) =>
-        `/Valuations/getPreliminaryValuationsByStatusOfStaff?staffId=${staffId}&pageSize=${pageSize}&pageIndex=${pageIndex}`,
+      query: ({ staffId }) => `/Valuations/getPreliminaryValuationsByStatusOfStaff?staffId=${staffId}`,
       transformResponse: (response: any) => ({
         dataResponse: response.data.dataResponse,
         totalItemRepsone: response.data.totalItemRepsone

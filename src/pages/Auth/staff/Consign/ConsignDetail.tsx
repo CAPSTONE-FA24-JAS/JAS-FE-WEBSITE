@@ -70,7 +70,8 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, reco
         message: 'Has sent a request for appraisal!'
       })
       setStatus('Requested')
-      refetch()
+      refetch() // Gọi refetch để cập nhật lại bảng
+      onCancel() // Đóng modal sau khi cập nhật thành công
     } catch (error) {
       notification.error({
         message: 'Status Update Failed'

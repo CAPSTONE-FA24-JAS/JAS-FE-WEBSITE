@@ -30,9 +30,10 @@ interface CreateReceiptProps {
   onCancel: () => void
   onCreate: () => void
   record: Record
+  refetch: () => void
 }
 
-const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCreate, record }) => {
+const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCreate, record, refetch }) => {
   const [actualStatusOfJewelry, setActualStatusOfJewelry] = useState(record?.actualStatusOfJewelry || '')
   const [deliveryDate, setDeliveryDate] = useState<string>(dateToString(dayjs()))
   const [idIssuanceDate, setIdIssuanceDate] = useState<string>(dateToString(dayjs(record?.seller?.idIssuanceDate)))
@@ -74,6 +75,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
       }
 
       onCreate()
+      refetch()
     } catch (error) {
       console.error('Failed to create receipt:', error)
     } finally {
