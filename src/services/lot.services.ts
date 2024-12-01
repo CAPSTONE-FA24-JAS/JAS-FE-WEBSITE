@@ -43,46 +43,42 @@ export const lotApi = createApi({
       }
     }),
     createLotFixedPrice: build.mutation<Respone<ListLot>, Partial<CreateLot>>({
-      query: (body) => (
-        console.log(body),
-        {
-          url: 'Lot/CreateLotFixedPrice',
-          method: 'POST',
-          body: {
-            title: body.title,
-            deposit: Number(body.deposit),
-            buyNowPrice: body.buyNowPrice,
-            haveFinancialProof: body.haveFinancialProof,
-            staffId: body.staffId,
-            jewelryId: body.jewelryId,
-            auctionId: body.auctionId
-          }
+      query: (body) => ({
+        url: 'Lot/CreateLotFixedPrice',
+        method: 'POST',
+        body: {
+          title: body.title,
+          deposit: Number(body.deposit),
+          buyNowPrice: body.buyNowPrice,
+          haveFinancialProof: body.haveFinancialProof,
+          staffId: body.staffId,
+          jewelryId: body.jewelryId,
+          auctionId: body.auctionId
         }
-      ),
+      }),
       invalidatesTags() {
         return [{ type: 'Lot', id: 'LIST' }]
       }
     }),
     createLotPublicAuction: build.mutation<Respone<ListLot>, Partial<CreateLot>>({
-      query: (body) => (
-        console.log(body),
-        {
-          url: 'Lot/CreateLotPublicAuction',
-          method: 'POST',
-          body: {
-            title: body.title,
-            startPrice: Number(body.startPrice),
-            finalPriceSold: Number(body.finalPriceSold),
-            bidIncrement: Number(body.bidIncrement),
-            deposit: Number(body.deposit),
-            isExtend: body.isExtend,
-            haveFinancialProof: body.haveFinancialProof,
-            staffId: body.staffId,
-            jewelryId: body.jewelryId,
-            auctionId: body.auctionId
-          }
+      query: (body) => ({
+        url: 'Lot/CreateLotPublicAuction',
+        method: 'POST',
+        body: {
+          title: body.title,
+          startPrice: Number(body.startPrice),
+          finalPriceSold: Number(body.finalPriceSold),
+          bidIncrement: Number(body.bidIncrement),
+          deposit: Number(body.deposit),
+          isExtend: body.isExtend,
+          haveFinancialProof: body.haveFinancialProof,
+          staffId: body.staffId,
+          jewelryId: body.jewelryId,
+          auctionId: body.auctionId,
+          round: body.round,
+          isHaveFinalPrice: body.isHaveFinalPrice
         }
-      ),
+      }),
       invalidatesTags() {
         return [{ type: 'Lot', id: 'LIST' }]
       }
@@ -96,7 +92,6 @@ export const lotApi = createApi({
           body: {
             title: body.title,
             startPrice: Number(body.startPrice),
-            finalPriceSold: Number(body.finalPriceSold),
             deposit: Number(body.deposit),
             haveFinancialProof: body.haveFinancialProof,
             staffId: body.staffId,
