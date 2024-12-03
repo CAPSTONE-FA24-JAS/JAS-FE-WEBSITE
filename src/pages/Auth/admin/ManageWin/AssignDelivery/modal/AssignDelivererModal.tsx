@@ -1,8 +1,8 @@
-import { Modal, Form, Select, Button, notification } from 'antd' // Import notification from Ant Design
+import { Modal, Form, Select, Button, notification } from 'antd'
 import { useGetFilterByRoleQuery } from '../../../../../../services/account.services'
 import { useEffect, useState } from 'react'
 import { AdminGetFilterByRoleChildrenResponse } from '../../../../../../types/Account.type'
-import { useAssignShipperMutation } from '../../../../../../services/invoice.services'
+import { useAssignShipperMutation, useShipperAndInvoiceQuery } from '../../../../../../services/invoice.services'
 
 interface AssignDelivererModalProps {
   visible: boolean
@@ -24,12 +24,28 @@ const AssignDelivererModal: React.FC<AssignDelivererModalProps> = ({
   const [form] = Form.useForm()
   const roleId = 6
   const [assignedStaff, setAssignedStaff] = useState<string>('')
-
   const [staffOptions, setStaffOptions] = useState<AdminGetFilterByRoleChildrenResponse[]>([])
-  const { data: staffData, isLoading: staffLoading, error: staffError } = useGetFilterByRoleQuery(roleId)
 
+  // Query for staff and shipper data
+  const { data: staffData, isLoading: staffLoading, error: staffError } = useGetFilterByRoleQuery(roleId)
+  const { data } = useShipperAndInvoiceQuery(undefined, { skip: !invoiceId })
   const [assignShipper, { isLoading: isAssigning }] = useAssignShipperMutation()
-  console.log('status', status)
+
+  // Extract invoice count safely
+  // const invoiceCount = Array.isArray(data?.invoiceCounts) ? data.invoiceCounts[0] || 0 : 0
+  useEffect(() => {
+    if (data) {
+      console.log('Full response data:', data)
+      const invoiceCounts = data.invoiceCounts || []
+      console.log('Invoice counts array:', invoiceCounts)
+      if (invoiceCounts.length > 0) {
+        const invoiceCount = invoiceCounts[0] ?? 0
+        console.log('Số lượng hóa đơn:', invoiceCount)
+      } else {
+        console.log('Không có hóa đơn nào')
+      }
+    }
+  }, [data])
 
   useEffect(() => {
     if (staffData && staffData.data) {
@@ -77,7 +93,7 @@ const AssignDelivererModal: React.FC<AssignDelivererModalProps> = ({
   return (
     <Modal
       title='Assign Deliverer'
-      visible={visible}
+      open={visible}
       onCancel={onCancel}
       footer={null} // Customize the footer for form submission
     >
@@ -100,7 +116,17 @@ const AssignDelivererModal: React.FC<AssignDelivererModalProps> = ({
               staffOptions.map((staff) =>
                 staff ? (
                   <Select.Option key={staff.id} value={staff.id}>
-                    {staff.firstName} {staff.lastName}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span>
+                        {staff.firstName} {staff.lastName}
+                      </span>
+                      <span>
+                        <strong>Invoice:</strong>{' '}
+                        {Array.isArray(data?.invoiceCounts) && data.invoiceCounts.length > 0
+                          ? data.invoiceCounts[0] ?? 'No Invoice'
+                          : 'No Invoice'}
+                      </span>
+                    </div>
                   </Select.Option>
                 ) : null
               )

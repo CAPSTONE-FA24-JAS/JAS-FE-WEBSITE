@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Modal, Button, Form, Select, notification } from 'antd'
-import { LeftOutlined, RightOutlined } from '@ant-design/icons'
+import { LeftOutlined, RightOutlined, FilePdfOutlined } from '@ant-design/icons'
 import { useGetValuationByIdQuery } from '../../../../services/requestconsign.services'
 import { useGetFilterByRoleQuery } from '../../../../services/account.services'
 import { useAssignStaffForValuationMutation } from '../../../../services/requestconsign.services'
@@ -18,7 +18,7 @@ const RequestConsignDetail: React.FC<RequestConsignDetailProps> = ({ recordId, o
   const [assignedStaff, setAssignedStaff] = useState<string>('')
   const [staffOptions, setStaffOptions] = useState<AdminGetFilterByRoleChildrenResponse[]>([])
   const roleId = 3
-
+  const [isModalVisible, setIsModalVisible] = useState(false)
   const { data: valuationData, isLoading: valuationLoading, error: valuationError } = useGetValuationByIdQuery(recordId)
   const { data: staffData, isLoading: staffLoading, error: staffError } = useGetFilterByRoleQuery(roleId)
   const [assignStaffForValuation] = useAssignStaffForValuationMutation()
@@ -43,7 +43,9 @@ const RequestConsignDetail: React.FC<RequestConsignDetailProps> = ({ recordId, o
     }
   }, [valuationData])
 
-  const images = valuationData?.data?.imageValuations?.map((image: any) => image.imageLink) || []
+  const images = valuationData?.data?.imageValuations || [
+    { imageLink: 'https://via.placeholder.com/150?text=No+Image', defaultImage: null }
+  ]
 
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length)
@@ -53,6 +55,8 @@ const RequestConsignDetail: React.FC<RequestConsignDetailProps> = ({ recordId, o
     setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length)
   }
 
+  const openModal = () => setIsModalVisible(true)
+  const closeModal = () => setIsModalVisible(false)
   const handleUpdate = () => {
     if (assignedStaff) {
       assignStaffForValuation({
@@ -93,6 +97,32 @@ const RequestConsignDetail: React.FC<RequestConsignDetailProps> = ({ recordId, o
     onClose()
   }
 
+  const renderImageOrLink = (image: any, index: number) => {
+    if (image.defaultImage === 'PDF') {
+      return (
+        <a
+          key={index}
+          href={image.imageLink}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='w-[100px] h-[100px] flex items-center justify-center bg-gray-200 rounded-lg mx-2 cursor-pointer border'
+        >
+          <FilePdfOutlined style={{ fontSize: '24px', color: '#ff4d4f' }} />
+        </a>
+      )
+    } else {
+      return (
+        <img
+          key={index}
+          src={image.imageLink}
+          alt={`thumb-${index}`}
+          className='w-[100px] h-[100px] object-cover rounded-lg mx-2 cursor-pointer border'
+          onClick={() => setCurrentImageIndex(index)}
+        />
+      )
+    }
+  }
+
   if (valuationLoading) {
     return <p>Loading valuation details...</p>
   }
@@ -107,25 +137,48 @@ const RequestConsignDetail: React.FC<RequestConsignDetailProps> = ({ recordId, o
       open={true}
       onCancel={handleClose} // Close modal on cancel
       footer={null}
-      width={900}
+      width={1200}
       style={{ padding: '24px' }}
     >
       <div className='grid grid-cols-2 gap-6'>
         <div className='relative'>
           <div className='flex items-center justify-center mb-4'>
-            {images.length > 0 ? (
-              <img src={images[currentImageIndex]} alt='product' className='max-w-full rounded-lg' />
+            {images[currentImageIndex]?.defaultImage === 'PDF' ? (
+              <a
+                href={images[currentImageIndex]?.imageLink}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='w-[450px] h-[500px] flex items-center justify-center bg-gray-200 rounded-lg cursor-pointer border font-bold'
+              >
+                <FilePdfOutlined style={{ fontSize: '48px', color: '#ff4d4f' }} />
+                GIA
+              </a>
             ) : (
-              <p>No images available</p>
+              <img
+                src={images[currentImageIndex]?.imageLink}
+                alt='product'
+                onClick={openModal}
+                className='w-[450px] h-[500px] object-cover rounded-lg'
+              />
             )}
           </div>
-          <div className='absolute inset-y-0 left-0 flex items-center justify-center pl-3'>
+          <div className='absolute top-56 left-0 flex items-center justify-center pl-3'>
             <Button icon={<LeftOutlined />} onClick={prevImage} className='bg-gray-300 hover:bg-gray-400' />
           </div>
-          <div className='absolute inset-y-0 right-0 flex items-center justify-center pr-3'>
+          <div className='absolute top-56 right-0 flex items-center justify-center pr-3'>
             <Button icon={<RightOutlined />} onClick={nextImage} className='bg-gray-300 hover:bg-gray-400' />
           </div>
+          <div className='flex ml-10 mt-10'>
+            {valuationData?.data?.imageValuations?.map(renderImageOrLink) || <p>No images available</p>}
+          </div>
         </div>
+        <Modal open={isModalVisible} footer={null} onCancel={closeModal} width='40%'>
+          <img
+            src={images[currentImageIndex]?.imageLink}
+            alt='product zoomed'
+            className='w-full h-auto object-contain'
+          />
+        </Modal>
         <div>
           <h2 className='text-xl font-semibold mb-4'>Valuation Details</h2>
           <div className='flex mb-4'>
@@ -170,35 +223,37 @@ const RequestConsignDetail: React.FC<RequestConsignDetailProps> = ({ recordId, o
             <strong className='w-1/3'>Status:</strong>
             <span className='text-red-600 font-semibold'>{assignedStaff ? 'Assigned' : 'Not Assigned'}</span>
           </div>
-          <Form.Item label='Assign Staff' className='mt-4 font-bold'>
-            <Select value={assignedStaff} onChange={handleStaffChange} placeholder='Select staff'>
-              {staffLoading ? (
-                <Select.Option value='' disabled>
-                  Select Staff
-                </Select.Option>
-              ) : staffError ? (
-                <Select.Option value='' disabled>
-                  Failed to load staff
-                </Select.Option>
-              ) : (
-                staffOptions.map((staff) => (
-                  <Select.Option key={staff.id} value={staff.id.toString()}>
-                    {staff.firstName} {staff.lastName}
+          <div className='flex'>
+            <strong className='w-1/3 font-bold'>Assign Staff:</strong>
+            <Form.Item className='w-2/3'>
+              <Select value={assignedStaff} onChange={handleStaffChange} placeholder='Select staff'>
+                {staffLoading ? (
+                  <Select.Option value='' disabled>
+                    Select Staff
                   </Select.Option>
-                ))
-              )}
-            </Select>
-          </Form.Item>
-
-          <div className='flex justify-end'>
-            <Button onClick={handleClose} className='mr-2'>
-              Close
-            </Button>
-            <Button type='primary' onClick={handleUpdate}>
-              Assign Staff
-            </Button>
+                ) : staffError ? (
+                  <Select.Option value='' disabled>
+                    Failed to load staff
+                  </Select.Option>
+                ) : (
+                  staffOptions.map((staff) => (
+                    <Select.Option key={staff.id} value={staff.id.toString()}>
+                      {staff.firstName} {staff.lastName}
+                    </Select.Option>
+                  ))
+                )}
+              </Select>
+            </Form.Item>
           </div>
         </div>
+      </div>
+      <div className='flex justify-end'>
+        <Button onClick={handleClose} className='mr-2'>
+          Close
+        </Button>
+        <Button type='primary' onClick={handleUpdate}>
+          Assign Staff
+        </Button>
       </div>
     </Modal>
   )

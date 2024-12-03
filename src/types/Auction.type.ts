@@ -17,3 +17,14 @@ export interface CreateAuctionPayload {
   Description: string
   FileImage: File | Blob
 }
+export interface AuctionLanding {
+  id: number
+  name: string
+  startTime: string
+  endTime: string
+  actualEndTime: string | null
+  description: string
+  imageLink: string
+  status: string
+  totalLot: number
+}

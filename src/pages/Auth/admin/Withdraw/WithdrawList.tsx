@@ -128,15 +128,9 @@ export default function WithdrawalRequests() {
       align: 'left',
       render: (record: WithDraw) => (
         <div className='flex flex-col'>
-          <span className='font-medium'>
-            {record.viewCreditCardDTO ? record.viewCreditCardDTO.bankAccountHolder : 'Unknow'}
-          </span>
-          <span className='text-sm text-gray-500'>
-            Bank Name: {record.viewCreditCardDTO ? record.viewCreditCardDTO.bankName : 'Unknow'}
-          </span>
-          <span className='text-xs text-gray-400'>
-            Bank Code: {record.viewCreditCardDTO ? record.viewCreditCardDTO.bankCode : 'Unknow'}
-          </span>
+          <span className='font-medium'>{record.viewCreditCardDTO.bankAccountHolder}</span>
+          <span className='text-sm text-gray-500'>Bank Name: {record.viewCreditCardDTO.bankName}</span>
+          <span className='text-xs text-gray-400'>Bank Code: {record.viewCreditCardDTO.bankCode}</span>
         </div>
       )
     },

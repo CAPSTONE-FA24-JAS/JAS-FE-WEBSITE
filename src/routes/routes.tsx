@@ -33,11 +33,14 @@ import JewelryList from '../pages/Auth/staff/Jewelry/JewelryList'
 import Index from '../pages/Auth/staff/Mission/LiveBidding'
 import CreateAuthorization from '../pages/Auth/staff/Valuation/AuthorizationLetter'
 import ValuationTabs from '../pages/Auth/staff/Valuation/ValuationList'
-import LotDetail from '../pages/clientPages/DetailLot'
+import AboutUs from '../pages/clientPages/AboutUs'
+import LotDetail from '../pages/clientPages/LotList/modal/DetailLot'
 import HomePage from '../pages/clientPages/Homepage'
-import Lots from '../pages/clientPages/Lots'
-import PastAuction from '../pages/clientPages/PastAuction'
+import Lots from '../pages/clientPages/LotList/Lots'
+import PastAuction from '../pages/clientPages/PastAuction/modal/PastAuction'
 import { RoleType } from '../slice/authLoginAPISlice'
+import PastAuctionMain from '../pages/clientPages/PastAuction/PastAuctionMain'
+import UpComingMain from '../pages/clientPages/Upcoming/UpComingMain'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -53,9 +56,11 @@ interface RouteProps {
 const publicRoutes: RouteProps[] = [
   { path: '/', component: HomePage, layout: ClientLayout },
   { path: '/login', component: LoginPage, layout: LoginLayout },
-  { path: '/pastauction', component: PastAuction, layout: ClientLayout },
-  { path: '/lotslist', component: Lots, layout: ClientLayout },
-  { path: '/detaillot/:id', component: LotDetail, layout: ClientLayout }
+  { path: '/pastauction', component: PastAuctionMain, layout: ClientLayout },
+  { path: '//upcoming-auctions', component: UpComingMain, layout: ClientLayout },
+  { path: '/lots/:auctionId', component: Lots, layout: ClientLayout },
+  { path: '/detaillot/:id', component: LotDetail, layout: ClientLayout },
+  { path: '/about', component: AboutUs, layout: ClientLayout }
 ]
 const managerRoutes: RouteProps[] = [
   { path: '/manager/dashboard', component: Dashboard, layout: ManagerLayout },

@@ -10,7 +10,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   return (
     <>
       <Header />
-      <div className='py-4 mt-4'>{children}</div>
+      <div className='pt-24'>{children}</div>
       <Footer />
     </>
   )

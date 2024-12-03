@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Modal, Button } from 'antd'
-import { LeftOutlined, RightOutlined } from '@ant-design/icons'
+import { FilePdfOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons'
 
 interface ValuationDetailsModalProps {
   visible: boolean
@@ -11,16 +11,11 @@ interface ValuationDetailsModalProps {
 
 const ValuationDetailsModal: React.FC<ValuationDetailsModalProps> = ({ visible, onCancel, record }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [isModalVisible, setIsModalVisible] = useState(false)
 
-  // const handleUpdate = () => {
-  //   notification.success({
-  //     message: 'Update Successful',
-  //     description: 'Valuation details have been updated successfully.'
-  //   })
-  //   onUpdate() // Call onUpdate to close modal
-  // }
-
-  const images = record?.imageValuations?.map((image: any) => image.imageLink) || []
+  const images = record?.imageValuations || [
+    { imageLink: 'https://via.placeholder.com/150?text=No+Image', defaultImage: null }
+  ]
 
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length)
@@ -30,29 +25,72 @@ const ValuationDetailsModal: React.FC<ValuationDetailsModalProps> = ({ visible, 
     setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length)
   }
 
+  const openModal = () => setIsModalVisible(true)
+  const closeModal = () => setIsModalVisible(false)
+  const renderImageOrLink = (image: any, index: number) => {
+    if (image.defaultImage === 'PDF') {
+      return (
+        <a
+          key={index}
+          href={image.imageLink}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='w-[100px] h-[100px] flex items-center justify-center bg-gray-200 rounded-lg mx-2 cursor-pointer border'
+        >
+          <FilePdfOutlined style={{ fontSize: '24px', color: '#ff4d4f' }} />
+        </a>
+      )
+    } else {
+      return (
+        <img
+          key={index}
+          src={image.imageLink}
+          alt={`thumb-${index}`}
+          className='w-[100px] h-[100px] object-cover rounded-lg mx-2 cursor-pointer border'
+          onClick={() => setCurrentImageIndex(index)}
+        />
+      )
+    }
+  }
   return (
     <Modal
       title='Valuation Details'
       open={visible}
       onCancel={onCancel}
       footer={null}
-      width={900}
+      width={1200}
       style={{ padding: '24px' }}
     >
       <div className='grid grid-cols-2 gap-6'>
         <div className='relative'>
           <div className='flex items-center justify-center mb-4'>
-            {images.length > 0 ? (
-              <img src={images[currentImageIndex]} alt='Valuation Item' className='max-w-full rounded-lg' />
+            {images[currentImageIndex]?.defaultImage === 'PDF' ? (
+              <a
+                href={images[currentImageIndex]?.imageLink}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='w-[450px] h-[500px] flex items-center justify-center bg-gray-200 rounded-lg cursor-pointer border font-bold'
+              >
+                <FilePdfOutlined style={{ fontSize: '48px', color: '#ff4d4f' }} />
+                GIA
+              </a>
             ) : (
-              <p>No images available</p>
+              <img
+                src={images[currentImageIndex]?.imageLink}
+                alt='product'
+                onClick={openModal}
+                className='w-[450px] h-[500px] object-cover rounded-lg'
+              />
             )}
           </div>
-          <div className='absolute inset-y-0 left-0 flex items-center justify-center pl-3'>
+          <div className='absolute top-56 left-0 flex items-center justify-center pl-3'>
             <Button icon={<LeftOutlined />} onClick={prevImage} className='bg-gray-300 hover:bg-gray-400' />
           </div>
-          <div className='absolute inset-y-0 right-0 flex items-center justify-center pr-3'>
+          <div className='absolute top-56 right-0 flex items-center justify-center pr-3'>
             <Button icon={<RightOutlined />} onClick={nextImage} className='bg-gray-300 hover:bg-gray-400' />
+          </div>
+          <div className='flex ml-10 mt-10'>
+            {record?.imageValuations?.map(renderImageOrLink) || <p>No images available</p>}
           </div>
         </div>
 

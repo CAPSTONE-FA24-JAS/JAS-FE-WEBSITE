@@ -1,43 +1,37 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-
-const lots = [
-  {
-    imageUrl: 'https://lavenderstudio.com.vn/wp-content/uploads/2017/10/chup-hinh-trang-suc-2.jpg',
-    idlots: 'L001',
-    name: 'Van Cleef & Arpels 10.33ct D IF Diamond Ring',
-    estimate: '$994,000',
-    status: 'Sold',
-    category: 'Rings'
-  },
-  {
-    imageUrl: 'https://lavenderstudio.com.vn/wp-content/uploads/2017/10/chup-hinh-trang-suc-2.jpg',
-    idlots: 'L002',
-    name: 'Art Deco Cartier Emerald Diamond Bracelet',
-    estimate: '$1,200,000',
-    status: 'Sold',
-    category: 'Bracelets'
-  },
-  {
-    imageUrl: 'https://lavenderstudio.com.vn/wp-content/uploads/2017/10/chup-hinh-trang-suc-2.jpg',
-    idlots: 'L003',
-    name: 'Art Deco Cartier Natural Pearl, Diamond Bracelet',
-    estimate: '$850,000',
-    status: 'Passed',
-    category: 'Bracelets'
-  }
-  // Add more items as needed
-]
+import { useNavigate, useParams } from 'react-router-dom'
+import { useViewListLotByAuctionQuery } from '../../../services/overview.services'
+import { LotLanding } from '../../../types/Lot.type'
 
 export default function Lots() {
   const navigate = useNavigate()
+  const { auctionId } = useParams<{ auctionId: string }>() // Lấy auctionId từ URL
+
+  // Kiểm tra và log auctionId
+  console.log('Received auctionId:', auctionId)
+
+  // Chuyển đổi auctionId thành số và kiểm tra tính hợp lệ
+  const auctionIdNumber = Number(auctionId)
+  console.log('Converted auctionIdNumber:', auctionIdNumber)
+
+  if (isNaN(auctionIdNumber)) {
+    return <p>Invalid auction ID!</p>
+  }
+
+  const { data, isLoading, error } = useViewListLotByAuctionQuery(auctionIdNumber)
+
   const itemsPerPage = 6
   const [currentPage, setCurrentPage] = useState(1)
   const [isExpanded, setIsExpanded] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
 
-  const handlePageChange = (pageNumber: any) => {
+  if (isLoading) return <p>Loading...</p>
+  if (error || !data) return <p>Error loading lots or no data available!</p>
+
+  const lots: LotLanding[] = data.data || [] // Lấy danh sách lots từ API
+
+  const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber)
   }
 
@@ -45,25 +39,25 @@ export default function Lots() {
     setIsExpanded(!isExpanded)
   }
 
-  const handleSearchChange = (e: any) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
     setCurrentPage(1) // Reset to the first page on search
   }
 
-  const handleCategoryChange = (e: any) => {
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCategory(e.target.value)
     setCurrentPage(1) // Reset to the first page on filter change
   }
 
-  const handleLotClick = (lotId: any) => {
-    navigate(`/detaillot/${lotId}`) // Navigate to the detail page for the selected lot
+  const handleLotClick = (lotId: number) => {
+    navigate(`/detaillot/${lotId.toString()}`) // Chuyển đổi lotId thành chuỗi
   }
 
   // Filter lots based on search term and category
   const filteredLots = lots.filter(
-    (lot) =>
-      lot.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (selectedCategory === 'All' || lot.category === selectedCategory)
+    (lot: LotLanding) =>
+      lot.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (selectedCategory === 'All' || lot.lotType === selectedCategory)
   )
 
   const startIndex = (currentPage - 1) * itemsPerPage
@@ -114,6 +108,8 @@ export default function Lots() {
           </button>
         </div>
       </div>
+
+      {/* Filter and search */}
       <div className='flex items-center mb-4'>
         <p className='mr-4 text-lg font-semibold'> {filteredLots.length} LOTS</p>
         <input
@@ -125,23 +121,27 @@ export default function Lots() {
         />
         <select value={selectedCategory} onChange={handleCategoryChange} className='px-4 py-2 border rounded-lg'>
           <option value='All'>All Categories</option>
-          <option value='Rings'>Rings</option>
-          <option value='Bracelets'>Bracelets</option>
-          {/* Add more categories as needed */}
+          {/* Map dynamic categories if available */}
+          {/* {[...new Set(lots.map((lot: LotLanding) => lot.lotType))].map((category) => (
+            // <option key={category} value={category}>
+            //   {category}
+            // </option>
+          ))} */}
         </select>
       </div>
+
+      {/* Lots grid */}
       <div className='grid grid-cols-1 gap-8 md:grid-cols-3'>
-        {paginatedLots.map((item, index) => (
+        {paginatedLots.map((item: LotLanding) => (
           <div
-            key={index}
+            key={item.id}
             className='flex flex-col items-center bg-gray-200 border rounded-lg shadow-lg cursor-pointer h-96'
-            onClick={() => handleLotClick(item.idlots)} // Add click handler for each lot
+            onClick={() => handleLotClick(item.id)}
           >
-            <img src={item.imageUrl} alt={item.name} className='object-cover w-full h-56 mb-4 rounded-md' />
+            <img src={item.imageLinkJewelry} alt={item.title} className='object-cover w-full h-56 mb-4 rounded-md' />
             <div className='flex flex-col items-start w-full px-4'>
-              <h3 className='text-lg font-semibold text-left uppercase'>{item.idlots}</h3>
-              <h3 className='text-lg font-semibold text-left uppercase'>{item.name}</h3>
-              <p className='text-sm italic font-semibold text-left text-gray-600'>Est. {item.estimate}</p>
+              <h3 className='text-lg font-semibold text-left uppercase'>{item.title}</h3>
+              <p className='text-sm italic font-semibold text-left text-gray-600'>Start Price: {item.startPrice}</p>
               <p
                 className={`text-sm font-semibold text-left ${
                   item.status === 'Sold' ? 'text-green-600' : 'text-red-600'
@@ -153,6 +153,8 @@ export default function Lots() {
           </div>
         ))}
       </div>
+
+      {/* Pagination */}
       <div className='flex justify-center mt-6'>
         <div className='flex space-x-2'>
           {Array.from({ length: totalPages }, (_, i) => (
