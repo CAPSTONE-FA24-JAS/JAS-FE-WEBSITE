@@ -67,8 +67,10 @@ export default function ManageInvoiceModal({
   const lotCode = invoiceDetails.myBidDTO?.lotDTO?.id ?? 'N/A'
   const customerLotCode = invoiceDetails.myBidDTO?.id ?? 'N/A'
   const nameLot = invoiceDetails.myBidDTO?.lotDTO?.title ?? 'N/A'
+  const lotType = invoiceDetails.myBidDTO?.lotDTO?.lotType ?? 'N/A'
   const bidPrice = invoiceDetails.myBidDTO?.yourMaxBidPrice ?? 'N/A'
   const platformFee = invoiceDetails.free ?? 'N/A'
+  const deposit = invoiceDetails.myBidDTO?.lotDTO?.deposit ?? 'N/A'
   const shippingFee = invoiceDetails.feeShip ?? 'N/A'
   const linkBillTransaction = invoiceDetails.linkBillTransaction ?? 'N/A'
   const historyTimes = invoiceDetails.myBidDTO?.historyCustomerLots || []
@@ -187,7 +189,7 @@ export default function ManageInvoiceModal({
           <p>
             <strong>Type of production:</strong>
           </p>
-          <p className='font-bold text-gray-600'></p>
+          <p className='font-bold text-gray-600'>{lotType}</p>
         </div>
         <div className='flex justify-between mb-2'>
           <p>
@@ -203,6 +205,12 @@ export default function ManageInvoiceModal({
         </div>
         <div className='flex justify-between mb-2'>
           <p>
+            <strong>Deposit:</strong>
+          </p>
+          <p className='font-bold text-gray-600'>{deposit.toLocaleString()}₫</p>
+        </div>
+        <div className='flex justify-between mb-2'>
+          <p>
             <strong>Shipping Fee:</strong>
           </p>
           <p className='font-bold text-gray-600'>{shippingFee.toLocaleString()}₫</p>
@@ -213,7 +221,7 @@ export default function ManageInvoiceModal({
           <p>
             <strong>Total Amount:</strong>
           </p>
-          <p className='font-extrabold '>{totalPrice.toLocaleString()}₫</p>
+          <p className='font-extrabold text-red-800 '>{totalPrice.toLocaleString()}₫</p>
         </div>
         <div className='mb-2 space-y-2'>
           {status === 'CreateInvoice' && (
@@ -222,6 +230,7 @@ export default function ManageInvoiceModal({
               <p>{stringToDate(createinvoiceTimes[0]).format('YYYY-MM-DD HH:mm:ss')}</p>
             </div>
           )}
+
           {status === 'PendingPayment' && (
             <>
               {createinvoiceTimes.length > 0 && (
@@ -241,6 +250,12 @@ export default function ManageInvoiceModal({
 
           {status === 'Paid' && (
             <>
+              {createinvoiceTimes.length > 0 && (
+                <div className='flex justify-between'>
+                  <strong>Create Invoice Time:</strong>
+                  <p>{stringToDate(createinvoiceTimes[0]).format('YYYY-MM-DD HH:mm:ss')}</p>
+                </div>
+              )}
               {pendingpaymentTimes.length > 0 && (
                 <div className='flex justify-between'>
                   <strong>Pending Payment Time:</strong>
@@ -258,6 +273,12 @@ export default function ManageInvoiceModal({
 
           {status === 'Delivering' && (
             <>
+              {createinvoiceTimes.length > 0 && (
+                <div className='flex justify-between'>
+                  <strong>Create Invoice Time:</strong>
+                  <p>{stringToDate(createinvoiceTimes[0]).format('YYYY-MM-DD HH:mm:ss')}</p>
+                </div>
+              )}
               {pendingpaymentTimes.length > 0 && (
                 <div className='flex justify-between'>
                   <strong>Pending Payment Time:</strong>
@@ -283,6 +304,12 @@ export default function ManageInvoiceModal({
 
           {status === 'Delivered' && (
             <>
+              {createinvoiceTimes.length > 0 && (
+                <div className='flex justify-between'>
+                  <strong>Create Invoice Time:</strong>
+                  <p>{stringToDate(createinvoiceTimes[0]).format('YYYY-MM-DD HH:mm:ss')}</p>
+                </div>
+              )}
               {pendingpaymentTimes.length > 0 && (
                 <div className='flex justify-between'>
                   <strong>Pending Payment Time:</strong>
@@ -313,6 +340,12 @@ export default function ManageInvoiceModal({
 
           {status === 'Finished' && (
             <>
+              {createinvoiceTimes.length > 0 && (
+                <div className='flex justify-between'>
+                  <strong>Create Invoice Time:</strong>
+                  <p>{stringToDate(createinvoiceTimes[0]).format('YYYY-MM-DD HH:mm:ss')}</p>
+                </div>
+              )}
               {pendingpaymentTimes.length > 0 && (
                 <div className='flex justify-between'>
                   <strong>Pending Payment Time:</strong>

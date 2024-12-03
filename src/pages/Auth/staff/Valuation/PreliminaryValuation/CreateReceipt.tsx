@@ -35,6 +35,7 @@ interface CreateReceiptProps {
 
 const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCreate, record, refetch }) => {
   const [actualStatusOfJewelry, setActualStatusOfJewelry] = useState(record?.actualStatusOfJewelry || '')
+  const [note, setnote] = useState('')
   const [deliveryDate, setDeliveryDate] = useState<string>(dateToString(dayjs()))
   const [idIssuanceDate, setIdIssuanceDate] = useState<string>(dateToString(dayjs(record?.seller?.idIssuanceDate)))
   const [idExpirationDate, setIdExpirationDate] = useState<string>(
@@ -48,6 +49,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
     const requestData = {
       id: record?.id,
       actualStatusOfJewelry,
+      note,
       status: 5, // Set status to 5 explicitly
       deliveryDate
     }
@@ -271,6 +273,16 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
               value={actualStatusOfJewelry}
               onChange={(e) => setActualStatusOfJewelry(e.target.value)}
             />
+          </Col>
+        </Row>
+        <Row gutter={16}>
+          <Col span={3}>
+            <Text strong className='block mb-2'>
+              Ghi chú:
+            </Text>
+          </Col>
+          <Col span={21}>
+            <Input className='w-full mb-2 font-bold' value={note} onChange={(e) => setnote(e.target.value)} />
           </Col>
         </Row>
       </div>

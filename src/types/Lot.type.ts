@@ -21,7 +21,15 @@ export interface ListLot {
   auctionId: number
   title: string
 }
-
+export interface LotLanding {
+  id: number
+  title: string
+  startPrice: number | null
+  status: string
+  lotType: string
+  imageLinkJewelry: string
+  // Thêm các thuộc tính khác nếu cần
+}
 export interface CreateLot {
   title: string
   deposit: number
