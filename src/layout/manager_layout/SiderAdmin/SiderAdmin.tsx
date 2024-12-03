@@ -42,9 +42,8 @@ export default function SiderAdmin() {
 
   const getConditionalItems = (): MenuItem[] => {
     return [
-      getItem('OverView', 'overview', <BarChartOutlined />),
+      getItem('OverView Account', 'overview', <BarChartOutlined />),
       getItem('Manage Account', 'manageAccount', <UserOutlined />, [
-        getItem('Account List', 'accountList', <UserOutlined />),
         getItem('Create Account', 'createAccount', <UserOutlined />)
       ]),
       getItem('Manage Category', 'category', <AppstoreAddOutlined />),
