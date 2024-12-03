@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import Slider from 'antd/es/slider'
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useViewDetailLotByIdQuery } from '../../../../services/overview.services'
-import Slider from 'antd/es/slider'
 
 interface ImageJewelry {
   imageLink: string
@@ -41,7 +41,7 @@ export default function LotDetail() {
     nextArrow: <div>Next</div>,
     prevArrow: <div>Prev</div>,
     focusOnSelect: true,
-    beforeChange: (current: number, next: number) => setMainImageIndex(next)
+    beforeChange: (next: number) => setMainImageIndex(next)
   }
 
   return (
