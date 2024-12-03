@@ -24,10 +24,17 @@ export const lotApi = createApi({
     getLotsByAuctionId: build.query<Respone<ListLot[]>, number>({
       query: (auctionId) => `Lot/ViewListLotByAuction?auctionId=${auctionId}`,
       providesTags: (result) => {
-        if (result?.data !== null) {
-          return result?.data
-            ? [...result.data.map(({ id }) => ({ type: 'Lot' as const, id })), { type: 'Lot', id: 'LIST' }]
-            : [{ type: 'Lot', id: 'LIST' }]
+        if (result?.data?.length) {
+          return [...result.data.map(({ id }) => ({ type: 'Lot' as const, id })), { type: 'Lot', id: 'LIST' }]
+        }
+        return [{ type: 'Lot', id: 'LIST' }]
+      }
+    }),
+    getLotByAuctionIdRaw: build.query<Respone<ListLot[]>, number>({
+      query: (auctionId) => `Lot/ViewListLotInAuction?auctionId=${auctionId}`,
+      providesTags: (result) => {
+        if (result?.data?.length) {
+          return [...result.data.map(({ id }) => ({ type: 'Lot' as const, id })), { type: 'Lot', id: 'LIST' }]
         }
         return [{ type: 'Lot', id: 'LIST' }]
       }
@@ -160,5 +167,6 @@ export const {
   useGetPlayerInLotQuery,
   useGetWinnerForLotQuery,
   useOpenAndPauseLotMutation,
-  useCancelLotMutation
+  useCancelLotMutation,
+  useGetLotByAuctionIdRawQuery
 } = lotApi

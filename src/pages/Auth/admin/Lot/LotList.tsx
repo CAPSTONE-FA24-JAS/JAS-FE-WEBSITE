@@ -1,23 +1,23 @@
-import { useState } from 'react'
-import { Table, Button, Input, Space, Tag, notification, Tooltip, Radio } from 'antd'
-import { EditOutlined, DeleteOutlined, UnorderedListOutlined, AppstoreOutlined } from '@ant-design/icons'
+import { AppstoreOutlined, DeleteOutlined, EditOutlined, UnorderedListOutlined } from '@ant-design/icons'
 import type { TableProps } from 'antd'
-import AddLotModal from './modal/AddLotModal'
-import { Link, useParams } from 'react-router-dom'
-import {
-  useCreateLotFixedPriceMutation,
-  useGetLotsByAuctionIdQuery,
-  useCreateLotSecretAuctionMutation,
-  useCreateLotPublicAuctionMutation,
-  useCreateLotAuctionPriceGraduallyReducedMutation
-} from '../../../../services/lot.services'
-import { CreateLot, ListLot } from '../../../../types/Lot.type'
-import { useGetAuctionByIdQuery } from '../../../../services/auction.services'
-import { parsePriceVND } from '../../../../utils/convertTypeDayjs'
+import { Button, Input, notification, Radio, Space, Table, Tag, Tooltip } from 'antd'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { RootState } from '../../../../store'
+import { Link, useParams } from 'react-router-dom'
+import { useGetAuctionByIdQuery } from '../../../../services/auction.services'
+import {
+  useCreateLotAuctionPriceGraduallyReducedMutation,
+  useCreateLotFixedPriceMutation,
+  useCreateLotPublicAuctionMutation,
+  useCreateLotSecretAuctionMutation,
+  useGetLotByAuctionIdRawQuery
+} from '../../../../services/lot.services'
 import { RoleType } from '../../../../slice/authLoginAPISlice'
+import { RootState } from '../../../../store'
+import { CreateLot, ListLot } from '../../../../types/Lot.type'
+import { parsePriceVND } from '../../../../utils/convertTypeDayjs'
 import LotGridView from './LotGridView'
+import AddLotModal from './modal/AddLotModal'
 
 const getLotTypeConfig = (lotType: string): { label: string; color: string } => {
   const config: Record<string, { label: string; color: string }> = {
@@ -37,7 +37,7 @@ const LotList = () => {
   const { id } = useParams<{ id: string }>()
   const auctionId = parseInt(id || '0', 10)
 
-  const { data: lotsData, isLoading } = useGetLotsByAuctionIdQuery(auctionId)
+  const { data: lotsData, isLoading } = useGetLotByAuctionIdRawQuery(auctionId)
   const { data: auctionData } = useGetAuctionByIdQuery(auctionId)
   const [createFixed, { isLoading: loadingFixedPrice }] = useCreateLotFixedPriceMutation()
   const [createSerect, { isLoading: loadingSecret }] = useCreateLotSecretAuctionMutation()
