@@ -93,7 +93,13 @@ const ValuationDetailsModal: React.FC<ValuationDetailsModalProps> = ({ visible, 
             {record?.imageValuations?.map(renderImageOrLink) || <p>No images available</p>}
           </div>
         </div>
-
+        <Modal open={isModalVisible} footer={null} onCancel={closeModal} width='40%'>
+          <img
+            src={images[currentImageIndex]?.imageLink}
+            alt='product zoomed'
+            className='w-full h-auto object-contain'
+          />
+        </Modal>
         <div>
           <p className='mb-2 text-xl font-bold'>{record?.id}</p>
           <p className='mb-6 text-xl font-bold'>{record?.name}</p>

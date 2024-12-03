@@ -17,7 +17,6 @@ const AssignDelivererModal: React.FC<AssignDelivererModalProps> = ({
   visible,
   onCancel,
   invoiceId,
-  status,
   setStatus,
   refetch
 }) => {

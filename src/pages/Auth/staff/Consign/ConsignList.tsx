@@ -13,6 +13,7 @@ const { Search } = Input
 // Định nghĩa interface cho ImageValuation
 interface ImageValuation {
   imageLink: string
+  defaultImage: string | null
 }
 
 // Định nghĩa interface cho Seller

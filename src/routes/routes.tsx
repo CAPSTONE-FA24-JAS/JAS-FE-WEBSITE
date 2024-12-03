@@ -34,13 +34,12 @@ import Index from '../pages/Auth/staff/Mission/LiveBidding'
 import CreateAuthorization from '../pages/Auth/staff/Valuation/AuthorizationLetter'
 import ValuationTabs from '../pages/Auth/staff/Valuation/ValuationList'
 import AboutUs from '../pages/clientPages/AboutUs'
-import LotDetail from '../pages/clientPages/LotList/modal/DetailLot'
 import HomePage from '../pages/clientPages/Homepage'
 import Lots from '../pages/clientPages/LotList/Lots'
-import PastAuction from '../pages/clientPages/PastAuction/modal/PastAuction'
-import { RoleType } from '../slice/authLoginAPISlice'
+import LotDetail from '../pages/clientPages/LotList/modal/DetailLot'
 import PastAuctionMain from '../pages/clientPages/PastAuction/PastAuctionMain'
 import UpComingMain from '../pages/clientPages/Upcoming/UpComingMain'
+import { RoleType } from '../slice/authLoginAPISlice'
 
 interface LayoutProps {
   children: React.ReactNode
