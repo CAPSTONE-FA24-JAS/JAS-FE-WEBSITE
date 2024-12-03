@@ -1,9 +1,9 @@
-import { Avatar, Button, notification, Space, Table, TableProps, Tag } from 'antd'
+import { DeleteOutlined, FundProjectionScreenOutlined, UserOutlined } from '@ant-design/icons'
+import { Avatar, Button, notification, Space, Table, TableProps } from 'antd'
 import { useState } from 'react'
-import { DeleteOutlined, EditOutlined, FundProjectionScreenOutlined, UserOutlined } from '@ant-design/icons'
-import UserDetail from './ManageAccount/modal/UserDetail'
-import { AdminGetListUserChildrenResponse } from '../../../types/Account.type'
 import { useDeleteAccountMutation, useGetListUsersQuery } from '../../../services/account.services'
+import { AccountData } from '../../../types/Account.type'
+import UserDetail from './ManageAccount/modal/UserDetail'
 
 const Overview = () => {
   const [modalVisible, setModalVisible] = useState(false)
@@ -43,20 +43,31 @@ const Overview = () => {
     }
   }
 
-  const columns: TableProps<AdminGetListUserChildrenResponse>['columns'] = [
+  const columns: TableProps<AccountData>['columns'] = [
     {
       title: 'Avatar',
-      dataIndex: 'profilePicture',
       key: 'avatar',
-      render: (text: string) => <Avatar src={text} />
+      render: (record: AccountData) => (
+        <Avatar
+          src={
+            `${
+              record.staffDTO?.profilePicture ||
+              record.customerDTO?.profilePicture ||
+              'https://www.gravatar.com/avatar/3b3be63a4c2a439b013787725dfce802?d=identicon'
+            }` || 'https://i.pravatar.cc/300'
+          }
+          size={40}
+        />
+      )
     },
     {
       title: 'Name',
-      dataIndex: 'name',
       key: 'name',
       render: (_, record) => (
         <a onClick={() => handleUserClick(record)}>
-          {record.firstName} {record.lastName}
+          {record.staffDTO
+            ? `${record.staffDTO?.firstName} ${record.staffDTO?.lastName}`
+            : ` ${record.customerDTO?.firstName} ${record.customerDTO?.lastName}`}
         </a>
       )
     },
@@ -82,17 +93,10 @@ const Overview = () => {
       key: 'email'
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status: boolean) => <Tag color={status ? 'green' : 'red'}>{status ? 'Active' : 'Inactive'}</Tag>
-    },
-    {
       title: 'Actions',
       key: 'actions',
-      render: (_, record: any) => (
+      render: (_, record: AccountData) => (
         <Space>
-          <Button onClick={handleUserClick} type='primary' icon={<EditOutlined />}></Button>
           <Button type='primary' danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)}></Button>
         </Space>
       )
@@ -144,11 +148,11 @@ const Overview = () => {
           />
         </div>
         <Table
-          columns={columns}
           dataSource={filteredData || []}
           pagination={{ pageSize: 5 }}
           loading={isLoading}
           style={{ minHeight: '65vh' }}
+          columns={columns || []}
         />
         <UserDetail visible={modalVisible} onClose={handleCloseModal} user={selectedUser} />
       </div>

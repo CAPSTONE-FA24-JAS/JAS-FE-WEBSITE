@@ -141,3 +141,51 @@ export interface AccessTokenResponse {
   accessToken: string
   user: UserDTO
 }
+
+interface WalletDTO {
+  id: number
+  balance: number
+  availableBalance: number
+  frozenBalance: number | null
+  customerDTO: null
+}
+
+interface CustomerDTO {
+  id: number
+  firstName: string
+  lastName: string
+  profilePicture: string
+  gender: string | null
+  dateOfBirth: string | null
+  address: string | null
+  citizenIdentificationCard: string | null
+  idIssuanceDate: string | null
+  idExpirationDate: string | null
+  priceLimit: number | null
+  expireDate: string | null
+  walletId: number | null
+  walletDTO: WalletDTO | null
+  accountDTO: null
+}
+
+interface StaffDTO {
+  id: number
+  firstName: string
+  lastName: string
+  profilePicture: string
+  gender: string
+  dateOfBirth: string
+  accountDTO: null
+}
+
+export interface AccountData {
+  id: number
+  email: string
+  phoneNumber: string
+  gender: string | null
+  passwordHash: string
+  roleId: number
+  roleName: 'Customer' | 'Manager' | 'Staff' | 'Appraiser' | 'Admin' | 'Shipper'
+  customerDTO: CustomerDTO | null
+  staffDTO: StaffDTO | null
+}

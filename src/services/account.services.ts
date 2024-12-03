@@ -1,7 +1,8 @@
 // services/accountApi.ts
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { AdminGetFilterByRole, AdminGetListUser, Data } from '../types/Account.type'
+import { AccountData, AdminGetFilterByRole, Data } from '../types/Account.type'
 import baseUrl from '../utils/http'
+import { Respone } from '../types/Respone.type'
 
 export const accountApi = createApi({
   reducerPath: 'accountApi',
@@ -19,7 +20,7 @@ export const accountApi = createApi({
   }),
   refetchOnMountOrArgChange: true,
   endpoints: (build) => ({
-    getListUsers: build.query<AdminGetListUser, void>({
+    getListUsers: build.query<Respone<AccountData>, void>({
       query: () => 'Account/ViewListAccount'
     }),
     deleteAccount: build.mutation<void, number>({
