@@ -1,5 +1,6 @@
 import { Menu } from 'antd'
-import { HomeOutlined, TrophyOutlined, FileTextOutlined, InfoCircleOutlined, LoginOutlined } from '@ant-design/icons'
+import { HomeOutlined, FileTextOutlined, InfoCircleOutlined, LoginOutlined } from '@ant-design/icons'
+import { FaGavel } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 
 export default function CustomHeader() {
@@ -11,7 +12,7 @@ export default function CustomHeader() {
     },
     {
       key: 'auction',
-      icon: <TrophyOutlined />,
+      icon: <FaGavel />,
       label: 'Auction',
       children: [
         {
@@ -42,16 +43,14 @@ export default function CustomHeader() {
   ]
 
   return (
-    <header className='p-6 bg-white shadow-md'>
+    <header className='fixed top-0 left-0 right-0 z-50 p-6 bg-white shadow-md'>
       <div className='flex items-center h-12 mx-28'>
-        {/* Logo and text in one flex container */}
         <div className='flex items-center'>
-          {/* Make image clickable and redirect to Home */}
           <Link to='/'>
             <img
               src='https://firebasestorage.googleapis.com/v0/b/voguary.appspot.com/o/Logo_Website%2Fsnapedit_1731943467578.png?alt=media&token=aab5b0d7-a6d1-4309-a9bc-c1fe6ecd2f01'
               alt='Logo'
-              className='w-32 h-32 object-contain cursor-pointer' // Add cursor-pointer to indicate it's clickable
+              className='w-32 h-32 object-contain cursor-pointer'
             />
           </Link>
         </div>
