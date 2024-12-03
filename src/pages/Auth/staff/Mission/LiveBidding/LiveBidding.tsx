@@ -224,6 +224,18 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
               Price Reduction: {calculatePriceReduction(startPrice, currentPrice || startPrice)}%
             </span>
           </div>
+          {sortedSecretBids.map((bid) => (
+            <div
+              key={`${bid.customerId}-${bid.bidTime}`}
+              className='flex justify-between p-2 my-4 mb-2 text-sm rounded bg-gray-50'
+            >
+              <span className='text-black'>{parseDate(bid.bidTime, 'dd/mm/yyyy hh:mm:ss')}</span>
+              <span className='text-black'>
+                {bid.customerId}: {bid.customerName}
+              </span>
+              <span className='text-black'>{parsePriceVND(bid.bidPrice)}</span>
+            </div>
+          ))}
         </div>
         <AuctionEndStatus />
       </>
