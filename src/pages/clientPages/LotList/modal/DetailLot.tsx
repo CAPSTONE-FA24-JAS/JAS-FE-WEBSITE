@@ -1,7 +1,8 @@
 import Slider from 'antd/es/slider'
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useViewDetailLotByIdQuery } from '../../../../services/overview.services'
+import { FaArrowLeft } from 'react-icons/fa'
 
 interface ImageJewelry {
   imageLink: string
@@ -22,7 +23,8 @@ interface KeyCharacteristicDetail {
 }
 
 export default function LotDetail() {
-  const { id } = useParams<{ id: string }>() // Lấy id từ URL
+  const navigate = useNavigate()
+  const { id } = useParams<{ id: string }>()
   const { data, isLoading, error } = useViewDetailLotByIdQuery(Number(id))
 
   const [mainImageIndex, setMainImageIndex] = useState(0)
@@ -30,22 +32,15 @@ export default function LotDetail() {
   if (isLoading) return <p>Loading...</p>
   if (error || !data) return <p>Error loading lot details!</p>
 
-  const lotDetail = data.data // Giả sử API trả về dữ liệu trong `data.data`
-
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    nextArrow: <div>Next</div>,
-    prevArrow: <div>Prev</div>,
-    focusOnSelect: true,
-    beforeChange: (next: number) => setMainImageIndex(next)
-  }
+  const lotDetail = data.data
 
   return (
     <div className='mx-56 my-12'>
+      {/* Back Button */}
+      <button onClick={() => navigate(-1)} className='mb-4  hover:text-blue-700'>
+        <FaArrowLeft className='inline-block mr-2' style={{ fontSize: '1.5em' }} />
+      </button>
+
       <div className='flex gap-8'>
         {/* Left Column: Images */}
         <div className='flex-1'>
@@ -53,44 +48,45 @@ export default function LotDetail() {
           <img
             src={lotDetail.jewelry.imageJewelries[mainImageIndex].imageLink}
             alt={`Lot ${lotDetail.id}`}
-            className='object-cover w-full h-64 mb-4 rounded-md'
+            className='object-cover w-full h-96 mb-4 rounded-md'
           />
 
-          {/* Thumbnail Slider */}
-          <Slider {...settings}>
+          {/* Thumbnail Images in a Row */}
+          <div className='flex gap-2'>
             {lotDetail.jewelry.imageJewelries.map((image: ImageJewelry, index: number) => (
-              <div key={index} onClick={() => setMainImageIndex(index)}>
-                <img
-                  src={image.thumbnailImage}
-                  alt={`Thumbnail ${index}`}
-                  className='object-cover w-full h-24 mb-2 rounded-md cursor-pointer'
-                />
-              </div>
+              <img
+                key={index}
+                src={image.thumbnailImage}
+                alt={`Thumbnail ${index}`}
+                className={`object-cover w-24 h-24 mb-2 rounded-md cursor-pointer ${
+                  mainImageIndex === index ? 'border-2 border-blue-500' : ''
+                }`}
+                onClick={() => setMainImageIndex(index)}
+              />
             ))}
-          </Slider>
+          </div>
         </div>
 
         {/* Right Column: Details */}
         <div className='flex-1'>
           <h2 className='mb-4 text-2xl font-semibold'>{lotDetail.jewelry.name}</h2>
-          <p className='mb-2 text-lg font-semibold'>
+          <p className='mb-2  text-gray-400 font-base'>
             Estimate: {lotDetail.jewelry.estimatePriceMin} - {lotDetail.jewelry.estimatePriceMax} VND
           </p>
-          <p className='mb-4 text-lg font-semibold'>Status: {lotDetail.status}</p>
-          <p className='mb-4 text-base'>
-            {lotDetail.auction.name} | {new Date(lotDetail.auction.startTime).toLocaleDateString()}
-          </p>
+          <p className='mb-4  font-semibold'>Status: {lotDetail.status}</p>
+          <h3 className='mb-2 font-bold'>LIVE AUCTION</h3>
+          <div className='flex items-center mb-4'>
+            <a href='URL_CỦA_BẠN' className='text-base' style={{ color: '#0099FF' }}>
+              {lotDetail.auction.name} | {new Date(lotDetail.auction.startTime).toLocaleDateString()}
+            </a>
+          </div>
+          <span className=' font-semibold'>Artist:</span>
+          <p className='mb-4 text-base'>{lotDetail.jewelry.artist.name}</p>
+          <span className='font-semibold'>Category:</span>
+          <p className='mb-4 text-base'>{lotDetail.jewelry.category.name}</p>
 
-          <h3 className='mb-2 text-xl font-semibold'>Details</h3>
           <p className='mb-4 text-base'>
-            <span className='font-semibold'>Artist:</span> {lotDetail.jewelry.artist.name}
-          </p>
-          <p className='mb-4 text-base'>
-            <span className='font-semibold'>Category:</span> {lotDetail.jewelry.category.name}
-          </p>
-          <p className='mb-4 text-base'>
-            <span className='font-semibold'>Description:</span>{' '}
-            {lotDetail.jewelry.description || 'No description available.'}
+            <span className='font-semibold'>Description</span>{' '}
           </p>
           <div className='mb-4'>
             <h4 className='mb-2 text-lg font-semibold'>Summary of Key Characteristics:</h4>
@@ -103,34 +99,28 @@ export default function LotDetail() {
             </ul>
           </div>
 
+          <span className='font-semibold'>Global Shipping:</span>
           <p className='mb-4 text-base'>
-            <span className='font-semibold'>Global Shipping:</span>
             {lotDetail.globalShipping || 'Information about global shipping is not available.'}
           </p>
+          <span className='font-semibold'>Post-Auction Support:</span>
           <p className='mb-4 text-base'>
-            <span className='font-semibold'>Post-Auction Support:</span>
             {lotDetail.postAuctionSupport || 'Details about post-auction support are not provided.'}
           </p>
+          <span className='font-semibold'>Property Sold As-Is:</span>
           <p className='mb-4 text-base'>
-            <span className='font-semibold'>Property Sold As-Is:</span>
             {lotDetail.propertySoldAsIs || 'Information about property sold as-is is not available.'}
           </p>
+          <span className='font-semibold'>Bidding Guidelines:</span>
+          <p className='mb-4 text-base'>{lotDetail.biddingGuidelines || 'Bidding guidelines are not specified.'}</p>
+          <span className='font-semibold'>Buyer's Premium and Sales Tax:</span>
           <p className='mb-4 text-base'>
-            <span className='font-semibold'>Bidding Guidelines:</span>
-            {lotDetail.biddingGuidelines || 'Bidding guidelines are not specified.'}
-          </p>
-          <p className='mb-4 text-base'>
-            <span className='font-semibold'>Buyer's Premium and Sales Tax:</span>
             {lotDetail.buyersPremium || "Details about buyer's premium and sales tax are not available."}
           </p>
-          <p className='mb-4 text-base'>
-            <span className='font-semibold'>Conditions of Sale:</span>
-            {lotDetail.conditionsOfSale || 'Conditions of sale are not specified.'}
-          </p>
-          <p className='mb-4 text-base'>
-            <span className='font-semibold'>Contact Us:</span>
-            {lotDetail.contact || 'Contact information is not available.'}
-          </p>
+          <span className='font-semibold'>Conditions of Sale:</span>
+          <p className='mb-4 text-base'>{lotDetail.conditionsOfSale || 'Conditions of sale are not specified.'}</p>
+          <span className='font-semibold'>Contact Us:</span>
+          <p className='mb-4 text-base'>{lotDetail.contact || 'Contact information is not available.'}</p>
         </div>
       </div>
     </div>

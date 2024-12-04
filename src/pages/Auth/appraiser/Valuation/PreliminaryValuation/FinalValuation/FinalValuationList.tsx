@@ -26,9 +26,10 @@ const FinalValuationList = () => {
       key: 'id'
     },
     {
-      title: 'Valuation Name',
-      dataIndex: 'name',
-      key: 'name'
+      title: 'Jewelry Name',
+      dataIndex: 'jewelry',
+      key: 'jewelry',
+      render: (jewelry: any) => (jewelry ? jewelry.name : '')
     },
     {
       title: 'Customer Name',

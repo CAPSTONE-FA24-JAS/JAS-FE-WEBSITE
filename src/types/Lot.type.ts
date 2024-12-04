@@ -21,15 +21,6 @@ export interface ListLot {
   auctionId: number
   title: string
 }
-export interface LotLanding {
-  id: number
-  title: string
-  startPrice: number | null
-  status: string
-  lotType: string
-  imageLinkJewelry: string
-  // Thêm các thuộc tính khác nếu cần
-}
 export interface CreateLot {
   title: string
   deposit: number
@@ -47,7 +38,6 @@ export interface CreateLot {
   round: number
   isHaveFinalPrice: boolean
 }
-
 export interface LotDetail {
   buyNowPrice?: number //Fixed_Price
   id: number
@@ -73,7 +63,74 @@ export interface LotDetail {
   bidIncrement?: number //Auction_Price_GraduallyReduced
   currentPrice?: any //Public_Auction
 }
+export interface LotLanding {
+  id: number
+  name: string
+  startTime: string
+  endTime: string
+  actualEndTime: string
+  description: string
+  imageLink: string
+  status: string
+  totalLot: number
+  lotDTOs: LotDto[]
+}
 
+export interface LotDto {
+  id: number
+  status: string
+  deposit: number
+  floorFeePercent: number
+  currentPriceWinner: any
+  startTime: string
+  endTime: string
+  actualEndTime: string
+  isExtend?: boolean
+  haveFinancialProof: boolean
+  lotType: string
+  round?: number
+  sellerId: any
+  staffId: number
+  jewelryId: number
+  auctionId: number
+  seller: any
+  staff: Staff
+  auction: Auction
+  jewelry: Jewelry
+}
+
+export interface Jewelry {
+  id: number
+  name: string
+  description: any
+  estimatePriceMin: number
+  estimatePriceMax: number
+  startingPrice: any
+  specificPrice: number
+  videoLink: any
+  forGender: any
+  title: string
+  bidForm: any
+  time_Bidding: any
+  artistId: number
+  categoryId: number
+  valuationId: number
+  artist: Artist
+  category: Category
+  imageJewelries: ImageJewelry[]
+  keyCharacteristicDetails: KeyCharacteristicDetail[]
+  mainDiamonds: MainDiamond[]
+  secondaryDiamonds: SecondaryDiamond[]
+  mainShaphies: MainShaphy[]
+  secondaryShaphies: SecondaryShaphy[]
+  valuation: Valuation
+}
+export interface ImageJewelry {
+  imageLink: string
+  title: string
+  thumbnailImage: string
+  jewelryId: number
+}
 export interface Seller {
   id: number
   firstName: string
@@ -117,33 +174,6 @@ export interface Auction {
   totalLot: number
 }
 
-export interface Jewelry {
-  id: number
-  name: string
-  description: any
-  estimatePriceMin: number
-  estimatePriceMax: number
-  startingPrice: any
-  specificPrice: number
-  videoLink: any
-  forGender: any
-  title: string
-  bidForm: any
-  time_Bidding: any
-  artistId: number
-  categoryId: number
-  valuationId: number
-  artist: Artist
-  category: Category
-  imageJewelries: ImageJewelry[]
-  keyCharacteristicDetails: KeyCharacteristicDetail[]
-  mainDiamonds: MainDiamond[]
-  secondaryDiamonds: SecondaryDiamond[]
-  mainShaphies: MainShaphy[]
-  secondaryShaphies: SecondaryShaphy[]
-  valuation: Valuation
-}
-
 export interface Artist {
   id: number
   name: string
@@ -152,13 +182,6 @@ export interface Artist {
 export interface Category {
   id: number
   name: string
-}
-
-export interface ImageJewelry {
-  imageLink: string
-  title: string
-  thumbnailImage: string
-  jewelryId: number
 }
 
 export interface KeyCharacteristicDetail {

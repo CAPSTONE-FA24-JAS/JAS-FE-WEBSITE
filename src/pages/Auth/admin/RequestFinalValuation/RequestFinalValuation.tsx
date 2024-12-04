@@ -59,8 +59,8 @@ const RequestFinalValuation = () => {
     },
     {
       title: 'Valuation Name',
-      dataIndex: 'name',
-      key: 'name'
+      dataIndex: 'nameJewelry',
+      key: 'nameJewelry'
     },
     {
       title: 'Customer Name',
@@ -143,6 +143,7 @@ const RequestFinalValuation = () => {
               )}
               columns={finalColumns}
               rowKey='id'
+              bordered
               pagination={{ pageSize: 6 }}
             />
           )}

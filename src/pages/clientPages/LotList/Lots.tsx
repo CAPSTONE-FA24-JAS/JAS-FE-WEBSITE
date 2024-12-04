@@ -1,18 +1,13 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useViewListLotByAuctionQuery } from '../../../services/overview.services'
-import { LotLanding } from '../../../types/Lot.type'
+import { LotDto, LotLanding } from '../../../types/Lot.type'
 
 export default function Lots() {
   const navigate = useNavigate()
-  const { auctionId } = useParams<{ auctionId: string }>() // Lấy auctionId từ URL
+  const { auctionId } = useParams<{ auctionId: string }>()
 
-  // Kiểm tra và log auctionId
-  console.log('Received auctionId:', auctionId)
-
-  // Chuyển đổi auctionId thành số và kiểm tra tính hợp lệ
   const auctionIdNumber = Number(auctionId)
-  console.log('Converted auctionIdNumber:', auctionIdNumber)
 
   if (isNaN(auctionIdNumber)) {
     return <p>Invalid auction ID!</p>
@@ -29,7 +24,28 @@ export default function Lots() {
   if (isLoading) return <p>Loading...</p>
   if (error || !data) return <p>Error loading lots or no data available!</p>
 
-  const lots: LotLanding[] = data.data || [] // Lấy danh sách lots từ API
+  const lotsData = data.data
+
+  const lots: LotLanding[] = Array.isArray(lotsData) ? lotsData : [lotsData]
+
+  if (lots.length === 0) {
+  } else {
+    console.log('Dữ liệu lots:', lots)
+  }
+
+  const allLotDTOs = lots.reduce((acc, lot: LotLanding) => {
+    return acc.concat(lot.lotDTOs || [])
+  }, [] as LotDto[])
+
+  if (allLotDTOs.length === 0) {
+  } else {
+    console.log('Dữ liệu lotDTOs:', allLotDTOs)
+  }
+
+  // Filter lots based on search term and category
+  const filteredLots = allLotDTOs.filter(
+    (dto) => selectedCategory === 'All' || dto.lotType === selectedCategory // Chỉ lọc theo loại lotType nếu cần
+  )
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber)
@@ -53,27 +69,42 @@ export default function Lots() {
     navigate(`/detaillot/${lotId.toString()}`) // Chuyển đổi lotId thành chuỗi
   }
 
-  // Filter lots based on search term and category
-  const filteredLots = lots.filter(
-    (lot: LotLanding) =>
-      lot.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (selectedCategory === 'All' || lot.lotType === selectedCategory)
-  )
-
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
   const paginatedLots = filteredLots.slice(startIndex, endIndex)
 
   const totalPages = Math.ceil(filteredLots.length / itemsPerPage)
 
+  console.log('Auction Name:', data.name)
+
   return (
-    <div className='mx-56'>
+    <div className='mx-56 mt-8'>
       <div className='flex items-start mb-20'>
         <div className='flex-1 pr-4'>
-          <h2 className='mb-4 text-2xl font-semibold'>Galleria by JAS® - August 27, 2024</h2>
-          <p className='mb-2 text-lg'>Live Auction</p>
-          <p className='mb-2 text-base'>Live bidding began: Aug 27, 2024 at 11 AM EDT</p>
-          <p className='text-base'>New York, NY | 167 Lots</p>
+          <h2 className='mb-4 text-4xl font-bold'>{lotsData.name}</h2>
+          <p className='text-3xl mb-4 font-bold'>
+            {new Date(lotsData.startTime).toLocaleDateString('en-US', {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric'
+            })}
+          </p>
+          <p className='mb-2 text-lg font-bold'>Live Auction</p>
+          <div className='flex items-center mb-2'>
+            <p className='text-base font-semibold mr-2'>Live bidding began:</p>
+            <p className='text-base'>
+              {new Date(lotsData.startTime).toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+              })}{' '}
+              EDT
+            </p>
+          </div>
+          <p className='text-base'>FPT, HO CHI MINH CITY | {lotsData.totalLot} Lots</p>
         </div>
         <div className='w-px mx-4 bg-gray-300' />
         <div className='flex-1 pl-4'>
@@ -132,22 +163,30 @@ export default function Lots() {
 
       {/* Lots grid */}
       <div className='grid grid-cols-1 gap-8 md:grid-cols-3'>
-        {paginatedLots.map((item: LotLanding) => (
+        {paginatedLots.map((item: LotDto) => (
           <div
             key={item.id}
             className='flex flex-col items-center bg-gray-200 border rounded-lg shadow-lg cursor-pointer h-96'
             onClick={() => handleLotClick(item.id)}
           >
-            <img src={item.imageLinkJewelry} alt={item.title} className='object-cover w-full h-56 mb-4 rounded-md' />
+            <img
+              src={item.jewelry.imageJewelries[0]?.imageLink || ''} // Lấy imageLink từ imageJewelries
+              alt={item.jewelry.name || 'Jewelry Image'}
+              className='object-cover w-full h-56 mb-4 rounded-md'
+            />
             <div className='flex flex-col items-start w-full px-4'>
-              <h3 className='text-lg font-semibold text-left uppercase'>{item.title}</h3>
-              <p className='text-sm italic font-semibold text-left text-gray-600'>Start Price: {item.startPrice}</p>
+              <h4 className='text-md font-medium text-left'>{item.title || 'Jewelry Title'}</h4>
+              <h3 className='text-lg font-semibold text-left uppercase'>{item.jewelry.name || 'Jewelry Name'}</h3>
+              <p className='text-sm italic font-semibold text-left text-gray-600'>
+                Est: {item.jewelry.estimatePriceMin.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })} -{' '}
+                {item.jewelry.estimatePriceMax.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+              </p>
               <p
                 className={`text-sm font-semibold text-left ${
-                  item.status === 'Sold' ? 'text-green-600' : 'text-red-600'
+                  item.status === 'Sold' ? 'text-green-500' : item.status === 'Pass' ? 'text-gray-500' : ''
                 }`}
               >
-                {item.status}
+                {item.status} {item.currentPriceWinner}
               </p>
             </div>
           </div>
