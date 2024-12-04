@@ -7,8 +7,8 @@ export default function UpComing() {
   const { data } = useViewAuctionQuery(undefined, {
     refetchOnMountOrArgChange: true
   })
-  const upcomingAuctions = data?.data.filter((auction: AuctionLanding) => auction.status === 'UpComing') || []
-  console.log(upcomingAuctions)
+  const upcomingAuctions =
+    data?.data.filter((auction: AuctionLanding) => auction.status === 'UpComing' || auction.status === 'Live') || []
 
   const handleViewLotsClick = (auctionId: number) => {
     navigate(`/lots/${auctionId}`)

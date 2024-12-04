@@ -119,7 +119,7 @@ export default function ManageWinList() {
 
   return (
     <div className='p-2'>
-      <Table columns={columns} dataSource={filteredData} pagination={{ pageSize: 5 }} rowKey='id' />
+      <Table columns={columns} dataSource={filteredData} bordered pagination={{ pageSize: 5 }} rowKey='id' />
 
       {selectedInvoiceId && (
         <ManageInvoiceModal

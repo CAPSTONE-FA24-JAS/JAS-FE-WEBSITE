@@ -1,4 +1,4 @@
-import { Modal, Typography, Input, Row, Col } from 'antd'
+import { Modal, Typography, Input, Row, Col, message } from 'antd'
 import React, { useState } from 'react'
 import { useCreateReceiptMutation } from '../../../../../services/valuation.services'
 import { dateToString } from '../../../../../utils/convertTypeDayjs'
@@ -36,6 +36,8 @@ interface CreateReceiptProps {
 const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCreate, record, refetch }) => {
   const [actualStatusOfJewelry, setActualStatusOfJewelry] = useState(record?.actualStatusOfJewelry || '')
   const [note, setnote] = useState('')
+  const [khoiluong, setkhoiluong] = useState('')
+  const [jewelryName, setjewlryName] = useState('')
   const [deliveryDate, setDeliveryDate] = useState<string>(dateToString(dayjs()))
   const [idIssuanceDate, setIdIssuanceDate] = useState<string>(dateToString(dayjs(record?.seller?.idIssuanceDate)))
   const [idExpirationDate, setIdExpirationDate] = useState<string>(
@@ -43,13 +45,29 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
   )
   const [createReceipt] = useCreateReceiptMutation()
   const [isLoading, setIsLoading] = useState(false)
+  const [errors, setErrors] = useState({ actualStatusOfJewelry: false, khoiluong: false, jewelryName: false })
 
   const handleCreate = async () => {
+    // Kiểm tra validation
+    const validationErrors = {
+      actualStatusOfJewelry: !actualStatusOfJewelry.trim(),
+      khoiluong: !khoiluong.trim(),
+      jewelryName: !jewelryName.trim()
+    }
+    setErrors(validationErrors)
+
+    if (Object.values(validationErrors).some((error) => error)) {
+      message.error('Vui lòng điền đầy đủ các trường bắt buộc!')
+      return
+    }
+
     setIsLoading(true)
     const requestData = {
       id: record?.id,
       actualStatusOfJewelry,
       note,
+      khoiluong,
+      jewelryName,
       status: 5, // Set status to 5 explicitly
       deliveryDate
     }
@@ -129,7 +147,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
           <Col span={21}>
             <Input
               className='w-full mb-2 font-bold text-black'
-              value='S10.05(VHGP), Nguyen Xien Street, Long Binh Ward, Thu Duc District, Ho Chi Minh City'
+              value='Lô E2a-7, Đường D1, Long Thạnh Mỹ, Thành phố Thủ Đức, Hồ Chí Minh'
               readOnly
             />
           </Col>
@@ -141,7 +159,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
             </Text>
           </Col>
           <Col span={21}>
-            <Input className='w-full mb-2 font-bold text-black' value='ngocnhse160303@fpt.edu.vn' readOnly />
+            <Input className='w-full mb-2 font-bold text-black' value=' NguyenVanStaff@gmail.com' readOnly />
           </Col>
         </Row>
         <Row gutter={16}>
@@ -154,7 +172,6 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
             <Input className='w-full mb-2 font-bold text-black' value='02158945456' readOnly />
           </Col>
         </Row>
-
         <Title level={5} className='font-bold'>
           II. Bên B:
         </Title>
@@ -233,7 +250,6 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
             <Input className='w-full mb-2 font-bold' value={record?.seller?.accountDTO?.phoneNumber} readOnly />
           </Col>
         </Row>
-
         <Title level={5} className='font-bold'>
           III. Nội dung xác nhận:
         </Title>
@@ -262,27 +278,52 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
           </Col>
         </Row>
         <Row gutter={16}>
-          <Col span={3}>
-            <Text strong className='block mb-2'>
-              Trạng thái sản phẩm:
-            </Text>
+          <Col span={12}>
+            <Row gutter={16}>
+              <Col span={24}>
+                <Text strong className='block mb-2'>
+                  Trạng thái sản phẩm: <span style={{ color: 'red' }}>*</span>
+                </Text>
+                <Input
+                  className={`w-full mb-2 font-bold ${errors.actualStatusOfJewelry ? 'border-red-500' : ''}`}
+                  value={actualStatusOfJewelry}
+                  onChange={(e) => setActualStatusOfJewelry(e.target.value)}
+                />
+                {errors.actualStatusOfJewelry && <Text className='text-red-500'>Trường này là bắt buộc.</Text>}
+              </Col>
+              <Col span={24}>
+                <Text strong className='block mb-2'>
+                  Khối Lượng: <span style={{ color: 'red' }}>*</span>
+                </Text>
+                <Input
+                  className={`w-full mb-2 font-bold ${errors.khoiluong ? 'border-red-500' : ''}`}
+                  value={khoiluong}
+                  onChange={(e) => setkhoiluong(e.target.value)}
+                />
+                {errors.khoiluong && <Text className='text-red-500'>Trường này là bắt buộc.</Text>}
+              </Col>
+            </Row>
           </Col>
-          <Col span={21}>
-            <Input
-              className='w-full mb-2 font-bold'
-              value={actualStatusOfJewelry}
-              onChange={(e) => setActualStatusOfJewelry(e.target.value)}
-            />
-          </Col>
-        </Row>
-        <Row gutter={16}>
-          <Col span={3}>
-            <Text strong className='block mb-2'>
-              Ghi chú:
-            </Text>
-          </Col>
-          <Col span={21}>
-            <Input className='w-full mb-2 font-bold' value={note} onChange={(e) => setnote(e.target.value)} />
+          <Col span={12}>
+            <Row gutter={16}>
+              <Col span={24}>
+                <Text strong className='block mb-2'>
+                  Tên sản phẩm: <span style={{ color: 'red' }}>*</span>
+                </Text>
+                <Input
+                  className={`w-full mb-2 font-bold ${errors.jewelryName ? 'border-red-500' : ''}`}
+                  value={jewelryName}
+                  onChange={(e) => setjewlryName(e.target.value)}
+                />
+                {errors.jewelryName && <Text className='text-red-500'>Trường này là bắt buộc.</Text>}
+              </Col>
+              <Col span={24}>
+                <Text strong className='block mb-2'>
+                  Ghi chú:
+                </Text>
+                <Input className='w-full mb-2 font-bold' value={note} onChange={(e) => setnote(e.target.value)} />
+              </Col>
+            </Row>
           </Col>
         </Row>
       </div>
