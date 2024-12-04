@@ -172,7 +172,7 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
         </Modal>
         <div>
           <p className='mb-2 text-xl font-bold'>{valuationData?.data?.id || 'N/A'}</p>
-          <p className='mb-6 text-xl font-bold'>{valuationData?.data?.name || 'No Name Available'}</p>
+          <p className='mb-6 text-xl font-bold'>{valuationData?.data?.jewelry?.name || 'No Name Available'}</p>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Customer Name:</strong>
             <span>

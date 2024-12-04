@@ -72,6 +72,7 @@ export default function ManageInvoiceModal({
   const platformFee = invoiceDetails.free ?? 'N/A'
   const deposit = invoiceDetails.myBidDTO?.lotDTO?.deposit ?? 'N/A'
   const shippingFee = invoiceDetails.feeShip ?? 'N/A'
+  const ReceiveAtCompany = invoiceDetails.isReceiveAtCompany ? 'In Company' : 'COD'
   const linkBillTransaction = invoiceDetails.linkBillTransaction ?? 'N/A'
   const historyTimes = invoiceDetails.myBidDTO?.historyCustomerLots || []
   const createinvoiceTimes = historyTimes
@@ -392,11 +393,11 @@ export default function ManageInvoiceModal({
             </div>
           )}
         </div>
-        <div className='space-y-2 mb-2'>
+        <div className='space-y-2 mb-2 flex'>
           {(status === 'Delivering' || status === 'Delivered') && (
-            <div className='flex justify-between mb-2'>
-              <p>
-                <strong>Received Image:</strong>
+            <div className='flex-1 mb-2'>
+              <p className='mb-2 '>
+                <strong>Received Image</strong>
               </p>
               <img
                 src={receivedImageLink}
@@ -407,19 +408,35 @@ export default function ManageInvoiceModal({
             </div>
           )}
           {status === 'Delivered' && (
-            <div className='flex justify-between mb-2'>
-              <p>
-                <strong>Delivered Image:</strong>
-              </p>
-              <img
-                src={deliveredImageLink}
-                alt='Delivered'
-                style={{ width: '100px', height: 'auto', cursor: 'pointer' }}
-                onClick={() => handleImageClick(deliveredImageLink)}
-              />
+            <div className='flex-1 mb-2 flex justify-end'>
+              <div>
+                <p className=' mb-2 '>
+                  <strong>Delivered Image</strong>
+                </p>
+                <img
+                  src={deliveredImageLink}
+                  alt='Delivered'
+                  style={{ width: '100px', height: 'auto', cursor: 'pointer' }}
+                  onClick={() => handleImageClick(deliveredImageLink)}
+                />
+              </div>
             </div>
           )}
         </div>
+        <div className='flex justify-between mb-2'>
+          <p>
+            <strong>Delivery Method:</strong>
+          </p>
+          <p className='font-bold text-gray-600'>{ReceiveAtCompany}</p>
+        </div>
+
+        {ReceiveAtCompany === 'In Company' && (
+          <div className='flex justify-end' style={{ marginTop: 20 }}>
+            <Button type='primary' onClick={handleFinish}>
+              Finish Invoice
+            </Button>
+          </div>
+        )}
 
         {status === 'Delivered' && (
           <div className='flex justify-end' style={{ marginTop: 20 }}>

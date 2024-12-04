@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import { Modal, Button } from 'antd'
 import { FilePdfOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons'
+import { Button, Modal } from 'antd'
+import React, { useState } from 'react'
 
 interface ValuationDetailsModalProps {
   visible: boolean
