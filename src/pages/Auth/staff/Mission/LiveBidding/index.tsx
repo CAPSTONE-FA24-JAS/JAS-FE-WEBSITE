@@ -52,10 +52,27 @@ const Index = () => {
 
   // Time calculation logic
   const calculateTimeLeft = useCallback(() => {
+    if (!data?.data) return { days: 0, hours: 0, minutes: 0, seconds: 0 }
+
+    // For UpComing or Waiting status, count down from current time to start time
+    if (data.data.status === 'UpComing' || data.data.status === 'Waiting') {
+      const difference = +new Date(data.data.startTime) - +new Date()
+      if (difference <= 0) {
+        return { days: 0, hours: 0, minutes: 0, seconds: 0 }
+      }
+      return {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60)
+      }
+    }
+
+    // For other statuses, use the existing logic
     if (
-      data?.data.lotType === 'Fixed_Price' ||
-      data?.data.lotType === 'Secret_Auction' ||
-      data?.data.lotType === 'Auction_Price_GraduallyReduced'
+      data.data.lotType === 'Fixed_Price' ||
+      data.data.lotType === 'Secret_Auction' ||
+      data.data.lotType === 'Auction_Price_GraduallyReduced'
     ) {
       const difference = +new Date(data.data.endTime) - +new Date()
       if (difference <= 0) {
@@ -83,7 +100,7 @@ const Index = () => {
       minutes: Math.floor((difference / 1000 / 60) % 60),
       seconds: Math.floor((difference / 1000) % 60)
     }
-  }, [data?.data.lotType, endTime])
+  }, [data?.data, endTime])
 
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft())
   const timerRef = useRef<NodeJS.Timeout>()
@@ -107,6 +124,18 @@ const Index = () => {
   const formatTimeDisplay = useMemo(() => {
     const { days, hours, minutes, seconds } = timeLeft
 
+    if (data?.data.status === 'UpComing' || data?.data.status === 'Waiting') {
+      if (days > 0) {
+        return `Start in: ${days}d ${hours}h ${minutes}m`
+      } else if (hours > 0) {
+        return `Start in: ${hours}h ${minutes}m ${seconds}s`
+      } else if (minutes > 0) {
+        return `Start in: ${minutes}m ${seconds}s`
+      } else {
+        return `Start in: ${seconds}s`
+      }
+    }
+
     if (days > 0) {
       return `${days}d ${hours}h ${minutes}m`
     } else if (hours > 0) {
@@ -116,7 +145,7 @@ const Index = () => {
     } else {
       return `${seconds}s`
     }
-  }, [timeLeft])
+  }, [timeLeft, data?.data.status])
 
   // Join live bidding on component mount
   useEffect(() => {
@@ -170,6 +199,7 @@ const Index = () => {
           itemLot={data.data}
           currentPrice={reducePrice}
           isEndAuction={isEndAuctionMethod4}
+          playerInLot={playerInLot?.data}
           winnerCustomer={winnerCustomer}
           winnerPrice={winnerPrice}
           status={statusMethod4}
@@ -199,7 +229,10 @@ const Index = () => {
 
         {canViewLiveBidding && (
           <div className='w-full'>
-            <div className='text-lg font-bold text-center'>Time left: {formatTimeDisplay}</div>
+            <div className='text-lg font-bold text-center'>
+              {(data && data?.data.status === 'Waiting') || data?.data.status === 'UpComing' ? '' : 'Time Left'}:{' '}
+              {formatTimeDisplay}
+            </div>
             {data?.data ? renderLiveBidding() : <div>No lot data available</div>}
           </div>
         )}

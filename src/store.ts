@@ -23,7 +23,7 @@ import { notiApi } from './services/notification.services'
 
 // Tạo cấu hình persist
 export const persistConfig = {
-  timeout: 100, // đỡ cái đoạn F5 chờ lâu quá :V thêm preloading sau thì setlaij default
+  timeout: 200, // đỡ cái đoạn F5 chờ lâu quá :V thêm preloading sau thì setlaij default
   key: 'root',
   storage: storage,
   whitelist: ['authLoginAPI', 'selectedKey']
