@@ -77,8 +77,8 @@ export const manageInvoice = createApi({
         params: { requestId }
       })
     }),
-    shipperAndInvoice: build.query({
-      query: () => `Invoices/getShipperAndInvoices`
+    getDeliveringInvoicesByShipper: build.query({
+      query: () => `Invoices/getDeliveringInvoicesByShipperToAssign`
     })
   })
 })
@@ -94,5 +94,6 @@ export const {
   useApproveRequestNewWithdrawMutation,
   useProcessWithdrawStaffMutation,
   useCancelWithdrawMutation,
-  useShipperAndInvoiceQuery
+  useGetDeliveringInvoicesByShipperQuery
+  // useShipperAndInvoiceQuery
 } = manageInvoice

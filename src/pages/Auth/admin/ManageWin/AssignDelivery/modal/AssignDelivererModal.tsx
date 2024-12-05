@@ -1,8 +1,11 @@
 import { Button, Form, Modal, notification, Select } from 'antd'
 import { useEffect, useState } from 'react'
 import { useGetFilterByRoleQuery } from '../../../../../../services/account.services'
-import { useAssignShipperMutation, useShipperAndInvoiceQuery } from '../../../../../../services/invoice.services'
-import { AdminGetFilterByRoleChildrenResponse } from '../../../../../../types/Account.type'
+import {
+  useAssignShipperMutation,
+  useGetDeliveringInvoicesByShipperQuery
+} from '../../../../../../services/invoice.services'
+import { AdminGetFilterByRoleChildrenResponse, AdminGetFilterByRoleData } from '../../../../../../types/Account.type'
 
 interface AssignDelivererModalProps {
   visible: boolean
@@ -24,32 +27,37 @@ const AssignDelivererModal: React.FC<AssignDelivererModalProps> = ({
   const roleId = 6
   const [assignedStaff, setAssignedStaff] = useState<string>('')
   const [staffOptions, setStaffOptions] = useState<AdminGetFilterByRoleChildrenResponse[]>([])
+  const [invoiceCountByShipper, setInvoiceCountByShipper] = useState<{ [key: number]: number }>({})
 
   const { data: staffData, isLoading: staffLoading, error: staffError } = useGetFilterByRoleQuery(roleId)
-  const { data } = useShipperAndInvoiceQuery(undefined, { skip: !invoiceId })
-  const [assignShipper, { isLoading: isAssigning }] = useAssignShipperMutation()
 
-  useEffect(() => {
-    if (data) {
-      console.log('Full response data:', data)
-      const invoiceCounts = data.invoiceCounts || []
-      console.log('Invoice counts array:', invoiceCounts)
-      if (invoiceCounts.length > 0) {
-        const invoiceCount = invoiceCounts[0] ?? 0
-        console.log('Số lượng hóa đơn:', invoiceCount)
-      } else {
-        console.log('Không có hóa đơn nào')
-      }
-    }
-  }, [data])
+  const [assignShipper, { isLoading: isAssigning }] = useAssignShipperMutation()
+  const shipperIds = staffData?.data.map((account: AdminGetFilterByRoleData) => account.staffDTO?.id).filter(Boolean)
+
+  const { data: deliveringInvoices } = useGetDeliveringInvoicesByShipperQuery(shipperIds)
 
   useEffect(() => {
     if (staffData && staffData.data) {
       const staffList = staffData.data
-      const extractedStaff = staffList.map((account: any) => account.staffDTO).filter(Boolean)
+      const extractedStaff = staffList.map((account: AdminGetFilterByRoleData) => account.staffDTO).filter(Boolean)
       setStaffOptions(extractedStaff)
     }
   }, [staffData])
+
+  useEffect(() => {
+    if (deliveringInvoices && deliveringInvoices.data && deliveringInvoices.data.dataResponse) {
+      const countByShipper = deliveringInvoices.data.dataResponse.reduce((acc: any, invoice: any) => {
+        const shipperId = invoice.shipperId
+        if (shipperId) {
+          acc[shipperId] = (acc[shipperId] || 0) + 1
+        }
+        return acc
+      }, {})
+      setInvoiceCountByShipper(countByShipper)
+    } else {
+      console.log('No delivering invoices data available')
+    }
+  }, [deliveringInvoices])
 
   const handleStaffChange = (value: string) => {
     setAssignedStaff(value)
@@ -117,10 +125,7 @@ const AssignDelivererModal: React.FC<AssignDelivererModalProps> = ({
                         {staff.firstName} {staff.lastName}
                       </span>
                       <span>
-                        <strong>Invoice:</strong>{' '}
-                        {Array.isArray(data?.invoiceCounts) && data.invoiceCounts.length > 0
-                          ? data.invoiceCounts[0] ?? 'No Invoice'
-                          : 'No Invoice'}
+                        <strong>Delivering:</strong> {invoiceCountByShipper[staff.id] || 0}
                       </span>
                     </div>
                   </Select.Option>
