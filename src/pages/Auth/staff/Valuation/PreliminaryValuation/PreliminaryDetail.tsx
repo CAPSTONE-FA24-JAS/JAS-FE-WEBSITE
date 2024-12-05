@@ -1,10 +1,11 @@
-import { LeftOutlined, RightOutlined } from '@ant-design/icons'
+import { FilePdfOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { Button, Modal } from 'antd'
 import React, { useState } from 'react'
 
 // Định nghĩa interface cho ImageValuation
 interface ImageValuation {
   imageLink: string
+  defaultImage: string | null
 }
 
 // Định nghĩa interface cho ValuationDocument
@@ -55,8 +56,8 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const images = record?.imageValuations?.map((img: ImageValuation) => img.imageLink) || [
-    'https://via.placeholder.com/150?text=No+Image'
+  const images = record?.imageValuations || [
+    { imageLink: 'https://via.placeholder.com/150?text=No+Image', defaultImage: null }
   ]
 
   const nextImage = () => {
@@ -88,7 +89,31 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
       console.error('Access denied: Status is not RecivedJewelry.')
     }
   }
-
+  const renderImageOrLink = (image: any, index: number) => {
+    if (image.defaultImage === 'PDF') {
+      return (
+        <a
+          key={index}
+          href={image.imageLink}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='w-[100px] h-[100px] flex items-center justify-center bg-gray-200 rounded-lg mx-2 cursor-pointer border'
+        >
+          <FilePdfOutlined style={{ fontSize: '24px', color: '#ff4d4f' }} />
+        </a>
+      )
+    } else {
+      return (
+        <img
+          key={index}
+          src={image.imageLink}
+          alt={`thumb-${index}`}
+          className='w-[100px] h-[100px] object-cover rounded-lg mx-2 cursor-pointer border'
+          onClick={() => setCurrentImageIndex(index)}
+        />
+      )
+    }
+  }
   return (
     <Modal
       title='Preliminary Valuation Detail'
@@ -108,35 +133,41 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
       <div className='grid grid-cols-2 gap-6 mt-10'>
         <div className='relative'>
           <div className='flex items-center justify-center mb-4'>
-            <img
-              src={images[currentImageIndex]}
-              alt='product'
-              onClick={openModal}
-              className='w-[450px] h-[500px] object-cover rounded-lg'
-            />
+            {images[currentImageIndex]?.defaultImage === 'PDF' ? (
+              <a
+                href={images[currentImageIndex]?.imageLink}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='w-[450px] h-[500px] flex items-center justify-center bg-gray-200 rounded-lg cursor-pointer border font-bold'
+              >
+                <FilePdfOutlined style={{ fontSize: '48px', color: '#ff4d4f' }} />
+                GIA
+              </a>
+            ) : (
+              <img
+                src={images[currentImageIndex]?.imageLink}
+                alt='product'
+                onClick={openModal}
+                className='w-[450px] h-[500px] object-cover rounded-lg'
+              />
+            )}
           </div>
-
-          <div className='absolute left-0 flex items-center justify-center pl-3 top-56'>
+          <div className='absolute top-56 left-0 flex items-center justify-center pl-3'>
             <Button icon={<LeftOutlined />} onClick={prevImage} className='bg-gray-300 hover:bg-gray-400' />
           </div>
-          <div className='absolute right-0 flex items-center justify-center pr-3 top-56'>
+          <div className='absolute top-56 right-0 flex items-center justify-center pr-3'>
             <Button icon={<RightOutlined />} onClick={nextImage} className='bg-gray-300 hover:bg-gray-400' />
           </div>
-
-          <div className='flex mt-10 ml-10'>
-            {images.map((image: string, index: number) => (
-              <img
-                key={index}
-                src={image}
-                alt={`thumb-${index}`}
-                className='w-[100px] h-[100px] object-cover rounded-lg mx-2 cursor-pointer border'
-                onClick={() => setCurrentImageIndex(index)}
-              />
-            ))}
+          <div className='flex ml-10 mt-10'>
+            {record?.imageValuations?.map(renderImageOrLink) || <p>No images available</p>}
           </div>
         </div>
         <Modal open={isModalVisible} footer={null} onCancel={closeModal} width='40%'>
-          <img src={images[currentImageIndex]} alt='product zoomed' className='object-contain w-full h-auto' />
+          <img
+            src={images[currentImageIndex]?.imageLink}
+            alt='product zoomed'
+            className='w-full h-auto object-contain'
+          />
         </Modal>
         <div>
           <p className='mb-2 text-xl font-bold'>{record?.id}</p>

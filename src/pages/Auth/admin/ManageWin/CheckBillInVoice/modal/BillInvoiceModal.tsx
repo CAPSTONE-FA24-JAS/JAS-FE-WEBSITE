@@ -1,10 +1,10 @@
-import { Modal, Avatar, Button, notification } from 'antd'
+import { Avatar, Button, Modal, notification } from 'antd'
 import { useState } from 'react'
-import { stringToDate } from '../../../../../../utils/convertTypeDayjs'
 import {
-  useGetInvoiceByIdQuery,
-  useApprovePaymentByBankTransferMutation
+  useApprovePaymentByBankTransferMutation,
+  useGetInvoiceByIdQuery
 } from '../../../../../../services/invoice.services'
+import { stringToDate } from '../../../../../../utils/convertTypeDayjs'
 
 interface ManageInvoiceModalProps {
   visible: boolean

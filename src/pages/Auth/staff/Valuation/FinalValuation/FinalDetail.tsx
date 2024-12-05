@@ -210,7 +210,7 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
             </div>
           )}
 
-          {record?.jewelry?.mainDiamonds?.length && (
+          {record?.jewelry?.mainDiamonds?.length > 0 && (
             <div>
               <div className='block w-full mb-4 font-bold'>Main Diamonds</div>
               {record?.jewelry?.mainDiamonds.map((diamond: any) => (

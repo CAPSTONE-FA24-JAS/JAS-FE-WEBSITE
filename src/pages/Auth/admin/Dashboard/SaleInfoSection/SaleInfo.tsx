@@ -29,7 +29,7 @@ const SaleInfo = ({ icon, title, sales, increment, date, backgroundClass }: Sale
       <div className='mt-2'>
         <div className='text-sm font-semibold text-black-200'>Total</div>
         <div className='text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-800 via-gray-500 to-white-500'>
-          {currencyFormat(sales)}
+          {title === 'Revenue' ? currencyFormat(sales) : sales}
         </div>
       </div>
 
