@@ -79,6 +79,7 @@ export interface LotLanding {
 export interface LotDto {
   id: number
   status: string
+  title: string
   deposit: number
   floorFeePercent: number
   currentPriceWinner: any
