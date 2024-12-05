@@ -32,15 +32,6 @@ const SaleInfoCards = () => {
       increment: 0,
       date: 'May 2022',
       backgroundClass: 'bg-gradient-to-r from-orange-200 via-orange-300 to-orange-400'
-    },
-    {
-      id: 3,
-      icon: <img src='https://cdn-icons-png.freepik.com/512/924/924471.png' alt='Invoice Icon' className='w-14 h-14' />,
-      title: 'Profit',
-      sales: 2300,
-      increment: 210,
-      date: 'May 2022',
-      backgroundClass: 'bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400'
     }
   ])
 
@@ -62,7 +53,7 @@ const SaleInfoCards = () => {
   }, [totalInvoiceData, totalRevenueData])
 
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3'>
+    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2'>
       {saleInfoData.map((saleInfoDataItem) => (
         <div key={saleInfoDataItem.id} className='p-4'>
           <SaleInfo

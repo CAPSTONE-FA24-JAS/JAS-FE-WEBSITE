@@ -1,8 +1,8 @@
-import { Modal, Form, Select, Button, notification } from 'antd'
-import { useGetFilterByRoleQuery } from '../../../../../../services/account.services'
+import { Button, Form, Modal, notification, Select } from 'antd'
 import { useEffect, useState } from 'react'
-import { AdminGetFilterByRoleChildrenResponse } from '../../../../../../types/Account.type'
+import { useGetFilterByRoleQuery } from '../../../../../../services/account.services'
 import { useAssignShipperMutation, useShipperAndInvoiceQuery } from '../../../../../../services/invoice.services'
+import { AdminGetFilterByRoleChildrenResponse } from '../../../../../../types/Account.type'
 
 interface AssignDelivererModalProps {
   visible: boolean
@@ -25,13 +25,10 @@ const AssignDelivererModal: React.FC<AssignDelivererModalProps> = ({
   const [assignedStaff, setAssignedStaff] = useState<string>('')
   const [staffOptions, setStaffOptions] = useState<AdminGetFilterByRoleChildrenResponse[]>([])
 
-  // Query for staff and shipper data
   const { data: staffData, isLoading: staffLoading, error: staffError } = useGetFilterByRoleQuery(roleId)
   const { data } = useShipperAndInvoiceQuery(undefined, { skip: !invoiceId })
   const [assignShipper, { isLoading: isAssigning }] = useAssignShipperMutation()
 
-  // Extract invoice count safely
-  // const invoiceCount = Array.isArray(data?.invoiceCounts) ? data.invoiceCounts[0] || 0 : 0
   useEffect(() => {
     if (data) {
       console.log('Full response data:', data)
