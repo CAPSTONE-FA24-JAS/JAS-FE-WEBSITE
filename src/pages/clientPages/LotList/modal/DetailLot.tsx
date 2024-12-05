@@ -1,8 +1,7 @@
-import Slider from 'antd/es/slider'
 import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { useViewDetailLotByIdQuery } from '../../../../services/overview.services'
 import { FaArrowLeft } from 'react-icons/fa'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useViewDetailLotByIdQuery } from '../../../../services/overview.services'
 
 interface ImageJewelry {
   imageLink: string
