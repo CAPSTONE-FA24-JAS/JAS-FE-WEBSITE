@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { RoleType } from '../../../../slice/authLoginAPISlice'
 import { RootState } from '../../../../store'
+import CancelJewelryModal from './Modal/CancelJewelryModal '
 
 const JewelryList = () => {
   const [pageIndex, setPageIndex] = useState(1)
@@ -15,11 +16,11 @@ const JewelryList = () => {
   const [searchText, setSearchText] = useState<string>('')
   const navigate = useNavigate()
 
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedJewelryId, setSelectedJewelryId] = useState<number | null>(null)
+
   const roleId = useSelector((state: RootState) => state.authLoginAPI.roleId)
-  const { data, isLoading, isFetching } = useGetAllJewelriesQuery({
-    pageSize,
-    pageIndex
-  })
+  const { data, isLoading, isFetching } = useGetAllJewelriesQuery()
 
   const handleEdit = (id: number) => {
     console.log('Edit jewelry', id)
@@ -29,6 +30,11 @@ const JewelryList = () => {
     if (roleId === RoleType.MANAGER) {
       navigate(`/manager/jewelry/${id}`)
     }
+  }
+
+  const handleCancel = (id: number) => {
+    setSelectedJewelryId(id)
+    setIsModalOpen(true)
   }
 
   const columns: ColumnsType<Jewelry> = [
@@ -109,6 +115,13 @@ const JewelryList = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      filters: [
+        { text: 'Authorized', value: 'Authorized' },
+        { text: 'Watting', value: 'Watting' },
+        { text: 'Cancelled', value: 'Canceled' },
+        { text: 'Sold', value: 'Sold' }
+      ],
+      onFilter: (value, record) => record.status === String(value),
       render: (status) => <Tag color={status === 'Authorized' ? 'success' : 'default'}>{status}</Tag>
     },
     {
@@ -119,6 +132,12 @@ const JewelryList = () => {
       width: 100,
       render: (_, record) => (
         <Space size='small'>
+          {record.status === 'Authorized' && (
+            <Button onClick={() => handleCancel(record.id)} type='primary' danger size='small'>
+              Cancel
+            </Button>
+          )}
+
           <Button onClick={() => handleEdit(record.id)} type='primary' size='small'>
             More
           </Button>
@@ -171,6 +190,15 @@ const JewelryList = () => {
           />
         </div>
       </div>
+
+      <CancelJewelryModal
+        jewelryId={selectedJewelryId}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false)
+          setSelectedJewelryId(null)
+        }}
+      />
     </div>
   )
 }

@@ -34,14 +34,8 @@ export const jewelryApi = createApi({
         }
       }
     }),
-    getAllJewelries: builder.query<
-      Respone<DataResponse<Jewelry>>,
-      {
-        pageSize?: number
-        pageIndex?: number
-      }
-    >({
-      query: ({ pageSize = 10, pageIndex = 1 }) => `/Jewelrys/GetJewelry?pageSize=${pageSize}&pageIndex=${pageIndex}`,
+    getAllJewelries: builder.query<Respone<DataResponse<Jewelry>>, void>({
+      query: () => `/Jewelrys/GetJewelry`,
       providesTags(res) {
         if (res?.data.dataResponse) {
           return [
@@ -56,7 +50,6 @@ export const jewelryApi = createApi({
       query: (id) => `/Jewelrys/GetDetailJewelry?jewelryId=${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Jewelry', id }]
     }),
-
     updateJewelry: builder.mutation<any, UpdateJewelryRequest>({
       query: (data) => ({
         url: `/Jewelrys/UpdateJewelry`,
@@ -65,6 +58,13 @@ export const jewelryApi = createApi({
         formData: true
       }),
 
+      invalidatesTags: ['Jewelry']
+    }),
+    CancelByMangerToNoAuction: builder.mutation<any, { jewelryId: string; reason: string }>({
+      query: ({ jewelryId, reason }) => ({
+        url: `/Jewelrys/CancelByMangerToNoAuction?jewelryId=${jewelryId}&reason=${reason}`,
+        method: 'PUT'
+      }),
       invalidatesTags: ['Jewelry']
     })
   })
@@ -93,5 +93,10 @@ const convertToFormData = (data: UpdateJewelryRequest) => {
   return formData
 }
 
-export const { useGetJewelriesNoSlotQuery, useGetAllJewelriesQuery, useGetJewelryByIdQuery, useUpdateJewelryMutation } =
-  jewelryApi
+export const {
+  useGetJewelriesNoSlotQuery,
+  useGetAllJewelriesQuery,
+  useGetJewelryByIdQuery,
+  useUpdateJewelryMutation,
+  useCancelByMangerToNoAuctionMutation
+} = jewelryApi
