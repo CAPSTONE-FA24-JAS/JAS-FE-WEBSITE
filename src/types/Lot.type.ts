@@ -20,6 +20,7 @@ export interface ListLot {
   jewelryId: number
   auctionId: number
   title: string
+  round: number
 }
 export interface CreateLot {
   title: string

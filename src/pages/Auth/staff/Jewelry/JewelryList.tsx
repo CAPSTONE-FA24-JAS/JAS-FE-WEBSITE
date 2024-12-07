@@ -6,8 +6,8 @@ import { Jewelry } from '../../../../types/Jewelry.type'
 import { parsePriceVND } from '../../../../utils/convertTypeDayjs'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { RootState } from '../../../../store'
 import { RoleType } from '../../../../slice/authLoginAPISlice'
+import { RootState } from '../../../../store'
 
 const JewelryList = () => {
   const [pageIndex, setPageIndex] = useState(1)
@@ -120,7 +120,7 @@ const JewelryList = () => {
       render: (_, record) => (
         <Space size='small'>
           <Button onClick={() => handleEdit(record.id)} type='primary' size='small'>
-            Edit
+            More
           </Button>
         </Space>
       )

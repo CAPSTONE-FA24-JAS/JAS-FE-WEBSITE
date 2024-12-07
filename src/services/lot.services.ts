@@ -68,10 +68,8 @@ export const lotApi = createApi({
       }
     }),
     createLotPublicAuction: build.mutation<Respone<ListLot>, Partial<CreateLot>>({
-      query: (body) => ({
-        url: 'Lot/CreateLotPublicAuction',
-        method: 'POST',
-        body: {
+      query: (body) => {
+        const requestBody: any = {
           title: body.title,
           startPrice: Number(body.startPrice),
           finalPriceSold: Number(body.finalPriceSold),
@@ -82,10 +80,20 @@ export const lotApi = createApi({
           staffId: body.staffId,
           jewelryId: body.jewelryId,
           auctionId: body.auctionId,
-          round: body.round,
           isHaveFinalPrice: body.isHaveFinalPrice
         }
-      }),
+
+        // Only add round if it exists
+        if (body.round !== undefined) {
+          requestBody.round = body.round
+        }
+
+        return {
+          url: 'Lot/CreateLotPublicAuction',
+          method: 'POST',
+          body: requestBody
+        }
+      },
       invalidatesTags() {
         return [{ type: 'Lot', id: 'LIST' }]
       }
@@ -147,7 +155,6 @@ export const lotApi = createApi({
         method: 'PUT'
       })
     }),
-
     getPlayerInLot: build.query<Respone<PLayerInLot[]>, number>({
       query: (lotId) => `Lot/GetPlayerInLotFixedAndSercet?lotId=${lotId}`
     }),

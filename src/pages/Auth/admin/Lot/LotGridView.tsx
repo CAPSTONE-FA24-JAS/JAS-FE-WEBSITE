@@ -3,32 +3,9 @@ import { Card, Tag, Row, Col, Tooltip, Typography, Space } from 'antd'
 import { ShoppingOutlined, LockOutlined, RiseOutlined, FallOutlined } from '@ant-design/icons'
 import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
+import { ListLot } from '../../../../types/Lot.type'
 
 const { Title, Text } = Typography
-
-interface ListLot {
-  id: number
-  startPrice: number
-  currentPrice: number
-  finalPriceSold: number
-  status: string
-  bidIncrement: number
-  deposit: number
-  buyNowPrice: number
-  floorFeePercent: number
-  startTime: string
-  endTime: string
-  actualEndTime: string
-  isExtend: boolean
-  haveFinancialProof: boolean
-  lotType: string
-  imageLinkJewelry: string
-  sellerId: number
-  staffId: number
-  jewelryId: number
-  auctionId: number
-  title: string
-}
 
 interface LotTypeConfig {
   label: string

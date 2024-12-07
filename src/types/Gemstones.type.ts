@@ -89,6 +89,7 @@ export interface SecondaryDiamond {
   jewelryId: number
   documentDiamonds: DocumentDiamond2[]
   imageDiamonds: ImageDiamond2[]
+  totalCarat?: number
 }
 
 export interface DocumentDiamond2 {
@@ -139,6 +140,7 @@ export interface SecondaryShaphy {
   jewelryId: number
   documentShaphies: DocumentShaphy2[]
   imageShaphies: ImageShaphy2[]
+  totalCarat?: number
 }
 
 export interface DocumentShaphy2 {
