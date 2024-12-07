@@ -2,7 +2,11 @@ import { Button, Image, message, Space, Table, TableProps, Tabs, Tag, Tooltip } 
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { useApproveAuctionMutation, useGetAuctionsQuery } from '../../../../services/auction.services'
+import {
+  useApproveAuctionMutation,
+  useCancelAuctionMutation,
+  useGetAuctionsQuery
+} from '../../../../services/auction.services'
 import { RoleType } from '../../../../slice/authLoginAPISlice'
 import { RootState } from '../../../../store'
 import { Auction } from '../../../../types/Auction.type'
@@ -16,6 +20,7 @@ const AuctionList = () => {
   const [tabKey, setTabKey] = useState<string>('all')
 
   const { data, isLoading } = useGetAuctionsQuery()
+  const [cancelAuction] = useCancelAuctionMutation()
   const [approveAuction] = useApproveAuctionMutation()
 
   const roleId = useSelector((state: RootState) => state.authLoginAPI.roleId)
@@ -39,17 +44,21 @@ const AuctionList = () => {
     setEditAuction(id)
   }
 
+  const handleCancel = (id: number) => async () => {
+    console.log('Cancel', id)
+    try {
+      const res = await cancelAuction(id).unwrap()
+      if (res.isSuccess) {
+        message.success('Cancel auction successfully')
+      } else {
+        message.error('Cancel auction failed')
+      }
+    } catch (error) {
+      message.error('Cancel auction failed')
+    }
+  }
+
   const columns: TableProps<Auction>['columns'] = [
-    {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-      width: 60,
-      fixed: 'left',
-      align: 'center',
-      sorter: (a, b) => a.id - b.id,
-      defaultSortOrder: 'ascend'
-    },
     {
       title: 'Image',
       dataIndex: 'imageLink',
@@ -71,6 +80,7 @@ const AuctionList = () => {
       dataIndex: 'name',
       key: 'name',
       width: 180,
+      fixed: 'left',
       ellipsis: {
         showTitle: true
       },
@@ -113,21 +123,26 @@ const AuctionList = () => {
           title: 'Start',
           dataIndex: 'startTime',
           key: 'createDate',
-          width: 150,
-          render: (text) => (text ? parseDate(text, 'dd/mm/yyyy hh:mm:ss') : 'N/A')
+          width: 120,
+          render: (text) => (text ? parseDate(text, 'dd/mm/yyyy hh:mm:ss') : 'N/A'),
+          defaultSortOrder: 'ascend',
+          sorter: (a, b) => {
+            if (!a.startTime || !b.startTime) return 0
+            return new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+          }
         },
         {
           title: 'End',
           dataIndex: 'endTime',
           key: 'expiredDate',
-          width: 150,
+          width: 120,
           render: (text) => (text ? parseDate(text, 'dd/mm/yyyy hh:mm:ss') : 'N/A')
         },
         {
           title: 'Actual End',
           dataIndex: 'actualEndTime',
           key: 'actualEndTime',
-          width: 150,
+          width: 120,
           render: (text) => (text ? parseDate(text, 'dd/mm/yyyy hh:mm:ss') : 'N/A')
         }
       ]
@@ -144,6 +159,7 @@ const AuctionList = () => {
       key: 'status',
       width: 120,
       align: 'center',
+      fixed: 'right',
       render: (_, record) => {
         let color = ''
         let tagText = ''
@@ -175,13 +191,7 @@ const AuctionList = () => {
 
         return (
           <div className='flex items-center justify-center gap-2'>
-            {record.status === 'Waiting' ? (
-              <Button onClick={handleApprove(record.id)} type='primary' size='small'>
-                Approve
-              </Button>
-            ) : (
-              <Tag color={color}>{tagText}</Tag>
-            )}
+            <Tag color={color}>{tagText}</Tag>
           </div>
         )
       }
@@ -193,17 +203,31 @@ const AuctionList = () => {
       width: 100,
       align: 'center',
       render: (_, record) => (
-        <div className='flex items-center justify-center gap-2'>
-          {record.status === 'Waiting' && (
-            <Space size='small'>
-              <Button onClick={handleEdit(record.id)} type='primary' size='small'>
-                Edit
+        <div className='flex flex-col items-center gap-2'>
+          <>
+            {record.status === 'Waiting' && (
+              <Button
+                onClick={handleApprove(record.id)}
+                type='primary'
+                className='w-full !bg-green-500 !text-white hover:!bg-green-600'
+                size='small'
+              >
+                Approve
               </Button>
-              <Button danger size='small'>
-                Delete
-              </Button>
+            )}
+            <Space size='small' className='w-full'>
+              {record.status !== 'Cancelled' && record.status !== 'Live' && record.status !== 'Past' && (
+                <Button onClick={handleEdit(record.id)} type='primary' size='small'>
+                  Edit
+                </Button>
+              )}
+              {record.status !== 'Past' && record.status !== 'Cancelled' && (
+                <Button danger size='small' onClick={handleCancel(record.id)}>
+                  Cancel
+                </Button>
+              )}
             </Space>
-          )}
+          </>
         </div>
       )
     }
@@ -211,13 +235,18 @@ const AuctionList = () => {
 
   const auctionFiltered =
     Array.isArray(data?.data) && data?.data.length > 0
-      ? data?.data.filter((item) => {
-          const matchSearch =
-            (item.description?.toLowerCase().includes(searchText.toLowerCase()) ?? false) ||
-            (item.name?.toLowerCase().includes(searchText.toLowerCase()) ?? false)
-          if (tabKey === 'all') return matchSearch
-          return item.status === tabKey && matchSearch
-        })
+      ? data?.data
+          .filter((item) => {
+            const matchSearch =
+              (item.description?.toLowerCase().includes(searchText.toLowerCase()) ?? false) ||
+              (item.name?.toLowerCase().includes(searchText.toLowerCase()) ?? false)
+            if (tabKey === 'all') return matchSearch
+            return item.status === tabKey && matchSearch
+          })
+          .sort((a, b) => {
+            if (!a.startTime || !b.startTime) return 0
+            return new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+          })
       : []
 
   const handleAddAuction = () => {

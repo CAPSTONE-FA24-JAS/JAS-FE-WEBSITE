@@ -59,7 +59,6 @@ const LotList = () => {
       title: 'Title',
       dataIndex: 'title',
       key: 'title',
-      width: 180,
       fixed: 'left',
       ellipsis: {
         showTitle: true
@@ -185,11 +184,17 @@ const LotList = () => {
     },
     {
       title: 'Extend',
-      dataIndex: 'isExtend',
       key: 'isExtend',
-      width: 70,
       align: 'center',
-      render: (value) => (value ? 'Yes' : 'No')
+      render: (_, record) =>
+        record.isExtend ? (
+          <div className='flex flex-col items-center'>
+            <div>Yes</div>
+            {record.round && <div>Round: {record.round}</div>}
+          </div>
+        ) : (
+          'No'
+        )
     },
     {
       title: 'Lot Type',
