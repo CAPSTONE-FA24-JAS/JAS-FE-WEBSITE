@@ -61,6 +61,13 @@ export const auctionApi = createApi({
         method: 'put'
       }),
       invalidatesTags: (_result, error, _body) => (error ? [] : [{ type: 'Auction', id: 'LIST' }])
+    }),
+    cancelAuction: builder.mutation<Respone<Auction>, number>({
+      query: (id) => ({
+        url: `/Auction/CancelAuction?auctionId=${id}`,
+        method: 'put'
+      }),
+      invalidatesTags: (_result, error, _body) => (error ? [] : [{ type: 'Auction', id: 'LIST' }])
     })
   })
 })
@@ -70,5 +77,6 @@ export const {
   useGetAuctionByIdQuery,
   useCreateAuctionMutation,
   useUpdateAuctionMutation,
-  useApproveAuctionMutation
+  useApproveAuctionMutation,
+  useCancelAuctionMutation
 } = auctionApi

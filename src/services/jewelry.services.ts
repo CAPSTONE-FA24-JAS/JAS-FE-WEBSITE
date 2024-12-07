@@ -61,9 +61,10 @@ export const jewelryApi = createApi({
       query: (data) => ({
         url: `/Jewelrys/UpdateJewelry`,
         method: 'PUT',
-        // Vì API yêu cầu multipart/form-data
-        body: convertToFormData(data)
+        body: convertToFormData(data),
+        formData: true
       }),
+
       invalidatesTags: ['Jewelry']
     })
   })
@@ -86,6 +87,8 @@ const convertToFormData = (data: UpdateJewelryRequest) => {
       }
     }
   })
+
+  console.log('formData api', formData)
 
   return formData
 }

@@ -581,12 +581,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
                     </Checkbox>
                   </Form.Item>
                   {isExtendTimeEnabled && (
-                    <Form.Item
-                      name='round'
-                      label='Extend Rounds'
-                      rules={[{ required: true, message: 'Please input the number of rounds', type: 'number' }]}
-                      className='mb-0'
-                    >
+                    <Form.Item name='round' label='Extend Rounds' rules={[{ type: 'number' }]} className='mb-0'>
                       <InputNumber min={1} className='w-24' />
                     </Form.Item>
                   )}
