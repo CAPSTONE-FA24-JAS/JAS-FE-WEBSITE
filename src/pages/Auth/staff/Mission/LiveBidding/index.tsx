@@ -230,7 +230,7 @@ const Index = () => {
         {canViewLiveBidding && (
           <div className='w-full'>
             <div className='text-lg font-bold text-center'>
-              {(data && data?.data.status === 'Waiting') || data?.data.status === 'UpComing' ? '' : 'Time Left'}:{' '}
+              {(data && data?.data.status === 'Waiting') || data?.data.status === 'UpComing' ? '' : 'Time Left'}{' '}
               {formatTimeDisplay}
             </div>
             {data?.data ? renderLiveBidding() : <div>No lot data available</div>}
