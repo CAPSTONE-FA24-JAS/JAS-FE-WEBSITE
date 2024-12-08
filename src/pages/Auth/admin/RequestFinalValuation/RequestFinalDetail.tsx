@@ -69,7 +69,7 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
         message: 'Status Updated',
         description: 'The status has been updated to Final Valuated'
       })
-      setStatus('FinalValuated')
+      setStatus('Evaluated')
 
       refetch()
       onClose()

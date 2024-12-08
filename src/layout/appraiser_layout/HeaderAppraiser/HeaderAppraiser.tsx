@@ -9,7 +9,7 @@ import { RootState } from '../../../store'
 import NotificationAppraiser from './NotificationAppraiser'
 // import { RootState } from 'store';
 
-export default function HeaderAppraiser() {
+export default function HeaderAppraiser({ collapsed }: { collapsed: boolean }) {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
@@ -40,7 +40,13 @@ export default function HeaderAppraiser() {
   ]
 
   return (
-    <Header className='fixed z-50 flex w-full px-5 bg-white border-b border-gray-200'>
+    <Header
+      className={`fixed z-50  flex justify-end px-5 bg-white border-b border-gray-200`}
+      style={{
+        width: collapsed ? '100%' : 'calc(100% - 256px)'
+      }}
+    >
+      {' '}
       <div className='flex items-center justify-end gap-3'>
         {isLoading ? <Spin className='mr-4' /> : <NotificationAppraiser accountId={staffId} />}
         <Dropdown menu={{ items }} placement='bottomRight' trigger={['click']} arrow>

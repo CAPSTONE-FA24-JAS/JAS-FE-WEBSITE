@@ -121,6 +121,7 @@ const FinanceProofList = () => {
       <Table
         columns={columns}
         dataSource={filteredData}
+        bordered
         pagination={{ pageSize: 5 }}
         loading={isLoading}
         style={{ minHeight: '65vh' }}

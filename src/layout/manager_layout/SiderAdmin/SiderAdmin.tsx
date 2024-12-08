@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { MdOutlineMenu } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 
-export default function SiderAdmin() {
+export default function SiderAdmin({ onCollapse }: { onCollapse: (collapsed: boolean) => void }) {
   type MenuItem = Required<MenuProps>['items'][number]
 
   function getItem(label: React.ReactNode, key: React.Key, icon?: React.ReactNode, children?: MenuItem[]): MenuItem {
@@ -30,7 +30,9 @@ export default function SiderAdmin() {
 
   useEffect(() => {
     const handleResize = () => {
-      setCollapsed(window.innerWidth < 1280)
+      const isCollapsed = window.innerWidth < 1280
+      setCollapsed(isCollapsed)
+      onCollapse(isCollapsed)
     }
 
     window.addEventListener('resize', handleResize)
@@ -38,7 +40,7 @@ export default function SiderAdmin() {
     return () => {
       window.removeEventListener('resize', handleResize)
     }
-  }, [])
+  }, [onCollapse])
 
   const getConditionalItems = (): MenuItem[] => {
     return [
@@ -67,7 +69,7 @@ export default function SiderAdmin() {
       collapsible
       collapsed={collapsed}
       onCollapse={(value) => setCollapsed(value)}
-      className='overflow-hidden border-r-[1px]'
+      className='fixed overflow-hidden border-r-[1px]'
       trigger={
         <div className='w-full border-r-[1px] border-t-[1px] flex items-center justify-center text-2xl pt-2'>
           <MdOutlineMenu />
