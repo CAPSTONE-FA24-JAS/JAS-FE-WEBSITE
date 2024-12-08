@@ -4,7 +4,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useCreatePreliminaryMutation, useGetValuationByIdQuery } from '../../../../services/valuation.services'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../../../store'
-import { parsePriceVND } from '../../../../utils/convertTypeDayjs'
 
 const { Title } = Typography
 

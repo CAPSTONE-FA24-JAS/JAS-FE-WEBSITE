@@ -6,6 +6,12 @@ import {
   SecondaryDiamond,
   SecondaryShaphy
 } from '../../../../../../../../types/Gemstones.type'
+import {
+  useGetEnumClaritiesQuery,
+  useGetEnumColorDiamondsQuery,
+  useGetEnumColorShapphiesQuery,
+  useGetEnumCutsQuery
+} from '../../../../../../../../services/createfinalvaluation.services'
 
 interface GemstoneDetailsProps {
   formData: {
@@ -42,6 +48,13 @@ interface ImageFilesUpload {
   }
 }
 
+interface FieldOption {
+  label: string
+  key: string
+  placeholder: string
+  options?: { name: string; value: number }[]
+}
+
 const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
   formData,
   handleGemstoneChange,
@@ -61,12 +74,17 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
     secondaryShaphies: false
   })
 
+  const { data: colorOptions } = useGetEnumColorDiamondsQuery()
+  const { data: cutOptions } = useGetEnumCutsQuery()
+  const { data: clarityOptions } = useGetEnumClaritiesQuery()
+  const { data: colorShaphyOptions } = useGetEnumColorShapphiesQuery()
+
   const diamondFields = [
     { label: 'Name', key: 'name', placeholder: 'Enter name' },
-    { label: 'Color', key: 'color', placeholder: 'Enter color' },
-    { label: 'Cut', key: 'cut', placeholder: 'Enter cut type' },
+    { label: 'Color', key: 'color', placeholder: 'Enter color', options: colorOptions?.data },
+    { label: 'Cut', key: 'cut', placeholder: 'Enter cut type', options: cutOptions?.data },
     { label: 'Quantity', key: 'quantity', placeholder: 'Enter quantity' },
-    { label: 'Clarity', key: 'clarity', placeholder: 'Enter clarity' },
+    { label: 'Clarity', key: 'clarity', placeholder: 'Enter clarity', options: clarityOptions?.data },
     { label: 'Dimensions', key: 'dimension', placeholder: 'Enter dimensions' },
     { label: 'Setting Type', key: 'settingType', placeholder: 'Enter setting type' },
     { label: 'Shape', key: 'shape', placeholder: 'Enter shape' },
@@ -77,7 +95,7 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
 
   const shaphyFields = [
     { label: 'Name', key: 'name', placeholder: 'Enter name' },
-    { label: 'Color', key: 'color', placeholder: 'Enter color' },
+    { label: 'Color', key: 'color', placeholder: 'Enter color', options: colorShaphyOptions?.data },
     { label: 'Carat', key: 'carat', placeholder: 'Enter carat' },
     { label: 'Quantity', key: 'quantity', placeholder: 'Enter quantity' },
     { label: 'Enhancement Type', key: 'enhancementType', placeholder: 'Enter enhancement type' },
@@ -202,40 +220,85 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
     )
   }
 
+  const renderSelectField = (
+    field: FieldOption,
+    value: string,
+    onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
+  ) => (
+    <div key={field.key}>
+      <label className='block font-medium mb-1'>{field.label}</label>
+      <select className='border rounded p-2 w-full' value={value} onChange={onChange}>
+        <option value='' disabled hidden>
+          {field.placeholder}
+        </option>
+        {field.options?.map((option) => (
+          <option key={option.value} value={option.name}>
+            {option.name}
+          </option>
+        ))}
+      </select>
+    </div>
+  )
+
+  const handleInputChange = (
+    type: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies',
+    index: number,
+    field: string,
+    value: string
+  ) => {
+    handleGemstoneChange(type, index, field, value)
+  }
+
+  const renderInputField = (
+    field: FieldOption,
+    value: string,
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  ) => (
+    <div key={field.key}>
+      <label className='block font-medium mb-1'>{field.label}</label>
+      <input
+        type='text'
+        placeholder={field.placeholder}
+        value={value}
+        onChange={onChange}
+        className='border rounded p-2 w-full'
+      />
+    </div>
+  )
+
   const renderGemstoneFields = (
     data: (MainDiamond | SecondaryDiamond | MainShaphy | SecondaryShaphy)[],
     type: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies'
   ) => {
     const isDiamondType = type === 'mainDiamonds' || type === 'secondaryDiamonds'
     const fields = isDiamondType ? diamondFields : shaphyFields
-    return data.map((detail, index) => {
-      return (
-        <div key={index} className='border p-4 mb-4 rounded'>
-          <h4 className='text-lg font-semibold'>{`${type} ${index + 1}`}</h4>
-          <div className='grid grid-cols-2 gap-4'>
-            {fields.map(({ label, key, placeholder }) => (
-              <div key={key}>
-                <label className='block font-medium mb-1'>{label}</label>
-                <input
-                  type='text'
-                  value={(detail as any)[key] || ''}
-                  placeholder={placeholder}
-                  onChange={(e) => {
-                    handleGemstoneChange(type, index, key as keyof typeof detail, e.target.value)
-                  }}
-                  className='border rounded p-2 w-full'
-                />
-              </div>
-            ))}
-          </div>
-
-          {renderImageUploadSection(index, type, 'imageDiamonds')}
-          {renderImageUploadSection(index, type, 'imageShaphies')}
-          {renderDocumentUploadSection(index, type, 'documentDiamonds')}
-          {renderDocumentUploadSection(index, type, 'documentShaphies')}
+    return data.map((detail, index) => (
+      <div key={index} className='border p-4 mb-4 rounded'>
+        <h4 className='text-lg font-semibold'>{`${type} ${index + 1}`}</h4>
+        <div className='grid grid-cols-2 gap-4'>
+          {fields.map((field: FieldOption) =>
+            field.options
+              ? renderSelectField(field, String(detail[field.key as keyof typeof detail]), (e) =>
+                  handleInputChange(type, index, field.key, e.target.value)
+                )
+              : renderInputField(field, String(detail[field.key as keyof typeof detail]), (e) =>
+                  handleInputChange(type, index, field.key, e.target.value)
+                )
+          )}
         </div>
-      )
-    })
+
+        <div className='grid grid-cols-2 gap-4'>
+          <div>
+            {renderImageUploadSection(index, type, 'imageDiamonds')}
+            {renderDocumentUploadSection(index, type, 'documentDiamonds')}
+          </div>
+          <div>
+            {renderImageUploadSection(index, type, 'imageShaphies')}
+            {renderDocumentUploadSection(index, type, 'documentShaphies')}
+          </div>
+        </div>
+      </div>
+    ))
   }
 
   const renderGemstoneSection = (

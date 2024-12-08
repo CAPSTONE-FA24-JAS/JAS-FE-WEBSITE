@@ -109,9 +109,10 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
             <strong className='w-1/3'>Video Link:</strong>
             <a
               href={record?.jewelry?.videoLink || '#'}
-              className='text-blue-800'
+              className='text-blue-800 truncate max-w-xs'
               target='_blank'
               rel='noopener noreferrer'
+              style={{ display: 'inline-block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
             >
               {record?.jewelry?.videoLink || 'No link available'}
             </a>
