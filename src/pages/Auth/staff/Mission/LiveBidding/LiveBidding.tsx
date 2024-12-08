@@ -79,7 +79,7 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
     try {
       const result = await cancelLot(itemLot.id).unwrap()
       if (result?.code === 200) {
-        setStatusLot('Canceled')
+        setStatusLot('Cancelled')
       }
     } catch (error) {
       console.error('Failed to cancel auction:', error)
