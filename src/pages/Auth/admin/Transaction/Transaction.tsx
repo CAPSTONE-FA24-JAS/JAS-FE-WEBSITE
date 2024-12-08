@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react'
 import { useViewCompanyTransactionsQuery } from '../../../../services/overview.services'
 import { Table, Tag, Typography } from 'antd'
 import moment from 'moment'
@@ -14,11 +15,16 @@ interface Transaction {
 
 function TransactionsComponent() {
   const { data, error, isLoading } = useViewCompanyTransactionsQuery(undefined)
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+
+  useEffect(() => {
+    if (data?.data) {
+      setTransactions([...data.data])
+    }
+  }, [data])
 
   if (isLoading) return <p className='py-4 text-lg text-center'>Loading transactions...</p>
   if (error) return <p className='py-4 text-lg text-center text-red-500'>Error loading transactions.</p>
-
-  const transactions: Transaction[] = data?.data || []
 
   const transactionTypes = Array.from(new Set(transactions.map((transaction) => transaction.transactionType)))
 
@@ -55,13 +61,31 @@ function TransactionsComponent() {
     }
   ]
 
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const sortOrder = e.target.value
+    const sortedTransactions = [...transactions].sort((a, b) => {
+      if (!a.transactionTime || !b.transactionTime) return 0
+      return sortOrder === 'asc'
+        ? new Date(a.transactionTime).getTime() - new Date(b.transactionTime).getTime()
+        : new Date(b.transactionTime).getTime() - new Date(a.transactionTime).getTime()
+    })
+    setTransactions(sortedTransactions)
+  }
+
   return (
     <div>
-      <h2 className='mb-4 text-2xl font-bold'>Transaction History</h2>
+      <div className='flex justify-between items-center mb-4'>
+        <h2 className='text-2xl font-bold'>Transaction History</h2>
+        <select onChange={handleSortChange} className='border p-2 rounded'>
+          <option value='desc'>Sort by Time: Newest</option>
+          <option value='asc'>Sort by Time: Oldest</option>
+        </select>
+      </div>
       <Table
         columns={columns}
         dataSource={transactions}
         rowKey={(record) => record.transactionTime || String(record.amount)}
+        bordered
         pagination={{
           pageSize: 8,
           showSizeChanger: true

@@ -73,7 +73,8 @@ export default function InvoiceTab() {
     'Rejected',
     'Finished',
     'Refunded',
-    'Cancelled'
+    'Cancelled',
+    'Closed'
   ]
 
   const columns = [
@@ -117,10 +118,14 @@ export default function InvoiceTab() {
   ]
 
   const allowedData = filteredData.filter((invoice: Invoice) => allowedStatuses.includes(invoice.status)) as Invoice[]
+  const createInvoices = allowedData.filter((invoice: Invoice) => invoice.status === 'CreateInvoice')
   const deliveringInvoices = allowedData.filter((invoice: Invoice) => invoice.status === 'Delivering')
   const deliveredInvoices = allowedData.filter((invoice: Invoice) => invoice.status === 'Delivered')
   const rejectedInvoices = allowedData.filter((invoice: Invoice) => invoice.status === 'Rejected')
   const finishedInvoices = allowedData.filter((invoice: Invoice) => invoice.status === 'Finished')
+  const refundedInvoices = allowedData.filter((invoice: Invoice) => invoice.status === 'Refunded')
+  const cancelledInvoices = allowedData.filter((invoice: Invoice) => invoice.status === 'Cancelled')
+  const closedInvoices = allowedData.filter((invoice: Invoice) => invoice.status === 'Closed')
   const tabItems = [
     {
       key: '1',
@@ -150,40 +155,68 @@ export default function InvoiceTab() {
     },
     {
       key: '2',
+      label: 'Create Invoice',
+      children: (
+        <Table columns={columns} dataSource={createInvoices} bordered pagination={{ pageSize: 5 }} rowKey='id' />
+      )
+    },
+    {
+      key: '3',
       label: 'Pending Payment',
       children: <BillInVoiceList />
     },
     {
-      key: '3',
+      key: '4',
       label: 'Paid',
       children: <ManageWinList />
     },
     {
-      key: '4',
+      key: '5',
       label: 'Delivering',
       children: (
         <Table columns={columns} dataSource={deliveringInvoices} bordered pagination={{ pageSize: 5 }} rowKey='id' />
       )
     },
     {
-      key: '5',
+      key: '6',
       label: 'Delivered',
       children: (
         <Table columns={columns} dataSource={deliveredInvoices} bordered pagination={{ pageSize: 5 }} rowKey='id' />
       )
     },
     {
-      key: '6',
+      key: '7',
       label: 'Rejected',
       children: (
         <Table columns={columns} dataSource={rejectedInvoices} bordered pagination={{ pageSize: 5 }} rowKey='id' />
       )
     },
     {
-      key: '7',
+      key: '8',
       label: 'Finished',
       children: (
         <Table columns={columns} dataSource={finishedInvoices} bordered pagination={{ pageSize: 5 }} rowKey='id' />
+      )
+    },
+    {
+      key: '9',
+      label: 'Refunded',
+      children: (
+        <Table columns={columns} dataSource={refundedInvoices} bordered pagination={{ pageSize: 5 }} rowKey='id' />
+      )
+    },
+    {
+      key: '10',
+      label: 'Cancelled',
+      children: (
+        <Table columns={columns} dataSource={cancelledInvoices} bordered pagination={{ pageSize: 5 }} rowKey='id' />
+      )
+    },
+    {
+      key: '11',
+      label: 'Closed',
+      children: (
+        <Table columns={columns} dataSource={closedInvoices} bordered pagination={{ pageSize: 5 }} rowKey='id' />
       )
     }
   ]

@@ -1,6 +1,11 @@
-import { Avatar, Button, Modal, notification } from 'antd'
+import { Avatar, Button, Modal, notification, Input } from 'antd'
 import { useState } from 'react'
-import { useFinishInvoiceMutation, useGetInvoiceByIdQuery } from '../../../../services/invoice.services'
+import {
+  useCancelInvoiceByManagerMutation,
+  useClosedInvoiceByManagerMutation,
+  useFinishInvoiceMutation,
+  useGetInvoiceByIdQuery
+} from '../../../../services/invoice.services'
 import { stringToDate } from '../../../../utils/convertTypeDayjs'
 
 interface ManageInvoiceModalProps {
@@ -20,8 +25,12 @@ export default function ManageInvoiceModal({
 }: ManageInvoiceModalProps) {
   const { data: invoiceData, error, isLoading } = useGetInvoiceByIdQuery(invoiceId, { skip: !invoiceId })
   const [finishInvoice] = useFinishInvoiceMutation()
+  const [cancelInvoiceByManager] = useCancelInvoiceByManagerMutation()
+  const [closedInvoiceByManager] = useClosedInvoiceByManagerMutation()
   const [isImageModalVisible, setImageModalVisible] = useState(false)
   const [currentImage, setCurrentImage] = useState('')
+  const [isCancelModalVisible, setCancelModalVisible] = useState(false)
+  const [cancelReason, setCancelReason] = useState('')
 
   const handleFinish = async () => {
     if (invoiceData?.data?.status === 'Delivered') {
@@ -44,7 +53,37 @@ export default function ManageInvoiceModal({
       }
     }
   }
-
+  const handleCancel = async () => {
+    try {
+      await cancelInvoiceByManager({ invoiceId: invoiceData.data.id, reason: cancelReason })
+      notification.success({
+        message: 'Success',
+        description: 'Invoice cancelled successfully',
+        placement: 'topRight'
+      })
+      setStatus('Cancelled')
+      refetch()
+      onCancel()
+    } catch (error) {
+      notification.error({
+        message: 'Error',
+        description: 'Failed to cancel invoice',
+        placement: 'topRight'
+      })
+    }
+    setCancelModalVisible(false)
+  }
+  const handleClosed = async () => {
+    await closedInvoiceByManager({ invoiceId: invoiceData.data.id })
+    notification.success({
+      message: 'Success',
+      description: 'Invoice closed successfully',
+      placement: 'topRight'
+    })
+    setStatus('Closed')
+    refetch()
+    onCancel()
+  }
   const handleImageClick = (imageLink: string) => {
     setCurrentImage(imageLink)
     setImageModalVisible(true)
@@ -380,6 +419,27 @@ export default function ManageInvoiceModal({
             </>
           )}
         </div>
+        <div className='flex justify-between mb-2'>
+          <p>
+            <strong>Delivery Method:</strong>
+          </p>
+          <p className='font-bold text-gray-600'>{ReceiveAtCompany}</p>
+        </div>
+
+        {status === 'CreateInvoice' && (
+          <div className='flex justify-end' style={{ marginTop: 20 }}>
+            <Button type='primary' onClick={() => setCancelModalVisible(true)}>
+              Cancel Invoice
+            </Button>
+          </div>
+        )}
+        {status === 'Rejected' && (
+          <div className='flex justify-end' style={{ marginTop: 20 }}>
+            <Button type='primary' onClick={handleClosed}>
+              Closed Invoice
+            </Button>
+          </div>
+        )}
         <div className='space-y-2 mb-2'>
           {status === 'PendingPayment' && (
             <div className='flex justify-between'>
@@ -423,12 +483,6 @@ export default function ManageInvoiceModal({
             </div>
           )}
         </div>
-        <div className='flex justify-between mb-2'>
-          <p>
-            <strong>Delivery Method:</strong>
-          </p>
-          <p className='font-bold text-gray-600'>{ReceiveAtCompany}</p>
-        </div>
 
         {ReceiveAtCompany === 'In Company' && (
           <div className='flex justify-end' style={{ marginTop: 20 }}>
@@ -445,6 +499,21 @@ export default function ManageInvoiceModal({
             </Button>
           </div>
         )}
+      </Modal>
+
+      <Modal
+        title='Cancel Invoice'
+        open={isCancelModalVisible}
+        onCancel={() => setCancelModalVisible(false)}
+        onOk={handleCancel}
+      >
+        <p>Please provide a reason for cancellation:</p>
+        <Input.TextArea
+          value={cancelReason}
+          onChange={(e) => setCancelReason(e.target.value)}
+          rows={4}
+          placeholder='Enter reason here...'
+        />
       </Modal>
 
       <Modal open={isImageModalVisible} onCancel={() => setImageModalVisible(false)} footer={null} centered width={800}>

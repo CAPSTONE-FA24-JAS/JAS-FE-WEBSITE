@@ -156,6 +156,7 @@ const JewelryList = () => {
             dataSource={jewelryFiltered}
             loading={isLoading || isFetching}
             rowKey={(record) => record.id.toString()}
+            bordered
             pagination={{
               total: data?.data.totalItemRepsone,
               pageSize,

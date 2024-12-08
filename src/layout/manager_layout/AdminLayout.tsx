@@ -3,16 +3,19 @@ import ContentAdmin from './ContentAdmin/ContentAdmin'
 import FooterAdmin from './FooterAdmin/FooterAdmin'
 import HeaderAdmin from './HeaderAdmin/HeaderAdmin'
 import SiderAdmin from './SiderAdmin/SiderAdmin'
-
+import { useState } from 'react'
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const [collapsed, setCollapsed] = useState(false)
   return (
     <Layout className='min-h-screen'>
-      <SiderAdmin />
       <Layout className='bg-white '>
-        <HeaderAdmin />
-        <ContentAdmin>{children}</ContentAdmin>
-        <FooterAdmin />
+        <SiderAdmin onCollapse={setCollapsed} />
+        <Layout>
+          <HeaderAdmin collapsed={collapsed} />
+          <ContentAdmin>{children}</ContentAdmin>
+        </Layout>
       </Layout>
+      <FooterAdmin />
     </Layout>
   )
 }

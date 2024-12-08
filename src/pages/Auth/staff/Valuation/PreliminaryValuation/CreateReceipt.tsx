@@ -1,4 +1,4 @@
-import { Modal, Typography, Input, Row, Col, message } from 'antd'
+import { Modal, Typography, Input, Row, Col, message, Select, InputNumber } from 'antd'
 import React, { useState } from 'react'
 import { useCreateReceiptMutation } from '../../../../../services/valuation.services'
 import { dateToString } from '../../../../../utils/convertTypeDayjs'
@@ -33,6 +33,8 @@ interface CreateReceiptProps {
   refetch: () => void
 }
 
+const { Option } = Select
+
 const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCreate, record, refetch }) => {
   const [actualStatusOfJewelry, setActualStatusOfJewelry] = useState(record?.actualStatusOfJewelry || '')
   const [note, setnote] = useState('')
@@ -46,6 +48,16 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
   const [createReceipt] = useCreateReceiptMutation()
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({ actualStatusOfJewelry: false, khoiluong: false, jewelryName: false })
+
+  const productStatusOptions = [
+    'Rất tốt ',
+    'Tốt ',
+    'Hư hại nhẹ ',
+    'Hư hại nghiêm trọng ',
+    'Thiếu phụ kiện ',
+    'Không đạt tiêu chuẩn ',
+    'Giả mạo '
+  ]
 
   const handleCreate = async () => {
     // Kiểm tra validation
@@ -284,21 +296,31 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
                 <Text strong className='block mb-2'>
                   Trạng thái sản phẩm: <span style={{ color: 'red' }}>*</span>
                 </Text>
-                <Input
+                <Select
                   className={`w-full mb-2 font-bold ${errors.actualStatusOfJewelry ? 'border-red-500' : ''}`}
                   value={actualStatusOfJewelry}
-                  onChange={(e) => setActualStatusOfJewelry(e.target.value)}
-                />
+                  onChange={(value) => setActualStatusOfJewelry(value)}
+                >
+                  {productStatusOptions.map((status, index) => (
+                    <Option key={index} value={status}>
+                      {status}
+                    </Option>
+                  ))}
+                </Select>
                 {errors.actualStatusOfJewelry && <Text className='text-red-500'>Trường này là bắt buộc.</Text>}
               </Col>
               <Col span={24}>
                 <Text strong className='block mb-2'>
-                  Khối Lượng: <span style={{ color: 'red' }}>*</span>
+                  Khối Lượng (g): <span style={{ color: 'red' }}>*</span>
                 </Text>
-                <Input
+                <InputNumber
                   className={`w-full mb-2 font-bold ${errors.khoiluong ? 'border-red-500' : ''}`}
-                  value={khoiluong}
-                  onChange={(e) => setkhoiluong(e.target.value)}
+                  value={khoiluong ? parseFloat(khoiluong) : 0}
+                  onChange={(value) => setkhoiluong((value ?? 0).toString())}
+                  min={0}
+                  step={0.1}
+                  formatter={(value) => `${value} g`}
+                  parser={(value) => parseFloat(value?.replace(' g', '') || '0')}
                 />
                 {errors.khoiluong && <Text className='text-red-500'>Trường này là bắt buộc.</Text>}
               </Col>

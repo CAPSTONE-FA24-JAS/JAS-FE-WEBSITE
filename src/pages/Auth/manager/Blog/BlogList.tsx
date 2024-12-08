@@ -103,7 +103,14 @@ const BlogTable = () => {
         </Tooltip>
       </div>
 
-      <Table columns={columns} dataSource={blogs} rowKey='id' pagination={false} style={{ tableLayout: 'fixed' }} />
+      <Table
+        columns={columns}
+        dataSource={blogs}
+        rowKey='id'
+        bordered
+        pagination={false}
+        style={{ tableLayout: 'fixed' }}
+      />
 
       <Modal title='Create New Blog' open={isModalVisible} onCancel={handleCancel} footer={null} width={700}>
         <CreateBlogPage />
