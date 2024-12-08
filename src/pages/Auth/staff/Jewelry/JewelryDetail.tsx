@@ -254,65 +254,98 @@ export const JewelryDetail = () => {
         time_Bidding: values.time_Bidding,
         artistId: values.artistId,
         categoryId: values.categoryId,
-        UpdateImageJewelryDTOs: values.imageJewelries.map((jewelry) => ({
-          id: jewelry.jewelryId,
-          imageLink: jewelry.imageLink,
-          title: jewelry.title,
-          thumbnailImage: jewelry.thumbnailImage
-        })),
+        UpdateImageJewelryDTOs: values.imageJewelries.map(
+          (jewelry: { jewelryId: any; imageLink: any; title: any; thumbnailImage: any }) => ({
+            id: jewelry.jewelryId,
+            imageLink: jewelry.imageLink,
+            title: jewelry.title,
+            thumbnailImage: jewelry.thumbnailImage
+          })
+        ),
 
         // Xử lý đá quý
         UpdateMainDiamondDTOs:
-          values.mainDiamonds?.map((diamond, index) => ({
-            ...diamond,
-            quantity: Number(diamond.quantity),
-            documentDiamonds: diamond.documentDiamonds || [],
-            imageDiamonds: {
-              imageLink: diamond.imageDiamonds?.imageLink || '',
-              id: diamond.imageDiamonds?.id || null
-            }
-          })) || [],
+          values.mainDiamonds?.map(
+            (
+              diamond: { quantity: any; documentDiamonds: any; imageDiamonds: { imageLink: any; id: any } },
+              _index: any
+            ) => ({
+              ...diamond,
+              quantity: Number(diamond.quantity),
+              documentDiamonds: diamond.documentDiamonds || [],
+              imageDiamonds: {
+                imageLink: diamond.imageDiamonds?.imageLink || '',
+                id: diamond.imageDiamonds?.id || null
+              }
+            })
+          ) || [],
 
         UpdateSecondaryDiamondDTOs:
-          values.secondaryDiamonds?.map((diamond, index) => ({
-            ...diamond,
-            quantity: Number(diamond.quantity),
-            totalCarat: Number(diamond.totalCarat),
-            documentDiamonds: diamond.documentDiamonds || [],
-            imageDiamonds: {
-              imageLink: diamond.imageDiamonds?.imageLink || '',
-              id: diamond.imageDiamonds?.id || null
-            }
-          })) || [],
+          values.secondaryDiamonds?.map(
+            (
+              diamond: {
+                quantity: any
+                totalCarat: any
+                documentDiamonds: any
+                imageDiamonds: { imageLink: any; id: any }
+              },
+              _index: any
+            ) => ({
+              ...diamond,
+              quantity: Number(diamond.quantity),
+              totalCarat: Number(diamond.totalCarat),
+              documentDiamonds: diamond.documentDiamonds || [],
+              imageDiamonds: {
+                imageLink: diamond.imageDiamonds?.imageLink || '',
+                id: diamond.imageDiamonds?.id || null
+              }
+            })
+          ) || [],
 
         UpdateMainShaphieDTOs:
-          values.mainShaphies?.map((shaphy, index) => ({
-            ...shaphy,
-            carat: Number(shaphy.carat),
-            quantity: Number(shaphy.quantity),
-            documentShaphies: shaphy.documentShaphies || [],
-            imageShaphies: {
-              imageLink: shaphy.imageShaphies?.imageLink || '',
-              id: shaphy.imageShaphies?.id || null
-            }
-          })) || [],
+          values.mainShaphies?.map(
+            (
+              shaphy: { carat: any; quantity: any; documentShaphies: any; imageShaphies: { imageLink: any; id: any } },
+              _index: any
+            ) => ({
+              ...shaphy,
+              carat: Number(shaphy.carat),
+              quantity: Number(shaphy.quantity),
+              documentShaphies: shaphy.documentShaphies || [],
+              imageShaphies: {
+                imageLink: shaphy.imageShaphies?.imageLink || '',
+                id: shaphy.imageShaphies?.id || null
+              }
+            })
+          ) || [],
 
         UpdateSecondaryShaphieDTOs:
-          values.secondaryShaphies?.map((shaphy, index) => ({
-            ...shaphy,
-            carat: Number(shaphy.carat),
-            quantity: Number(shaphy.quantity),
-            totalCarat: Number(shaphy.totalCarat),
-            documentShaphies: shaphy.documentShaphies || [],
-            imageShaphies: {
-              imageLink: shaphy.imageShaphies?.imageLink || '',
-              id: shaphy.imageShaphies?.id || null
-            }
-          })) || [],
+          values.secondaryShaphies?.map(
+            (
+              shaphy: {
+                carat: any
+                quantity: any
+                totalCarat: any
+                documentShaphies: any
+                imageShaphies: { imageLink: any; id: any }
+              },
+              _index: any
+            ) => ({
+              ...shaphy,
+              carat: Number(shaphy.carat),
+              quantity: Number(shaphy.quantity),
+              totalCarat: Number(shaphy.totalCarat),
+              documentShaphies: shaphy.documentShaphies || [],
+              imageShaphies: {
+                imageLink: shaphy.imageShaphies?.imageLink || '',
+                id: shaphy.imageShaphies?.id || null
+              }
+            })
+          ) || [],
 
         // Xử lý đặc điểm
         UpdateKeyCharacteristicDetailDTOs:
-          values.keyCharacteristicDetails?.map((char) => ({
+          values.keyCharacteristicDetails?.map((char: { id: any; description: any; keyCharacteristicId: any }) => ({
             id: char.id,
             description: char.description,
             keyCharacteristicId: Number(char.keyCharacteristicId)
