@@ -106,6 +106,17 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
             <span className='text-blue-800 '>{record?.jewelry?.category?.name}</span>
           </div>
           <div className='flex mb-4'>
+            <strong className='w-1/3'>Video Link:</strong>
+            <a
+              href={record?.jewelry?.videoLink || '#'}
+              className='text-blue-800'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              {record?.jewelry?.videoLink || 'No link available'}
+            </a>
+          </div>
+          <div className='flex mb-4'>
             <strong className='w-1/3'>Estimated Price:</strong>
             <span>
               {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(

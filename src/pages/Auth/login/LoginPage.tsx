@@ -18,8 +18,8 @@ export default function LoginPage() {
       dispatch(setUser(data.data))
       localStorage.setItem('userLogin', JSON.stringify(data.data))
       notification.success({
-        message: 'Đăng nhập thành công',
-        description: 'Chào mừng bạn trở lại hệ thống'
+        message: 'Login Success',
+        description: 'Welcome back to the system'
       })
       setTimeout(() => {
         navigate('/')
@@ -28,9 +28,9 @@ export default function LoginPage() {
 
     if (isError && error) {
       const err = error as ErrorRegisterResponse
-      const errorMessage = err.errorMessages ? err.errorMessages : 'Tên tài khoản hoặc mật khẩu không đúng'
+      const errorMessage = err.errorMessages ? err.errorMessages : 'Username or password is incorrect'
       notification.error({
-        message: 'Đăng nhập thất bại',
+        message: 'Login Failed',
         description: errorMessage
       })
     }
@@ -41,9 +41,9 @@ export default function LoginPage() {
       await userLogin(values)
     } catch (error) {
       const err = error as ErrorRegisterResponse
-      const errorMessage = err.errorMessages ? err.errorMessages : 'Tên tài khoản hoặc mật khẩu không đúng'
+      const errorMessage = err.errorMessages ? err.errorMessages : 'Username or password is incorrect'
       notification.error({
-        message: 'Đăng nhập thất bại',
+        message: 'Login Failed',
         description: errorMessage
       })
     }

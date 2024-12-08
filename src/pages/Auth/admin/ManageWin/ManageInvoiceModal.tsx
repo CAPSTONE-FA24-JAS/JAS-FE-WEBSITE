@@ -112,6 +112,7 @@ export default function ManageInvoiceModal({
   const deposit = invoiceDetails.myBidDTO?.lotDTO?.deposit ?? 'N/A'
   const shippingFee = invoiceDetails.feeShip ?? 'N/A'
   const ReceiveAtCompany = invoiceDetails.isReceiveAtCompany ? 'In Company' : 'COD'
+  const reason = invoiceDetails.note ?? 'N/A'
   const linkBillTransaction = invoiceDetails.linkBillTransaction ?? 'N/A'
   const historyTimes = invoiceDetails.myBidDTO?.historyCustomerLots || []
   const createinvoiceTimes = historyTimes
@@ -140,6 +141,9 @@ export default function ManageInvoiceModal({
   const deliveredImageLink = invoiceDetails.statusInvoiceDTOs?.find(
     (item: any) => item.status === 'Delivered'
   )?.imageLink
+
+  console.log('ReceiveAtCompany:', ReceiveAtCompany)
+  console.log('Status:', status)
 
   return (
     <>
@@ -426,6 +430,15 @@ export default function ManageInvoiceModal({
           <p className='font-bold text-gray-600'>{ReceiveAtCompany}</p>
         </div>
 
+        {status === 'Cancelled' && (
+          <div className='flex justify-between mb-2'>
+            <p>
+              <strong>Reason Cancel:</strong>
+            </p>
+            <p className='font-bold text-gray-600'>{reason}</p>
+          </div>
+        )}
+
         {status === 'CreateInvoice' && (
           <div className='flex justify-end' style={{ marginTop: 20 }}>
             <Button type='primary' onClick={() => setCancelModalVisible(true)}>
@@ -484,7 +497,7 @@ export default function ManageInvoiceModal({
           )}
         </div>
 
-        {ReceiveAtCompany === 'In Company' && (
+        {ReceiveAtCompany === 'In Company' && status === 'Paid' && (
           <div className='flex justify-end' style={{ marginTop: 20 }}>
             <Button type='primary' onClick={handleFinish}>
               Finish Invoice

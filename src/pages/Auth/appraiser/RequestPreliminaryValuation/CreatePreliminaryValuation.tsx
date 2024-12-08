@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useCreatePreliminaryMutation, useGetValuationByIdQuery } from '../../../../services/valuation.services'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../../../store'
+import { parsePriceVND } from '../../../../utils/convertTypeDayjs'
 
 const { Title } = Typography
 
@@ -49,6 +50,7 @@ const CreatePreliminaryValuationAppraiser = () => {
   }, [data])
 
   const handleEstimatePriceMinChange = (value: number | null) => {
+    console.log('Estimate Price Min:', value)
     setFormValues((prevValues) => ({
       ...prevValues,
       estimatePriceMin: value || 0
@@ -60,6 +62,7 @@ const CreatePreliminaryValuationAppraiser = () => {
   }
 
   const handleEstimatePriceMaxChange = (value: number | null) => {
+    console.log('Estimate Price Max:', value)
     setFormValues((prevValues) => ({
       ...prevValues,
       estimatePriceMax: value || 0
@@ -218,7 +221,7 @@ const CreatePreliminaryValuationAppraiser = () => {
           <Col span={12}>
             <div className='mb-4'>
               <label htmlFor='estimatePriceMin' className='block mb-2 text-sm font-medium text-gray-900'>
-                Estimate Price Min
+                Estimate Price Min(VND)
               </label>
               <InputNumber
                 id='estimatePriceMin'
@@ -226,7 +229,7 @@ const CreatePreliminaryValuationAppraiser = () => {
                 step={1000000}
                 value={formValues.estimatePriceMin}
                 onChange={handleEstimatePriceMinChange}
-                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'}
+                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                 parser={(value) => parseFloat(value!.replace(/\$\s?|(,*)/g, '')) || 0}
                 className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5'
               />
@@ -238,7 +241,7 @@ const CreatePreliminaryValuationAppraiser = () => {
           <Col span={12}>
             <div className='mb-4'>
               <label htmlFor='estimatePriceMax' className='block mb-2 text-sm font-medium text-gray-900'>
-                Estimate Price Max
+                Estimate Price Max(VND)
               </label>
               <InputNumber
                 id='estimatePriceMax'
@@ -246,7 +249,7 @@ const CreatePreliminaryValuationAppraiser = () => {
                 step={1000000}
                 value={formValues.estimatePriceMax}
                 onChange={handleEstimatePriceMaxChange}
-                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'}
+                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                 parser={(value) => parseFloat(value!.replace(/\$\s?|(,*)/g, '')) || 0}
                 className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5'
               />
