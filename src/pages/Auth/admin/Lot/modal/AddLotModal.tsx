@@ -385,8 +385,8 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
 
                 <Form.Item
                   name='bidIncrementTime'
-                  label='Bid Decrease Time (minute)'
-                  rules={[{ required: true, message: 'Please input the decreate amout' }]}
+                  label='Bid Decrease Time (seconds)'
+                  rules={[{ required: true, message: 'Please input the time decrease' }]}
                   className='w-[48%]'
                 >
                   <InputNumber className='w-full' />

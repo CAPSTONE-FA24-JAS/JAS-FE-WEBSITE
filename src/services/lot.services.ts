@@ -135,7 +135,7 @@ export const lotApi = createApi({
             staffId: body.staffId,
             jewelryId: body.jewelryId,
             auctionId: body.auctionId,
-            bidIncrementTime: Number(body.bidIncrementTime) * 60
+            bidIncrementTime: Number(body.bidIncrementTime)
           }
         }
       ),
