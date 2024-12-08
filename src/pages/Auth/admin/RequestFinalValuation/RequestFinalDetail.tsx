@@ -196,6 +196,18 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
             <span className=' text-blue-800'>{valuationData?.data?.jewelry?.category?.name || 0} </span>
           </div>
           <div className='flex mb-4'>
+            <strong className='w-1/3'>Video Link:</strong>
+            <a
+              href={valuationData?.data?.jewelry?.videoLink || '#'}
+              className='text-blue-800 truncate max-w-xs'
+              target='_blank'
+              rel='noopener noreferrer'
+              style={{ display: 'inline-block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+            >
+              {valuationData?.data?.jewelry?.videoLink || 'No link available'}
+            </a>
+          </div>
+          <div className='flex mb-4'>
             <strong className='w-1/3'>Estimated Price:</strong>
             <span>
               {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
@@ -222,6 +234,10 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
                 valuationData?.data?.jewelry?.specificPrice || 0
               )}
             </span>
+          </div>
+          <div className='flex mb-4'>
+            <strong className='w-1/3'>Bid Form:</strong>
+            <span className='text-red-700 font-bold'>{valuationData?.data?.jewelry?.bidForm || 0} </span>
           </div>
           <div>
             <strong className='w-full block mb-4'>Key Characteristics</strong>
