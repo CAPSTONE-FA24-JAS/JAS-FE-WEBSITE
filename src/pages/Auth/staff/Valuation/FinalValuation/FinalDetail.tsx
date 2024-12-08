@@ -164,8 +164,14 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
           {record?.jewelry?.videoLink && (
             <div className='flex mb-4'>
               <strong className='w-1/3'>Video Link:</strong>
-              <a href={record?.jewelry?.videoLink} target='_blank' rel='noopener noreferrer' className='text-blue-800'>
-                {record?.jewelry?.videoLink}
+              <a
+                href={record?.jewelry?.videoLink || '#'}
+                className='text-blue-800 truncate max-w-xs'
+                target='_blank'
+                rel='noopener noreferrer'
+                style={{ display: 'inline-block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+              >
+                {record?.jewelry?.videoLink || 'No link available'}
               </a>
             </div>
           )}
@@ -312,7 +318,7 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
                               src={image.imageLink}
                               alt={`diamond-image-${index}`}
                               className='mb-2'
-                              style={{ maxWidth: '80px', borderRadius: '15px', border: '6px solid gray' }}
+                              style={{ maxWidth: '80px', borderRadius: '15px' }}
                               preview={{ src: image.imageLink }}
                             />
                           ) : null

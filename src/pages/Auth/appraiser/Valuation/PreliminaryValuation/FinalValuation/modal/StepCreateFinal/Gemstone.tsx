@@ -287,10 +287,16 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
           )}
         </div>
 
-        {renderImageUploadSection(index, type, 'imageDiamonds')}
-        {renderImageUploadSection(index, type, 'imageShaphies')}
-        {renderDocumentUploadSection(index, type, 'documentDiamonds')}
-        {renderDocumentUploadSection(index, type, 'documentShaphies')}
+        <div className='grid grid-cols-2 gap-4'>
+          <div>
+            {renderImageUploadSection(index, type, 'imageDiamonds')}
+            {renderDocumentUploadSection(index, type, 'documentDiamonds')}
+          </div>
+          <div>
+            {renderImageUploadSection(index, type, 'imageShaphies')}
+            {renderDocumentUploadSection(index, type, 'documentShaphies')}
+          </div>
+        </div>
       </div>
     ))
   }
