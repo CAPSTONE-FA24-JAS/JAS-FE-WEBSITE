@@ -149,6 +149,7 @@ const Overview = () => {
         </div>
         <Table
           dataSource={filteredData || []}
+          bordered
           pagination={{ pageSize: 5 }}
           loading={isLoading}
           style={{ minHeight: '65vh' }}

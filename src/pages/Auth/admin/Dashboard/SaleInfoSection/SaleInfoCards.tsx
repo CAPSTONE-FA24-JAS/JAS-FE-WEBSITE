@@ -19,7 +19,6 @@ const SaleInfoCards = () => {
       title: 'Invoices',
       sales: 0,
       increment: 0,
-      date: 'May 2022',
       backgroundClass: 'bg-gradient-to-r from-red-200 via-red-300 to-red-400'
     },
     {
@@ -30,7 +29,6 @@ const SaleInfoCards = () => {
       title: 'Revenue',
       sales: 0,
       increment: 0,
-      date: 'May 2022',
       backgroundClass: 'bg-gradient-to-r from-orange-200 via-orange-300 to-orange-400'
     }
   ])
@@ -61,7 +59,6 @@ const SaleInfoCards = () => {
             icon={saleInfoDataItem.icon}
             sales={saleInfoDataItem.sales}
             increment={saleInfoDataItem.increment}
-            date={saleInfoDataItem.date}
             backgroundClass={saleInfoDataItem.backgroundClass}
           />
         </div>

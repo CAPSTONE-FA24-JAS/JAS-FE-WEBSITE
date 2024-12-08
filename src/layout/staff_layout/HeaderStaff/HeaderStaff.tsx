@@ -8,7 +8,7 @@ import { logoutUser, RoleType } from '../../../slice/authLoginAPISlice'
 import { RootState } from '../../../store'
 import NotificationMenu from './NotificationMenu'
 
-export default function HeaderStaff() {
+export default function HeaderStaff({ collapsed }: { collapsed: boolean }) {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
@@ -39,7 +39,12 @@ export default function HeaderStaff() {
   ]
 
   return (
-    <Header className='fixed z-50 flex w-full px-5 bg-white border-b border-gray-200'>
+    <Header
+      className={`fixed z-50  flex justify-end px-5 bg-white border-b border-gray-200`}
+      style={{
+        width: collapsed ? '100%' : 'calc(100% - 256px)'
+      }}
+    >
       <div className='flex items-center justify-end gap-3'>
         {isLoading ? <Spin className='mr-4' /> : <NotificationMenu accountId={staffId} />}
         <Dropdown menu={{ items }} placement='bottomRight' trigger={['click']} arrow>

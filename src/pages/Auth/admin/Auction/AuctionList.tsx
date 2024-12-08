@@ -281,6 +281,7 @@ const AuctionList = () => {
           <Table
             columns={columns}
             dataSource={auctionFiltered}
+            bordered
             pagination={{ pageSize: 5 }}
             loading={isLoading}
             style={{ minHeight: '65vh' }}

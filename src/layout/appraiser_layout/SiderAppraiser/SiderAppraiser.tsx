@@ -5,7 +5,7 @@ import { HiOutlineDocument } from 'react-icons/hi'
 import { MdAssessment, MdOutlineMenu } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 
-export default function SiderAppraiser() {
+export default function SiderAppraiser({ onCollapse }: { onCollapse: (collapsed: boolean) => void }) {
   type MenuItem = Required<MenuProps>['items'][number]
 
   function getItem(label: React.ReactNode, key: React.Key, icon?: React.ReactNode, children?: MenuItem[]): MenuItem {
@@ -30,7 +30,9 @@ export default function SiderAppraiser() {
 
   useEffect(() => {
     const handleResize = () => {
-      setCollapsed(window.innerWidth < 1280)
+      const isCollapsed = window.innerWidth < 1280
+      setCollapsed(isCollapsed)
+      onCollapse(isCollapsed)
     }
 
     window.addEventListener('resize', handleResize)
@@ -38,7 +40,7 @@ export default function SiderAppraiser() {
     return () => {
       window.removeEventListener('resize', handleResize)
     }
-  }, [])
+  }, [onCollapse])
 
   const getConditionalItems = (): MenuItem[] => {
     return [
@@ -62,7 +64,7 @@ export default function SiderAppraiser() {
       collapsible
       collapsed={collapsed}
       onCollapse={(value) => setCollapsed(value)}
-      className='overflow-hidden border-r-[1px]'
+      className='fixed overflow-hidden border-r-[1px]'
       trigger={
         <div className='w-full border-r-[1px] border-t-[1px] flex items-center justify-center text-2xl pt-2'>
           <MdOutlineMenu />
@@ -79,22 +81,6 @@ export default function SiderAppraiser() {
             className='object-contain w-36 h-36' // Adjust size as needed
           />
         </div>
-
-        {/* <div
-          className={cn('mx-auto text-center mb-6 mt-6 pb-6', {
-            hidden: collapsed
-          })}
-        >
-          <div className='text-2xl font-bold text-black'>JAS</div>
-          <div className='text-lg font-normal text-black up'>Auctions</div>
-        </div>
-        <div
-          className={cn('mx-auto text-center mb-4 mt-4 pb-4', {
-            hidden: !collapsed
-          })}
-        >
-          <div className='py-2 text-xl font-bold text-black'>JAS</div>
-        </div> */}
       </div>
 
       <Menu

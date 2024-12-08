@@ -410,6 +410,7 @@ const LotList = () => {
             columns={columns}
             dataSource={filteredLots || []}
             scroll={{ x: 'max-content' }}
+            bordered
             rowKey='id'
             pagination={{
               pageSize: 5

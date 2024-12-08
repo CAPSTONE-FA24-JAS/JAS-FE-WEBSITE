@@ -79,6 +79,20 @@ export const manageInvoice = createApi({
     }),
     getDeliveringInvoicesByShipper: build.query({
       query: () => `Invoices/getDeliveringInvoicesByShipperToAssign`
+    }),
+    cancelInvoiceByManager: build.mutation<{ message: string }, { invoiceId: number; reason: string }>({
+      query: ({ invoiceId, reason }) => ({
+        url: `Invoices/CancelledInvoiceByManager`,
+        method: 'PUT',
+        params: { invoiceId, reason }
+      })
+    }),
+    closedInvoiceByManager: build.mutation<{ message: string }, { invoiceId: number }>({
+      query: ({ invoiceId }) => ({
+        url: `Invoices/ClosedInvoiceByManager`,
+        method: 'PUT',
+        params: { invoiceId }
+      })
     })
   })
 })
@@ -94,6 +108,8 @@ export const {
   useApproveRequestNewWithdrawMutation,
   useProcessWithdrawStaffMutation,
   useCancelWithdrawMutation,
-  useGetDeliveringInvoicesByShipperQuery
+  useGetDeliveringInvoicesByShipperQuery,
+  useCancelInvoiceByManagerMutation,
+  useClosedInvoiceByManagerMutation
   // useShipperAndInvoiceQuery
 } = manageInvoice

@@ -27,6 +27,11 @@ const CreatePreliminaryValuationAppraiser = () => {
   const staffId = useSelector((state: RootState) => state.authLoginAPI.staffId)
   console.log('Staff ID:', staffId)
 
+  const [errors, setErrors] = useState({
+    estimatePriceMin: '',
+    estimatePriceMax: ''
+  })
+
   useEffect(() => {
     if (data && data.data) {
       const { data: valuationData } = data
@@ -48,6 +53,10 @@ const CreatePreliminaryValuationAppraiser = () => {
       ...prevValues,
       estimatePriceMin: value || 0
     }))
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      estimatePriceMin: value === null ? 'Estimate Price Min is required' : ''
+    }))
   }
 
   const handleEstimatePriceMaxChange = (value: number | null) => {
@@ -55,12 +64,30 @@ const CreatePreliminaryValuationAppraiser = () => {
       ...prevValues,
       estimatePriceMax: value || 0
     }))
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      estimatePriceMax: value === null ? 'Estimate Price Max is required' : ''
+    }))
   }
 
   const handleCreatePreliminary = async () => {
-    const appraiserId = staffId
+    if (formValues.estimatePriceMin === 0) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        estimatePriceMin: 'Estimate Price Min is required'
+      }))
+      return
+    }
 
-    console.log('Appraiser ID:', appraiserId)
+    if (formValues.estimatePriceMax === 0) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        estimatePriceMax: 'Estimate Price Max is required'
+      }))
+      return
+    }
+
+    const appraiserId = staffId
 
     if (!appraiserId) {
       notification.error({
@@ -196,10 +223,14 @@ const CreatePreliminaryValuationAppraiser = () => {
               <InputNumber
                 id='estimatePriceMin'
                 min={0}
+                step={1000000}
                 value={formValues.estimatePriceMin}
                 onChange={handleEstimatePriceMinChange}
+                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'}
+                parser={(value) => parseFloat(value!.replace(/\$\s?|(,*)/g, '')) || 0}
                 className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5'
               />
+              {errors.estimatePriceMin && <div className='text-red-500 text-sm'>{errors.estimatePriceMin}</div>}
             </div>
           </Col>
         </Row>
@@ -212,10 +243,14 @@ const CreatePreliminaryValuationAppraiser = () => {
               <InputNumber
                 id='estimatePriceMax'
                 min={0}
+                step={1000000}
                 value={formValues.estimatePriceMax}
                 onChange={handleEstimatePriceMaxChange}
+                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'}
+                parser={(value) => parseFloat(value!.replace(/\$\s?|(,*)/g, '')) || 0}
                 className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5'
               />
+              {errors.estimatePriceMax && <div className='text-red-500 text-sm'>{errors.estimatePriceMax}</div>}
             </div>
           </Col>
         </Row>

@@ -45,7 +45,7 @@ const FinalValuationList = () => {
         let color = 'green'
         let label = status
 
-        if (status === 'FinalValuated') {
+        if (status === 'Evaluated') {
           color = 'red'
         } else if (status === 'ManagerApproved') {
           color = 'blue'

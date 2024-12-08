@@ -27,7 +27,7 @@ const RequestFinalValuation = () => {
 
   const finalValuationData: Valuation[] =
     data?.dataResponse?.filter((valuation: Valuation) =>
-      ['FinalValuated', 'ManagerApproved', 'Authorized', 'Rejected'].includes(valuation.status)
+      ['Evaluated', 'ManagerApproved', 'Authorized', 'Rejected'].includes(valuation.status)
     ) || []
 
   useEffect(() => {
@@ -76,7 +76,7 @@ const RequestFinalValuation = () => {
         let color = 'green'
         let label = status
 
-        if (status === 'FinalValuated') {
+        if (status === 'Evaluated') {
           color = 'red'
         } else if (status === 'ManagerApproved') {
           color = 'blue'

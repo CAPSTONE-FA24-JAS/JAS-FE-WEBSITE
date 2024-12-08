@@ -653,7 +653,7 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
             </div>
           )}
 
-          {record?.status === 'FinalValuated' && (
+          {record?.status === 'Evaluated' && (
             <>
               <div className='mb-4'>
                 <strong>Giá khởi điểm:</strong>
