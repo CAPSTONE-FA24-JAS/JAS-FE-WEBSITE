@@ -2,7 +2,6 @@ import { ArrowLeftOutlined, EditOutlined, PlusOutlined, SaveOutlined } from '@an
 import { Button, Card, Descriptions, Form, Image, Input, InputNumber, message, Select, Spin } from 'antd'
 import { useEffect, useId, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useGetJewelryByIdQuery, useUpdateJewelryMutation } from '../../../../services/jewelry.services'
 import {
   useGetArtistQuery,
   useGetCategoriesQuery,
@@ -12,6 +11,7 @@ import {
   useGetEnumCutsQuery,
   useGetKeyCharacteristicsQuery
 } from '../../../../services/createfinalvaluation.services'
+import { useGetJewelryByIdQuery, useUpdateJewelryMutation } from '../../../../services/jewelry.services'
 import { UpdateJewelryRequest } from '../../../../types/Jewelry.type'
 
 export const JewelryDetail = () => {
