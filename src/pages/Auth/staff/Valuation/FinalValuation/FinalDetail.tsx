@@ -161,6 +161,15 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
             </div>
           )}
 
+          {record?.jewelry?.videoLink && (
+            <div className='flex mb-4'>
+              <strong className='w-1/3'>Video Link:</strong>
+              <a href={record?.jewelry?.videoLink} target='_blank' rel='noopener noreferrer' className='text-blue-800'>
+                {record?.jewelry?.videoLink}
+              </a>
+            </div>
+          )}
+
           {(record?.jewelry?.estimatePriceMin || record?.jewelry?.estimatePriceMax) && (
             <div className='flex mb-4'>
               <strong className='w-1/3'>Estimated Price:</strong>

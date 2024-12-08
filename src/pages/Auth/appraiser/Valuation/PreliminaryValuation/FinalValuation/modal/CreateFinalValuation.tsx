@@ -398,17 +398,17 @@ export default function CreateFinalValuation() {
       console.log('Phản hồi API:', response)
 
       notification.success({
-        message: 'Thành công',
-        description: 'Tạo đánh giá cuối cùng thành công!'
+        message: 'Success',
+        description: 'Create Final Valuation Success!'
       })
 
       navigate('/appraiser/finalList')
     } catch (error) {
-      console.error('Yêu cầu API thất bại:', error)
+      console.error('Create Final Valuation Failed:', error)
 
       notification.error({
-        message: 'Lỗi',
-        description: 'Yêu cầu API thất bại!'
+        message: 'Error',
+        description: 'Create Final Valuation Failed!'
       })
     } finally {
       setIsLoading(false)
