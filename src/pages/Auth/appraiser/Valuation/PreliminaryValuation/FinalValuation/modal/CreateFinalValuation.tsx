@@ -140,7 +140,7 @@ export default function CreateFinalValuation() {
       const updatedData = [...prevData]
       const gemstone = updatedData.find((gem) => gem.type === type)
 
-      if (gemstone) {
+      if (gemstone && gemstone.details.length === 0) {
         let newDetail
         if (type === 'mainDiamonds' || type === 'secondaryDiamonds') {
           newDetail = {
