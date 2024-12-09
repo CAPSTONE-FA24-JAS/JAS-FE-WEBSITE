@@ -12,7 +12,7 @@ import { RootState } from '../../../../store'
 import { RoleType } from '../../../../slice/authLoginAPISlice'
 import { WithDraw } from '../../../../types/Withdraw.type'
 
-type WithdrawStatus = 'Requested' | 'InProgress' | 'Approved' | 'Canceled'
+type WithdrawStatus = 'Requested' | 'InProgress' | 'Approved' | 'Cancelled'
 
 export default function WithdrawalRequests() {
   const { data, error, isLoading, refetch } = useViewListRequestWithdrawForManagementQuery()
@@ -93,7 +93,7 @@ export default function WithdrawalRequests() {
       Requested: 'blue',
       InProgress: 'gold',
       Approved: 'green',
-      Canceled: 'red'
+      Cancelled: 'red'
     }
     return statusColors[status]
   }
