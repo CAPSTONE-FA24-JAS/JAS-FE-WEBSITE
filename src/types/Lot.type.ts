@@ -413,7 +413,7 @@ export enum AuctionLotStatus {
   Ready = 2, // Lot is ready for auction
   Auctioning = 3, // Lot is currently being auctioned
   Sold = 4, // Lot has been sold
-  Canceled = 5, // Lot has been canceled
+  Cancelled = 5, // Lot has been canceled
   Passed = 6, // Lot remains unsold after the auction
   Pause = 7 // Lot auctioning is temporarily paused
 }
