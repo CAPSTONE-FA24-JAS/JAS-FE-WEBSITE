@@ -194,7 +194,12 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
                       <span className='w-2/3'>{diamond.clarity}</span>
                     </div>
                   )}
-
+                  {diamond.carat && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Carat:</div>
+                      <span className='w-2/3'>{diamond.carat}</span>
+                    </div>
+                  )}
                   {/* Quantity */}
                   {diamond.quantity && (
                     <div className='flex mb-2'>
@@ -326,7 +331,12 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
                       <span className='w-2/3'>{diamond.clarity}</span>
                     </div>
                   )}
-
+                  {diamond.totalCarat && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Carat:</div>
+                      <span className='w-2/3'>{diamond.totalCarat}</span>
+                    </div>
+                  )}
                   {diamond.quantity && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Quantity:</div>
