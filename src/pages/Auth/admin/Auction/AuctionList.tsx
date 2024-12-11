@@ -216,7 +216,7 @@ const AuctionList = () => {
               </Button>
             )}
             <Space size='small' className='w-full'>
-              {record.status !== 'Cancelled' && record.status !== 'Live' && record.status !== 'Past' && (
+              {record.status == 'Waiting' && (
                 <Button onClick={handleEdit(record.id)} type='primary' size='small'>
                   Edit
                 </Button>

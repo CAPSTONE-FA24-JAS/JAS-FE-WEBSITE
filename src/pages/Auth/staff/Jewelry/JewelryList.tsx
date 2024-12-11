@@ -118,7 +118,7 @@ const JewelryList = () => {
       filters: [
         { text: 'Authorized', value: 'Authorized' },
         { text: 'Watting', value: 'Watting' },
-        { text: 'Cancelled', value: 'Canceled' },
+        { text: 'Cancelled', value: 'Cancelled' },
         { text: 'Sold', value: 'Sold' }
       ],
       onFilter: (value, record) => record.status === String(value),
