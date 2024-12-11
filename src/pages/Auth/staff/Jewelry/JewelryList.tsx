@@ -147,12 +147,15 @@ const JewelryList = () => {
   ]
 
   // Filter data based on search text
-  const jewelryFiltered =
-    data?.data.dataResponse.filter(
-      (item) =>
-        item.name?.toLowerCase().includes(searchText.toLowerCase()) ||
-        item.description?.toLowerCase().includes(searchText.toLowerCase())
-    ) || []
+  const jewelryFiltered = data?.data?.dataResponse
+    ? data.data.dataResponse.filter((item) => {
+        const searchLower = searchText.toLowerCase()
+        const nameLower = item.name?.toLowerCase() || ''
+        const descriptionLower = item.description?.toLowerCase() || ''
+
+        return nameLower.includes(searchLower) || descriptionLower.includes(searchLower)
+      })
+    : []
 
   return (
     <div className='p-5 rounded-lg bg-slate-50'>
@@ -177,7 +180,7 @@ const JewelryList = () => {
             rowKey={(record) => record.id.toString()}
             bordered
             pagination={{
-              total: data?.data.totalItemRepsone,
+              total: data?.data ? data.data.totalItemRepsone : 0,
               pageSize,
               current: pageIndex,
               onChange: (page, pageSize) => {
