@@ -20,7 +20,7 @@ const FinalStepsStep: React.FC<FinalStepsProps> = ({ formDataPrice, handleImageC
     let newErrors = { ...errors }
     const min = parseFloat(formDataPrice.estimatePriceMin.toString() || '0')
     const max = parseFloat(formDataPrice.estimatePriceMax.toString() || '0')
-    const specific = parseFloat(formDataPrice.specificPrice.toString() || '0')
+    // const specific = parseFloat(formDataPrice.specificPrice.toString() || '0')
     const numValue = parseFloat(value || '0')
 
     if (name === 'estimatePriceMin' && numValue >= max) {
