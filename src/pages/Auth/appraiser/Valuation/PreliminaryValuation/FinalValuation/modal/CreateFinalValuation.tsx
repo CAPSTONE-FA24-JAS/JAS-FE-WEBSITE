@@ -149,6 +149,8 @@ export default function CreateFinalValuation() {
             color: '',
             cut: '',
             clarity: '',
+            carat: '',
+            totalcarat: '',
             quantity: 0,
             settingType: '',
             dimension: '',
@@ -167,6 +169,7 @@ export default function CreateFinalValuation() {
             name: '',
             color: '',
             carat: '',
+            totalcarat: '',
             enhancementType: '',
             quantity: 0,
             settingType: '',
@@ -328,6 +331,8 @@ export default function CreateFinalValuation() {
             formDataToSend.append(`${gemstoneType}[${index}].color`, diamondDetail.color)
             formDataToSend.append(`${gemstoneType}[${index}].cut`, diamondDetail.cut)
             formDataToSend.append(`${gemstoneType}[${index}].clarity`, diamondDetail.clarity)
+            formDataToSend.append(`${gemstoneType}[${index}].carat`, diamondDetail.carat)
+            formDataToSend.append(`${gemstoneType}[${index}].totalcarat`, diamondDetail.totalcarat)
             formDataToSend.append(`${gemstoneType}[${index}].quantity`, diamondDetail.quantity.toString())
             formDataToSend.append(`${gemstoneType}[${index}].settingType`, diamondDetail.settingType)
             formDataToSend.append(`${gemstoneType}[${index}].dimension`, diamondDetail.dimension)
@@ -358,6 +363,7 @@ export default function CreateFinalValuation() {
             formDataToSend.append(`${gemstoneType}[${index}].name`, shaphyDetail.name)
             formDataToSend.append(`${gemstoneType}[${index}].color`, shaphyDetail.color)
             formDataToSend.append(`${gemstoneType}[${index}].carat`, shaphyDetail.carat)
+            formDataToSend.append(`${gemstoneType}[${index}].totalcarat`, shaphyDetail.totalcarat)
             formDataToSend.append(`${gemstoneType}[${index}].enhancementType`, shaphyDetail.enhancementType)
             formDataToSend.append(`${gemstoneType}[${index}].quantity`, shaphyDetail.quantity.toString())
             formDataToSend.append(`${gemstoneType}[${index}].settingType`, shaphyDetail.settingType)

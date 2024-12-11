@@ -86,6 +86,8 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
     { label: 'Quantity', key: 'quantity', placeholder: 'Enter quantity' },
     { label: 'Clarity', key: 'clarity', placeholder: 'Enter clarity', options: clarityOptions?.data },
     { label: 'Dimensions', key: 'dimension', placeholder: 'Enter dimensions' },
+    { label: 'Carat', key: 'carat', placeholder: 'Enter carat' },
+    { label: 'Total Carat', key: 'totalcarat', placeholder: 'Enter carat' },
     { label: 'Setting Type', key: 'settingType', placeholder: 'Enter setting type' },
     { label: 'Shape', key: 'shape', placeholder: 'Enter shape' },
     { label: 'Certificate', key: 'certificate', placeholder: 'Enter certificate' },
@@ -97,6 +99,7 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
     { label: 'Name', key: 'name', placeholder: 'Enter name' },
     { label: 'Color', key: 'color', placeholder: 'Enter color', options: colorShaphyOptions?.data },
     { label: 'Carat', key: 'carat', placeholder: 'Enter carat' },
+    { label: 'Total Carat', key: 'totalcarat', placeholder: 'Enter carat' },
     { label: 'Quantity', key: 'quantity', placeholder: 'Enter quantity' },
     { label: 'Enhancement Type', key: 'enhancementType', placeholder: 'Enter enhancement type' },
     { label: 'Setting Type', key: 'settingType', placeholder: 'Enter setting type' },
@@ -274,7 +277,7 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
     const fields = isDiamondType ? diamondFields : shaphyFields
     return data.map((detail, index) => (
       <div key={index} className='border p-4 mb-4 rounded'>
-        <h4 className='text-lg font-semibold'>{`${type} ${index + 1}`}</h4>
+        <h4 className='text-lg font-semibold'></h4>
         <div className='grid grid-cols-2 gap-4'>
           {fields.map((field: FieldOption) =>
             field.options

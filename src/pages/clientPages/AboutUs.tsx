@@ -59,7 +59,7 @@ export default function AboutUs() {
           </p>
           <p className='mb-8 text-gray-600'>
             <strong>Hours:</strong>
-            <br />
+            <br />npm
             Mon-Fri 10am-6pm EST
             <br />
             Office Visits by Appointment Only
@@ -77,7 +77,7 @@ export default function AboutUs() {
           <p className='mb-8 text-gray-600'>
             <strong>Email:</strong>
             <br />
-            jas@gmail.com
+            jasSystem57@gmail.com
           </p>
         </div>
       </div>
