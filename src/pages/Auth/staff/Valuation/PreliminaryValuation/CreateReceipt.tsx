@@ -40,7 +40,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
   const [note, setnote] = useState('')
   const [khoiluong, setkhoiluong] = useState('')
   const [jewelryName, setjewlryName] = useState('')
-  const [deliveryDate, setDeliveryDate] = useState<string>(dateToString(dayjs()))
+  const [deliveryDate] = useState<string>(dateToString(dayjs()))
   const [idIssuanceDate, setIdIssuanceDate] = useState<string>(record?.seller?.idIssuanceDate || '')
   const [idExpirationDate, setIdExpirationDate] = useState<string>(record?.seller?.idExpirationDate || '')
 

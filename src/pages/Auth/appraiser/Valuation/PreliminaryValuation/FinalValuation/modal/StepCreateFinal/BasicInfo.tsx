@@ -62,11 +62,6 @@ const BasicInfoStep: React.FC<BasicInfoProps> = ({ formData, handleFormChange })
     return value.trim().length >= 6
   }
 
-  const validateNonZeroNumber = (value: string | number) => {
-    const numValue = Number(value)
-    return !isNaN(numValue) && numValue > 0
-  }
-
   const validateNonEmptyString = (value: string) => {
     return value.trim().length > 0
   }
