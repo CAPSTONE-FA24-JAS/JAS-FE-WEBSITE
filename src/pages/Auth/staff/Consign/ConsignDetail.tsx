@@ -109,19 +109,33 @@ const ConsignDetail: React.FC<ConsignDetailProps> = ({ isVisible, onCancel, reco
       )
     }
   }
+
+  // Tạo hàm để render footer buttons dựa trên status
+  const getFooterButtons = () => {
+    const buttons = [
+      <Button key='cancel' onClick={onCancel}>
+        Cancel
+      </Button>
+    ]
+
+    // Chỉ thêm nút Request nếu status là "Assigned"
+    if (record?.status === 'Assigned') {
+      buttons.push(
+        <Button key='update' type='primary' onClick={handleUpdateStatus} loading={isLoading}>
+          Request
+        </Button>
+      )
+    }
+
+    return buttons
+  }
+
   return (
     <Modal
       title='Consign Detail'
       open={isVisible}
       onCancel={onCancel}
-      footer={[
-        <Button key='cancel' onClick={onCancel}>
-          Cancel
-        </Button>,
-        <Button key='update' type='primary' onClick={handleUpdateStatus} loading={isLoading}>
-          Request
-        </Button>
-      ]}
+      footer={getFooterButtons()}
       width={1200}
       style={{ padding: '24px' }}
     >

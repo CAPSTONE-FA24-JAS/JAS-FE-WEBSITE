@@ -128,14 +128,22 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
       title='Request Final Valuation Details'
       open={isVisible}
       onCancel={onClose}
-      footer={[
-        <Button key='reject' onClick={handleRejectClick} loading={isRejectLoading} danger>
-          Reject
-        </Button>,
-        <Button key='update' type='primary' onClick={handleUpdateClick} loading={isLoading}>
-          Approve
-        </Button>
-      ]}
+      footer={
+        valuationData?.data?.status === 'Evaluated'
+          ? [
+              <Button key='reject' onClick={handleRejectClick} loading={isRejectLoading} danger>
+                Reject
+              </Button>,
+              <Button key='update' type='primary' onClick={handleUpdateClick} loading={isLoading}>
+                Approve
+              </Button>
+            ]
+          : [
+              <Button key='close' onClick={onClose}>
+                Close
+              </Button>
+            ]
+      }
       width={1200}
       style={{ padding: '24px' }}
     >

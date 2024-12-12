@@ -57,7 +57,11 @@ const ValuationDetailsModal: React.FC<ValuationDetailsModalProps> = ({ visible, 
       title='Valuation Details'
       open={visible}
       onCancel={onCancel}
-      footer={null}
+      footer={[
+        <Button key='close' type='default' onClick={onCancel}>
+          Close
+        </Button>
+      ]}
       width={1200}
       style={{ padding: '24px' }}
     >

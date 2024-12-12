@@ -302,9 +302,50 @@ export default function CreateFinalValuation() {
 
       if (hasEmptyFields) {
         notification.error({
-          message: 'Validation Error',
+          message: 'Lỗi Validation',
           description: 'Vui lòng điền đầy đủ thông tin các trường bắt buộc'
         })
+        return
+      }
+    }
+
+    if (currentStep === 1) {
+      const requiredDiamondFields = ['shape', 'quantity', 'color', 'clarity', 'totalcarat', 'dimension']
+      const requiredShaphyFields = ['quantity', 'color', 'totalcarat', 'dimension']
+      let hasError = false
+
+      const activeGemstones = ['mainDiamonds', 'secondaryDiamonds', 'mainShaphies', 'secondaryShaphies'].filter(
+        (type) =>
+          Array.isArray(formData[type as keyof ValuationGemstoneData]) &&
+          (formData[type as keyof ValuationGemstoneData] as any[]).length > 0
+      )
+
+      if (activeGemstones.length === 0) {
+        notification.error({
+          message: 'Lỗi Validation',
+          description: 'Vui lòng thêm ít nhất một loại đá quý'
+        })
+        return
+      }
+
+      activeGemstones.forEach((type) => {
+        const gemstones = formData[type as keyof typeof formData] as any[]
+        const requiredFields = type.includes('Diamond') ? requiredDiamondFields : requiredShaphyFields
+
+        gemstones.forEach((gemstone, index) => {
+          requiredFields.forEach((field) => {
+            if (!gemstone[field] || gemstone[field].toString().trim() === '') {
+              hasError = true
+              notification.error({
+                message: 'Lỗi Validation',
+                description: `Vui lòng điền đầy đủ thông tin trường ${field} cho ${type} #${index + 1}`
+              })
+            }
+          })
+        })
+      })
+
+      if (hasError) {
         return
       }
     }
