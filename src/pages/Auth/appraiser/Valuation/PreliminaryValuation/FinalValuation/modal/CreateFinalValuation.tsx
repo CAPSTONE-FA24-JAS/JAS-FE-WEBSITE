@@ -283,7 +283,32 @@ export default function CreateFinalValuation() {
   }
 
   const next = () => {
-    console.log('Dữ liệu Form tại Bước Thông Tin Cơ Bản:', formData)
+    if (currentStep === 0) {
+      const requiredFields = {
+        name: formData.name,
+        categoryId: formData.categoryId,
+        condition: formData.keyCharacteristicDetails.find((item) => item.keyCharacteristicId === 4)?.description,
+        measurements: formData.keyCharacteristicDetails.find((item) => item.keyCharacteristicId === 5)?.description,
+        weight: formData.keyCharacteristicDetails.find((item) => item.keyCharacteristicId === 7)?.description,
+        metal: formData.keyCharacteristicDetails.find((item) => item.keyCharacteristicId === 8)?.description
+      }
+
+      const hasEmptyFields = Object.entries(requiredFields).some(([key, value]) => {
+        if (key === 'categoryId') {
+          return !value || Number(value) <= 0
+        }
+        return !value || value.toString().trim() === ''
+      })
+
+      if (hasEmptyFields) {
+        notification.error({
+          message: 'Validation Error',
+          description: 'Vui lòng điền đầy đủ thông tin các trường bắt buộc'
+        })
+        return
+      }
+    }
+
     setCurrentStep(currentStep + 1)
   }
 
@@ -292,6 +317,14 @@ export default function CreateFinalValuation() {
   }
 
   const handleSubmit = async () => {
+    if (!formData.estimatePriceMin || !formData.estimatePriceMax || !formData.specificPrice) {
+      notification.error({
+        message: 'Lỗi Validation',
+        description: 'Vui lòng nhập đầy đủ thông tin giá (Estimate Price Min, Estimate Price Max, Specific Price)'
+      })
+      return
+    }
+
     setIsLoading(true)
     try {
       const formDataToSend = new FormData()
