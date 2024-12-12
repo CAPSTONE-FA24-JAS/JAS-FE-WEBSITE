@@ -63,7 +63,7 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
             <Button icon={<RightOutlined />} onClick={nextImage} className='bg-gray-300 hover:bg-gray-400' />
           </div>
 
-          <div className='flex mt-10 ml-10'>
+          <div className='flex mt-10 ml-10 flex-wrap gap-y-2'>
             {images.map((image: string, index: number) => (
               <img
                 key={index}

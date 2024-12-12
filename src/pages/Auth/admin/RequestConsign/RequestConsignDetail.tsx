@@ -225,25 +225,31 @@ const RequestConsignDetail: React.FC<RequestConsignDetailProps> = ({ recordId, o
           </div>
           <div className='flex'>
             <strong className='w-1/3 font-bold'>Assign Staff:</strong>
-            <Form.Item className='w-2/3'>
-              <Select value={assignedStaff} onChange={handleStaffChange} placeholder='Select staff'>
-                {staffLoading ? (
-                  <Select.Option value='' disabled>
-                    Select Staff
-                  </Select.Option>
-                ) : staffError ? (
-                  <Select.Option value='' disabled>
-                    Failed to load staff
-                  </Select.Option>
-                ) : (
-                  staffOptions.map((staff) => (
-                    <Select.Option key={staff.id} value={staff.id.toString()}>
-                      {staff.firstName} {staff.lastName}
+            {valuationData?.data?.status === 'Requested' ? (
+              <Form.Item className='w-2/3'>
+                <Select value={assignedStaff} onChange={handleStaffChange} placeholder='Select staff'>
+                  {staffLoading ? (
+                    <Select.Option value='' disabled>
+                      Select Staff
                     </Select.Option>
-                  ))
-                )}
-              </Select>
-            </Form.Item>
+                  ) : staffError ? (
+                    <Select.Option value='' disabled>
+                      Failed to load staff
+                    </Select.Option>
+                  ) : (
+                    staffOptions.map((staff) => (
+                      <Select.Option key={staff.id} value={staff.id.toString()}>
+                        {staff.firstName} {staff.lastName}
+                      </Select.Option>
+                    ))
+                  )}
+                </Select>
+              </Form.Item>
+            ) : (
+              <span className='w-2/3'>
+                {staffOptions.find((staff) => staff.id.toString() === assignedStaff)?.firstName || 'N/A'}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -251,9 +257,11 @@ const RequestConsignDetail: React.FC<RequestConsignDetailProps> = ({ recordId, o
         <Button onClick={handleClose} className='mr-2'>
           Close
         </Button>
-        <Button type='primary' onClick={handleUpdate}>
-          Assign Staff
-        </Button>
+        {valuationData?.data?.status === 'Requested' && (
+          <Button type='primary' onClick={handleUpdate}>
+            Assign Staff
+          </Button>
+        )}
       </div>
     </Modal>
   )

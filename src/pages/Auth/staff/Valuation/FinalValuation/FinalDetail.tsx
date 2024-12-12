@@ -70,19 +70,30 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
     }
   }
 
-  return (
-    <Modal
-      title='Final Valuation Details'
-      open={isVisible}
-      onCancel={onCancel}
-      footer={[
+  const renderFooterButtons = () => {
+    if (record?.status === 'Evaluated') {
+      return [
         <Button key='cancel' onClick={onCancel}>
           Cancel
         </Button>,
         <Button key='update' type='primary' onClick={handleUpdate} loading={loading}>
           Send
         </Button>
-      ]}
+      ]
+    }
+    return [
+      <Button key='cancel' onClick={onCancel}>
+        Close
+      </Button>
+    ]
+  }
+
+  return (
+    <Modal
+      title='Final Valuation Details'
+      open={isVisible}
+      onCancel={onCancel}
+      footer={renderFooterButtons()}
       width={1200}
       style={{ padding: '24px' }}
     >
