@@ -8,7 +8,7 @@ import {
 } from '../../../../../services/financeProof.services'
 import { RootState } from '../../../../../store'
 import { EyeOutlined } from '@ant-design/icons'
-import { parseDate } from '../../../../../utils/convertTypeDayjs'
+import { parseDate, parsePriceVND } from '../../../../../utils/convertTypeDayjs'
 
 interface FinancialProofModalProps {
   visible: boolean
@@ -26,7 +26,6 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
   const [note, setNote] = useState<string>('')
   const staffId = useSelector((state: RootState) => state.authLoginAPI.staffId) ?? 0
 
-  // Mở tab mới để xem tài liệu
   const handleOpenDocument = (fileUrl: string) => {
     window.open(fileUrl, '_blank')
   }
@@ -35,17 +34,50 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
     setModalVisible(false)
     setIsSetLimitBidModalVisible(true)
   }
+  const validateLimitBid = (value: string): boolean => {
+    const cleanValue = value.replace(/[,\s]/g, '')
+    const numValue = Number(cleanValue)
+
+    if (!value.trim()) {
+      message.error('Vui lòng nhập hạn mức')
+      return false
+    }
+
+    if (!/^\d+$/.test(cleanValue)) {
+      message.error('Vui lòng chỉ nhập số')
+      return false
+    }
+
+    if (numValue <= 0) {
+      message.error('Hạn mức phải là số dương')
+      return false
+    }
+
+    return true
+  }
+
+  const handleLimitBidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    // Chỉ cho phép nhập số và dấu chấm
+    if (value === '' || /^\d*\.?\d*$/.test(value)) {
+      setLimitBid(value)
+    }
+  }
 
   const handleSetLimitBidOk = async () => {
-    setIsSetLimitBidModalVisible(false)
+    if (!validateLimitBid(limitBid)) {
+      return
+    }
+
     try {
       await updateFinanceProof({
         id,
         status: 1,
         priceLimit: Number(limitBid),
         reason: '',
-        staffId
+        staffId: staffId
       }).unwrap()
+      setIsSetLimitBidModalVisible(false)
       message.success('Limit bid set successfully')
     } catch (error) {
       console.error('Error updating finance proof:', error)
@@ -55,6 +87,7 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
 
   const handleSetLimitBidCancel = () => {
     setIsSetLimitBidModalVisible(false)
+    setLimitBid('')
   }
 
   const handleReject = () => {
@@ -63,15 +96,20 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
   }
 
   const handleRejectOk = async () => {
-    setReasonReject(false)
+    if (!note.trim()) {
+      message.error('Please provide a reason for rejection')
+      return
+    }
+
     try {
       await updateFinanceProof({
         id,
         status: 4,
         priceLimit: 0,
-        reason: note,
-        staffId
+        reason: note.trim(),
+        staffId: staffId
       }).unwrap()
+      setReasonReject(false)
       message.success('Finance proof rejected successfully')
     } catch (error) {
       console.error('Error rejecting finance proof:', error)
@@ -81,10 +119,11 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
 
   const handleRejectCancel = () => {
     setReasonReject(false)
+    setNote('')
   }
 
   const renderFooter = () => {
-    if (financeProof && financeProof?.data.status == 'Pending') {
+    if (financeProof && financeProof?.data.status === 'Pending') {
       return [
         <Button key='reject' type='primary' danger onClick={handleReject}>
           Reject
@@ -94,11 +133,12 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
         </Button>
       ]
     }
+    return null
   }
 
   return (
     <>
-      <Modal forceRender title='Financial Proof Details' open={visible} onCancel={onClose} footer={renderFooter}>
+      <Modal title='Financial Proof Details' open={visible} onCancel={onClose} footer={renderFooter()}>
         {isLoading ? (
           <Skeleton active />
         ) : financeProof ? (
@@ -106,12 +146,15 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
             <p>Customer Name: {financeProof.data.customerName}</p>
             <p>Create Date: {parseDate(financeProof.data.startDate, 'dd/mm/yyyy hh:mm:ss')}</p>
             <p>Expired Date: {parseDate(financeProof.data.expireDate, 'dd/mm/yyyy hh:mm:ss')}</p>
-            {financeProof && financeProof.data.priceLimit ? (
-              <Input placeholder='Limit Bid' value={financeProof.data.priceLimit} disabled prefix='$' />
-            ) : null}
-
+            {financeProof.data.priceLimit > 0 && (
+              <Input
+                placeholder='Limit Amount'
+                value={parsePriceVND(financeProof.data.priceLimit)}
+                disabled
+                suffix='VND'
+              />
+            )}
             <Divider />
-
             <div className='flex flex-row items-start gap-4'>
               <div className='flex-1'>
                 <embed src={financeProof.data.file} width='300' height='200' />
@@ -127,7 +170,7 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
       </Modal>
 
       <Modal
-        title='Set Limit Bid'
+        title='Set Limit Amount'
         open={isSetLimitBidModalVisible}
         onOk={handleSetLimitBidOk}
         onCancel={handleSetLimitBidCancel}
@@ -141,12 +184,19 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
         ]}
       >
         <Space direction='vertical' style={{ width: '100%' }}>
-          <Input placeholder='Limit Bid' value={limitBid} onChange={(e) => setLimitBid(e.target.value)} prefix='$' />
+          <Input
+            placeholder='Enter limit amount'
+            value={limitBid}
+            onChange={handleLimitBidChange}
+            type='text'
+            suffix='VND'
+            required
+          />
         </Space>
       </Modal>
 
       <Modal
-        title='Reason for Reject'
+        title='Reason for Rejection'
         open={reasonReject}
         onOk={handleRejectOk}
         onCancel={handleRejectCancel}
@@ -160,7 +210,12 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
         ]}
       >
         <Space direction='vertical' style={{ width: '100%' }}>
-          <TextArea rows={4} placeholder='Reason' value={note} onChange={(e) => setNote(e.target.value)} />
+          <TextArea
+            rows={4}
+            placeholder='Please provide a reason for rejection'
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+          />
         </Space>
       </Modal>
     </>

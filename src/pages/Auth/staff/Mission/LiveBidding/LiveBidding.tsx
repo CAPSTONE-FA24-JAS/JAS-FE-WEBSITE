@@ -117,7 +117,7 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
         key={`${bid.customerId}-${bid.bidTime}-${bid.currentPrice}`}
         className={`flex justify-between items-center p-3 mb-2 rounded-lg shadow ${getBidStatusColor()}`}
       >
-        <span className='flex-1 text-left text-gray-600'>{parseDate(bid.bidTime, 'dd/mm/yyyy hh:mm:ss')}</span>
+        <span className='flex-1 text-left text-gray-600'>{parseDate(bid.bidTime, 'dd/mm/yyyy hh:mm:ss:ttt')}</span>
         <span className='flex-1 font-medium text-left text-gray-700'>
           {bid.customerId}: {bid.firstName} {bid.lastName}
         </span>

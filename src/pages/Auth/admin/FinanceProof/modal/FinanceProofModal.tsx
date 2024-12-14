@@ -21,21 +21,34 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
   const [reasonReject, setReasonReject] = useState<boolean>(false)
   const [note, setNote] = useState<string>('')
 
-  // Mở tab mới để xem tài liệu
   const handleOpenDocument = (fileUrl: string) => {
     window.open(fileUrl, '_blank')
   }
 
+  const validatePrice = (price: number | undefined): boolean => {
+    if (!price || price <= 0) {
+      message.error('Price limit must be a positive number')
+      return false
+    }
+    return true
+  }
+
   const handleSetLimitBidOk = async () => {
-    setModalVisible(false)
+    const priceLimit = financeProof?.data.priceLimit
+
+    if (!validatePrice(priceLimit)) {
+      return
+    }
+
     try {
       await updateFinanceProof({
         id,
         status: 2,
-        priceLimit: financeProof?.data.priceLimit ?? 0,
+        priceLimit: priceLimit!,
         reason: '',
         staffId: financeProof?.data.staffId ?? 0
       }).unwrap()
+      setModalVisible(false)
       message.success('Limit bid set successfully')
     } catch (error) {
       console.error('Error updating finance proof:', error)
@@ -49,15 +62,20 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
   }
 
   const handleRejectOk = async () => {
-    setReasonReject(false)
+    if (!note.trim()) {
+      message.error('Please provide a reason for rejection')
+      return
+    }
+
     try {
       await updateFinanceProof({
         id,
         status: 3,
         priceLimit: financeProof?.data.priceLimit ?? 0,
-        reason: note,
+        reason: note.trim(),
         staffId: financeProof?.data.staffId ?? 0
       }).unwrap()
+      setReasonReject(false)
       message.success('Finance proof rejected successfully')
     } catch (error) {
       console.error('Error rejecting finance proof:', error)
@@ -67,6 +85,7 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
 
   const handleRejectCancel = () => {
     setReasonReject(false)
+    setNote('')
   }
 
   return (
@@ -76,13 +95,13 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
         open={visible}
         onCancel={onClose}
         footer={
-          financeProof?.data.status == 'Processing'
+          financeProof?.data.status === 'Processing'
             ? [
                 <Button key='reject' type='primary' danger onClick={handleReject}>
                   Reject
                 </Button>,
                 <Button loading={isUpdating} key='setLimitBid' type='primary' onClick={handleSetLimitBidOk}>
-                  Set Limit Bid
+                  Approve
                 </Button>
               ]
             : null
@@ -100,6 +119,7 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
               <InputNumber
                 className='w-[70%]'
                 value={financeProof.data.priceLimit}
+                min={1}
                 disabled
                 formatter={(value: number | undefined) => String(parsePriceVND(value ?? 0))}
               />

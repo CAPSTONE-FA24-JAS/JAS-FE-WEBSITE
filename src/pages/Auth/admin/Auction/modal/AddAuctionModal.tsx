@@ -103,6 +103,14 @@ const AuctionModal: React.FC<AuctionModalProps> = ({ visible, onCancel, id, setE
     return true
   }
 
+  const validateSpaces = (value: string) => {
+    if (!value) return true
+    const trimmed = value.trim()
+    if (trimmed !== value) return 'Cannot start or end with spaces'
+    if (value.includes('  ')) return 'Cannot contain consecutive spaces'
+    return true
+  }
+
   const handleRemoveImage = () => {
     setFileList([])
     setIsImageChanged(true)
@@ -116,11 +124,16 @@ const AuctionModal: React.FC<AuctionModalProps> = ({ visible, onCancel, id, setE
         return
       }
 
+      if (data.StartTime.isSame(data.EndTime)) {
+        message.error('Start time and end time cannot be the same')
+        return
+      }
+
       const formData = new FormData()
-      formData.append('Name', data.Name)
+      formData.append('Name', data.Name.trim())
       formData.append('StartTime', data.StartTime.toISOString())
       formData.append('EndTime', data.EndTime.toISOString())
-      formData.append('Description', data.Description)
+      formData.append('Description', data.Description.trim())
 
       if (id) {
         formData.append('AutionId', id.toString())
@@ -187,7 +200,12 @@ const AuctionModal: React.FC<AuctionModalProps> = ({ visible, onCancel, id, setE
           <Controller
             name='Name'
             control={control}
-            rules={{ required: 'Name is required' }}
+            rules={{
+              required: 'Name is required',
+              maxLength: { value: 255, message: 'Name is too long' },
+              minLength: { value: 3, message: 'Name is too short' },
+              validate: validateSpaces
+            }}
             render={({ field, fieldState: { error } }) => (
               <Form.Item label='Name' validateStatus={error ? 'error' : ''} help={error?.message}>
                 <Input {...field} className='w-full' />
@@ -273,7 +291,18 @@ const AuctionModal: React.FC<AuctionModalProps> = ({ visible, onCancel, id, setE
           <Controller
             name='Description'
             control={control}
-            rules={{ required: 'Description is required' }}
+            rules={{
+              required: 'Description is required',
+              maxLength: {
+                value: 500,
+                message: 'Description is too long'
+              },
+              minLength: {
+                value: 3,
+                message: 'Description is too short'
+              },
+              validate: validateSpaces
+            }}
             render={({ field, fieldState: { error } }) => (
               <Form.Item label='Description' validateStatus={error ? 'error' : ''} help={error?.message}>
                 <Input.TextArea {...field} className='w-full' />

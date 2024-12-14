@@ -34,7 +34,11 @@ export const HeaderControls: React.FC<HeaderControlsProps> = ({
 
   // Get display status and color
   const { display: displayStatus, color: statusColor } = useMemo(
-    () => statusMap[normalizedStatus] || { display: 'Unknown', color: 'text-gray-500' },
+    () =>
+      statusMap[normalizedStatus] || {
+        display: status, // Use original status text as fallback
+        color: 'text-gray-500'
+      },
     [normalizedStatus, statusMap]
   )
 
