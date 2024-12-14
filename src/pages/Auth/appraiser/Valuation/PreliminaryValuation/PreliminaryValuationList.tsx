@@ -32,10 +32,6 @@ const PreliminaryValuationList = () => {
     setIsModalVisible(true)
   }
 
-  const handleUpdate = () => {
-    console.log('Update clicked for record:', currentRecord)
-  }
-
   const handleCancel = () => {
     setIsModalVisible(false)
     setCurrentRecord(null)
@@ -137,12 +133,7 @@ const PreliminaryValuationList = () => {
         <Search placeholder='Search by customer name' enterButton onSearch={handleSearch} style={{ width: 300 }} />
       </div>
       <Table dataSource={filteredPreliminaryData} columns={columns} rowKey='id' bordered />
-      <PreliminaryDetailsModal
-        isVisible={isModalVisible}
-        onUpdate={handleUpdate}
-        onCancel={handleCancel}
-        record={currentRecord}
-      />
+      <PreliminaryDetailsModal isVisible={isModalVisible} onCancel={handleCancel} record={currentRecord} />
     </div>
   )
 }

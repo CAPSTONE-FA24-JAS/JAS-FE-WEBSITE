@@ -2,6 +2,7 @@ import { DeleteOutlined, FundProjectionScreenOutlined, UserOutlined } from '@ant
 import { Avatar, Button, notification, Space, Table, TableProps } from 'antd'
 import { useState } from 'react'
 import { useDeleteAccountMutation, useGetListUsersQuery } from '../../../services/account.services'
+import { useGetTotalAccountActiveQuery, useGetTotalAccountsQuery } from '../../../services/dashboard.services'
 import { AccountData } from '../../../types/Account.type'
 import UserDetail from './ManageAccount/modal/UserDetail'
 
@@ -9,8 +10,11 @@ const Overview = () => {
   const [modalVisible, setModalVisible] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
   const [searchText, setSearchText] = useState<string>('')
+  const { data: totalAccount } = useGetTotalAccountsQuery()
+  const { data: activeCurrent } = useGetTotalAccountActiveQuery()
 
   const { data, isLoading, refetch } = useGetListUsersQuery()
+
   const [deleteAccount] = useDeleteAccountMutation()
 
   const filteredData = Array.isArray(data?.data)
@@ -105,34 +109,24 @@ const Overview = () => {
 
   return (
     <>
-      <div className='grid grid-cols-3 gap-4 p-6 mb-6 rounded-lg bg-slate-50'>
+      <div className='grid grid-cols-2 gap-4 p-6 mb-6 rounded-lg bg-slate-50'>
         <div className='flex items-center space-x-4'>
           <div className='flex items-center justify-center w-12 h-12 bg-green-100 rounded-full'>
             <UserOutlined size={24} color='green' />
           </div>
           <div>
             <p className='text-sm text-gray-500'>Total Customers</p>
-            <p className='text-2xl font-semibold'>5,423</p>
-            <p className='text-xs text-green-500'>↑ 15% this month</p>
+            <p className='text-2xl font-semibold'>{totalAccount?.data ? totalAccount.data : 0}</p>
           </div>
         </div>
-        <div className='flex items-center space-x-4'>
-          <div className='flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full'>
-            <UserOutlined size={24} color='blue' />
-          </div>
-          <div>
-            <p className='text-sm text-gray-500'>Members</p>
-            <p className='text-2xl font-semibold'>1,893</p>
-            <p className='text-xs text-red-500'>↓ 1% this month</p>
-          </div>
-        </div>
+
         <div className='flex items-center space-x-4'>
           <div className='flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full'>
             <FundProjectionScreenOutlined size={24} color='purple   ' />
           </div>
           <div>
-            <p className='text-sm text-gray-500'>Active Now</p>
-            <p className='text-2xl font-semibold'>189</p>
+            <p className='text-sm text-gray-500'>Recently Active Account</p>
+            <p className='text-2xl font-semibold'>{activeCurrent?.data ? activeCurrent.data : 0}</p>
           </div>
         </div>
       </div>
@@ -154,6 +148,7 @@ const Overview = () => {
           loading={isLoading}
           style={{ minHeight: '65vh' }}
           columns={columns || []}
+          rowKey={(record) => record.id}
         />
         <UserDetail visible={modalVisible} onClose={handleCloseModal} user={selectedUser} />
       </div>

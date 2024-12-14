@@ -1,4 +1,4 @@
-import { Button, Checkbox, DatePicker, Form, Image, Input, InputNumber, Modal, Select } from 'antd'
+import { Button, Checkbox, DatePicker, Form, Image, Input, InputNumber, Modal, notification, Select } from 'antd'
 import dayjs from 'dayjs'
 import React, { useEffect, useState } from 'react'
 import { useGetFilterByRoleQuery } from '../../../../../services/account.services'
@@ -93,6 +93,23 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
   }, [visible, form, initialValues])
 
   const handleSubmit = () => {
+    if (form.getFieldValue('bidForm') === '3' && form.getFieldValue('priceStep') == 0) {
+      notification.error({
+        message: 'Price step must be greater than 0'
+      })
+      return
+    }
+
+    if (form.getFieldValue('bidForm') === '3' && form.getFieldValue('finalPriceSold') != 0) {
+      const valuesBetweenMinAndMax = form.getFieldValue('finalPriceSold') - form.getFieldValue('startPrice')
+      if (valuesBetweenMinAndMax < form.getFieldValue('priceStep')) {
+        notification.error({
+          message: 'Step must be less than the difference between the starting price and the final price'
+        })
+        return
+      }
+    }
+
     form.validateFields().then((values) => {
       const FormatValues: CreateLot = {
         title: values.title,

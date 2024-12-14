@@ -10,6 +10,50 @@ interface FinalStepsProps {
 
 const FinalStepsStep: React.FC<FinalStepsProps> = ({ formDataPrice, handleImageChange, handleFormChange }) => {
   const [selectedImages, setSelectedImages] = useState<File[]>([])
+  const [errors, setErrors] = useState({
+    estimatePriceMin: '',
+    estimatePriceMax: '',
+    specificPrice: ''
+  })
+
+  const handleValidation = (name: string, value: string) => {
+    let newErrors = { ...errors }
+    const min = parseFloat(formDataPrice.estimatePriceMin.toString() || '0')
+    const max = parseFloat(formDataPrice.estimatePriceMax.toString() || '0')
+    const numValue = parseFloat(value || '0')
+
+    if (name === 'estimatePriceMin') {
+      if (!value) {
+        newErrors.estimatePriceMin = 'Vui lòng nhập giá tối thiểu'
+      } else if (numValue >= max && max !== 0) {
+        newErrors.estimatePriceMin = 'Giá tối thiểu phải nhỏ hơn giá tối đa'
+      } else {
+        newErrors.estimatePriceMin = ''
+      }
+    }
+
+    if (name === 'estimatePriceMax') {
+      if (!value) {
+        newErrors.estimatePriceMax = 'Vui lòng nhập giá tối đa'
+      } else if (numValue <= min && min !== 0) {
+        newErrors.estimatePriceMax = 'Giá tối đa phải lớn hơn giá tối thiểu'
+      } else {
+        newErrors.estimatePriceMax = ''
+      }
+    }
+
+    if (name === 'specificPrice') {
+      if (!value) {
+        newErrors.specificPrice = 'Vui lòng nhập giá cụ thể'
+      } else if ((numValue < min || numValue > max) && min !== 0 && max !== 0) {
+        newErrors.specificPrice = 'Giá cụ thể phải nằm trong khoảng giá tối thiểu và tối đa'
+      } else {
+        newErrors.specificPrice = ''
+      }
+    }
+
+    setErrors(newErrors)
+  }
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -24,51 +68,72 @@ const FinalStepsStep: React.FC<FinalStepsProps> = ({ formDataPrice, handleImageC
       setSelectedImages(updatedImages)
       handleImageChange(updatedImages)
     }
-    console.log('Selected Images:', selectedImages)
+  }
+
+  const handleInputChange = (name: string, value: string) => {
+    handleValidation(name, value)
+    handleFormChange(name, value)
   }
 
   return (
     <>
       <div className='grid grid-cols-2 gap-4 mt-8'>
         <div>
-          <label className='block font-extrabold mb-2'>Estimate Price Min</label>
+          <label className='block font-extrabold mb-2'>
+            Estimate Price Min <span className='text-red-500'>*</span>
+          </label>
           <input
+            required
             type='number'
             name='estimatePriceMin'
-            value={formDataPrice.estimatePriceMin > 0 ? formDataPrice.estimatePriceMin : ''} // Set value to empty if 0
-            onChange={(e) => handleFormChange('estimatePriceMin', e.target.value)} // Call with name and value
+            value={formDataPrice.estimatePriceMin > 0 ? formDataPrice.estimatePriceMin : ''}
+            onChange={(e) => handleInputChange('estimatePriceMin', e.target.value)}
             min={0}
-            className='w-full border border-gray-300 p-2 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200'
+            className={`w-full border ${
+              errors.estimatePriceMin ? 'border-red-500' : 'border-gray-300'
+            } p-2 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200`}
             placeholder='Enter minimum estimated price'
           />
+          {errors.estimatePriceMin && <span className='text-red-500 text-sm'>{errors.estimatePriceMin}</span>}
         </div>
         <div>
-          <label className='block font-extrabold mb-2'>Estimate Price Max</label>
+          <label className='block font-extrabold mb-2'>
+            Estimate Price Max <span className='text-red-500'>*</span>
+          </label>
           <input
+            required
             type='number'
             name='estimatePriceMax'
-            value={formDataPrice.estimatePriceMax > 0 ? formDataPrice.estimatePriceMax : ''} // Set value to empty if 0
-            onChange={(e) => handleFormChange('estimatePriceMax', e.target.value)} // Call with name and value
+            value={formDataPrice.estimatePriceMax > 0 ? formDataPrice.estimatePriceMax : ''}
+            onChange={(e) => handleInputChange('estimatePriceMax', e.target.value)}
             min={0}
-            className='w-full border border-gray-300 p-2 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200'
+            className={`w-full border ${
+              errors.estimatePriceMax ? 'border-red-500' : 'border-gray-300'
+            } p-2 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200`}
             placeholder='Enter maximum estimated price'
           />
+          {errors.estimatePriceMax && <span className='text-red-500 text-sm'>{errors.estimatePriceMax}</span>}
         </div>
         <div>
-          <label className='block font-extrabold text-red-600 mb-2'>Specific Price</label>
+          <label className='block font-extrabold text-red-600 mb-2'>
+            Specific Price <span className='text-red-500'>*</span>
+          </label>
           <input
+            required
             type='number'
             name='specificPrice'
-            value={formDataPrice.specificPrice > 0 ? formDataPrice.specificPrice : ''} // Set value to empty if 0
-            onChange={(e) => handleFormChange('specificPrice', e.target.value)} // Call with name and value
+            value={formDataPrice.specificPrice > 0 ? formDataPrice.specificPrice : ''}
+            onChange={(e) => handleInputChange('specificPrice', e.target.value)}
             min={0}
-            className='w-full border border-gray-300 p-2 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200'
+            className={`w-full border ${
+              errors.specificPrice ? 'border-red-500' : 'border-gray-300'
+            } p-2 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200`}
             placeholder='Enter specific price'
           />
+          {errors.specificPrice && <span className='text-red-500 text-sm'>{errors.specificPrice}</span>}
         </div>
       </div>
 
-      {/* Image Upload Section */}
       <div className='mt-8'>
         <div>
           <label className='block font-extrabold mb-4'>Upload Images</label>

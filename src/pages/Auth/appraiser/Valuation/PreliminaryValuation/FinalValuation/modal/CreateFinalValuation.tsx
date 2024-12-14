@@ -149,6 +149,8 @@ export default function CreateFinalValuation() {
             color: '',
             cut: '',
             clarity: '',
+            carat: '',
+            totalcarat: '',
             quantity: 0,
             settingType: '',
             dimension: '',
@@ -167,6 +169,7 @@ export default function CreateFinalValuation() {
             name: '',
             color: '',
             carat: '',
+            totalcarat: '',
             enhancementType: '',
             quantity: 0,
             settingType: '',
@@ -280,7 +283,73 @@ export default function CreateFinalValuation() {
   }
 
   const next = () => {
-    console.log('Dữ liệu Form tại Bước Thông Tin Cơ Bản:', formData)
+    if (currentStep === 0) {
+      const requiredFields = {
+        name: formData.name,
+        categoryId: formData.categoryId,
+        condition: formData.keyCharacteristicDetails.find((item) => item.keyCharacteristicId === 4)?.description,
+        measurements: formData.keyCharacteristicDetails.find((item) => item.keyCharacteristicId === 5)?.description,
+        weight: formData.keyCharacteristicDetails.find((item) => item.keyCharacteristicId === 7)?.description,
+        metal: formData.keyCharacteristicDetails.find((item) => item.keyCharacteristicId === 8)?.description
+      }
+
+      const hasEmptyFields = Object.entries(requiredFields).some(([key, value]) => {
+        if (key === 'categoryId') {
+          return !value || Number(value) <= 0
+        }
+        return !value || value.toString().trim() === ''
+      })
+
+      if (hasEmptyFields) {
+        notification.error({
+          message: 'Lỗi Validation',
+          description: 'Vui lòng điền đầy đủ thông tin các trường bắt buộc'
+        })
+        return
+      }
+    }
+
+    if (currentStep === 1) {
+      const requiredDiamondFields = ['shape', 'quantity', 'color', 'clarity', 'totalcarat', 'dimension']
+      const requiredShaphyFields = ['quantity', 'color', 'totalcarat', 'dimension']
+      let hasError = false
+
+      const activeGemstones = ['mainDiamonds', 'secondaryDiamonds', 'mainShaphies', 'secondaryShaphies'].filter(
+        (type) =>
+          Array.isArray(formData[type as keyof ValuationGemstoneData]) &&
+          (formData[type as keyof ValuationGemstoneData] as any[]).length > 0
+      )
+
+      if (activeGemstones.length === 0) {
+        notification.error({
+          message: 'Lỗi Validation',
+          description: 'Vui lòng thêm ít nhất một loại đá quý'
+        })
+        return
+      }
+
+      activeGemstones.forEach((type) => {
+        const gemstones = formData[type as keyof typeof formData] as any[]
+        const requiredFields = type.includes('Diamond') ? requiredDiamondFields : requiredShaphyFields
+
+        gemstones.forEach((gemstone, index) => {
+          requiredFields.forEach((field) => {
+            if (!gemstone[field] || gemstone[field].toString().trim() === '') {
+              hasError = true
+              notification.error({
+                message: 'Lỗi Validation',
+                description: `Vui lòng điền đầy đủ thông tin trường ${field} cho ${type} #${index + 1}`
+              })
+            }
+          })
+        })
+      })
+
+      if (hasError) {
+        return
+      }
+    }
+
     setCurrentStep(currentStep + 1)
   }
 
@@ -289,6 +358,14 @@ export default function CreateFinalValuation() {
   }
 
   const handleSubmit = async () => {
+    if (!formData.estimatePriceMin || !formData.estimatePriceMax || !formData.specificPrice) {
+      notification.error({
+        message: 'Lỗi Validation',
+        description: 'Vui lòng nhập đầy đủ thông tin giá (Estimate Price Min, Estimate Price Max, Specific Price)'
+      })
+      return
+    }
+
     setIsLoading(true)
     try {
       const formDataToSend = new FormData()
@@ -328,6 +405,8 @@ export default function CreateFinalValuation() {
             formDataToSend.append(`${gemstoneType}[${index}].color`, diamondDetail.color)
             formDataToSend.append(`${gemstoneType}[${index}].cut`, diamondDetail.cut)
             formDataToSend.append(`${gemstoneType}[${index}].clarity`, diamondDetail.clarity)
+            formDataToSend.append(`${gemstoneType}[${index}].carat`, diamondDetail.carat)
+            formDataToSend.append(`${gemstoneType}[${index}].totalcarat`, diamondDetail.totalcarat)
             formDataToSend.append(`${gemstoneType}[${index}].quantity`, diamondDetail.quantity.toString())
             formDataToSend.append(`${gemstoneType}[${index}].settingType`, diamondDetail.settingType)
             formDataToSend.append(`${gemstoneType}[${index}].dimension`, diamondDetail.dimension)
@@ -358,6 +437,7 @@ export default function CreateFinalValuation() {
             formDataToSend.append(`${gemstoneType}[${index}].name`, shaphyDetail.name)
             formDataToSend.append(`${gemstoneType}[${index}].color`, shaphyDetail.color)
             formDataToSend.append(`${gemstoneType}[${index}].carat`, shaphyDetail.carat)
+            formDataToSend.append(`${gemstoneType}[${index}].totalcarat`, shaphyDetail.totalcarat)
             formDataToSend.append(`${gemstoneType}[${index}].enhancementType`, shaphyDetail.enhancementType)
             formDataToSend.append(`${gemstoneType}[${index}].quantity`, shaphyDetail.quantity.toString())
             formDataToSend.append(`${gemstoneType}[${index}].settingType`, shaphyDetail.settingType)

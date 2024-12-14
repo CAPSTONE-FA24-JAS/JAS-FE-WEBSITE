@@ -103,6 +103,10 @@ const FinanceProofList = () => {
     { key: 'approve', label: 'Approved' },
     { key: 'reject', label: 'Rejected' },
     { key: 'pending', label: 'Pending' },
+    {
+      key: 'processing',
+      label: 'Processing'
+    },
     { key: 'cancel', label: 'Cancelled' }
   ]
 

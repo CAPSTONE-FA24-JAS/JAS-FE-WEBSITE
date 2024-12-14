@@ -49,6 +49,8 @@ export interface MainDiamond {
   cut: string
   clarity: string
   quantity: number
+  carat: string
+  totalcarat: string
   settingType: string
   dimension: string
   shape: string
@@ -79,6 +81,8 @@ export interface SecondaryDiamond {
   cut: string
   clarity: string
   quantity: number
+  carat: string
+  totalcarat: string
   settingType: string
   dimension: string
   shape: string
@@ -108,6 +112,7 @@ export interface MainShaphy {
   name: string
   color: string
   carat: string
+  totalcarat: string
   enhancementType: string
   quantity: number
   settingType: string
@@ -133,6 +138,7 @@ export interface SecondaryShaphy {
   name: string
   color: string
   carat: string
+  totalcarat: string
   enhancementType: string
   quantity: number
   settingType: string

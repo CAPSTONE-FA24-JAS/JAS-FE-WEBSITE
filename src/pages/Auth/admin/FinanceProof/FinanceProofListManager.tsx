@@ -115,6 +115,10 @@ const FinanceProofListManager = () => {
       key: 'pending',
       label: 'Pending'
     },
+    {
+      key: 'processing',
+      label: 'Processing'
+    },
     { key: 'cancel', label: 'Cancelled' }
   ]
 

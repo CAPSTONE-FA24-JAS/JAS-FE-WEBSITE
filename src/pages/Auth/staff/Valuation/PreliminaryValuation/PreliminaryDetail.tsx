@@ -48,12 +48,7 @@ interface PreliminaryValuationDetailProps {
   status: string
 }
 
-const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
-  isVisible,
-  onCancel,
-  onUpdate,
-  record
-}) => {
+const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({ isVisible, onCancel, record }) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const images = record?.imageValuations || [
@@ -122,9 +117,6 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
       footer={[
         <Button key='cancel' onClick={onCancel}>
           Cancel
-        </Button>,
-        <Button key='update' type='primary' onClick={onUpdate}>
-          Send
         </Button>
       ]}
       width={1200}

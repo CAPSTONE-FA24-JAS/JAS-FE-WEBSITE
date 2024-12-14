@@ -6,10 +6,9 @@ interface ValuationDetailsModalProps {
   isVisible: boolean
   onCancel: () => void
   record: any
-  onUpdate: () => void // Added onUpdate prop
 }
 
-const PreliminaryDetailsModal: React.FC<ValuationDetailsModalProps> = ({ isVisible, onUpdate, onCancel, record }) => {
+const PreliminaryDetailsModal: React.FC<ValuationDetailsModalProps> = ({ isVisible, onCancel, record }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isModalVisible, setIsModalVisible] = useState(false)
   const images = record?.imageValuations || [
@@ -72,10 +71,7 @@ const PreliminaryDetailsModal: React.FC<ValuationDetailsModalProps> = ({ isVisib
       onCancel={onCancel}
       footer={[
         <Button key='cancel' onClick={onCancel}>
-          Cancel
-        </Button>,
-        <Button key='update' type='primary' onClick={onUpdate}>
-          Send
+          Close
         </Button>
       ]}
       width={1200}

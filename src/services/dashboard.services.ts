@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { Data } from '../types/Account.type'
 import baseUrl from '../utils/http'
+import { Respone } from '../types/Respone.type'
 
 export const dashboardApi = createApi({
   reducerPath: 'dashboardApi',
@@ -29,9 +30,21 @@ export const dashboardApi = createApi({
     }),
     getInvoiceInYear: build.query({
       query: (year: number) => `DashBoard/DashBoardInvoiceInYear?year=${year}`
+    }),
+    getTotalAccounts: build.query<Respone<number>, void>({
+      query: () => 'DashBoard/TotalAccounts'
+    }),
+    getTotalAccountActive: build.query<Respone<number>, void>({
+      query: () => 'DashBoard/TotalAccountActive'
     })
   })
 })
 
-export const { useGetTotalInvoiceQuery, useGetTotalRevenueQuery, useGetRevenueInYearQuery, useGetInvoiceInYearQuery } =
-  dashboardApi
+export const {
+  useGetTotalInvoiceQuery,
+  useGetTotalRevenueQuery,
+  useGetRevenueInYearQuery,
+  useGetInvoiceInYearQuery,
+  useGetTotalAccountsQuery,
+  useGetTotalAccountActiveQuery
+} = dashboardApi

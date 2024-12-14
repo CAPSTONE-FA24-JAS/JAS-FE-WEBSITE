@@ -70,19 +70,30 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
     }
   }
 
-  return (
-    <Modal
-      title='Final Valuation Details'
-      open={isVisible}
-      onCancel={onCancel}
-      footer={[
+  const renderFooterButtons = () => {
+    if (record?.status === 'Evaluated') {
+      return [
         <Button key='cancel' onClick={onCancel}>
           Cancel
         </Button>,
         <Button key='update' type='primary' onClick={handleUpdate} loading={loading}>
           Send
         </Button>
-      ]}
+      ]
+    }
+    return [
+      <Button key='cancel' onClick={onCancel}>
+        Close
+      </Button>
+    ]
+  }
+
+  return (
+    <Modal
+      title='Final Valuation Details'
+      open={isVisible}
+      onCancel={onCancel}
+      footer={renderFooterButtons()}
       width={1200}
       style={{ padding: '24px' }}
     >
@@ -257,7 +268,12 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
                       <span className='w-2/3'>{diamond.clarity}</span>
                     </div>
                   )}
-
+                  {diamond.carat && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Carat:</div>
+                      <span className='w-2/3'>{diamond.carat}</span>
+                    </div>
+                  )}
                   {diamond.quantity && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Quantity:</div>
@@ -384,7 +400,12 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
                       <span className='w-2/3'>{diamond.clarity}</span>
                     </div>
                   )}
-
+                  {diamond.totalCarat && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Carat:</div>
+                      <span className='w-2/3'>{diamond.totalCarat}</span>
+                    </div>
+                  )}
                   {diamond.quantity && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Quantity:</div>

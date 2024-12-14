@@ -128,14 +128,22 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
       title='Request Final Valuation Details'
       open={isVisible}
       onCancel={onClose}
-      footer={[
-        <Button key='reject' onClick={handleRejectClick} loading={isRejectLoading} danger>
-          Reject
-        </Button>,
-        <Button key='update' type='primary' onClick={handleUpdateClick} loading={isLoading}>
-          Approve
-        </Button>
-      ]}
+      footer={
+        valuationData?.data?.status === 'Evaluated'
+          ? [
+              <Button key='reject' onClick={handleRejectClick} loading={isRejectLoading} danger>
+                Reject
+              </Button>,
+              <Button key='update' type='primary' onClick={handleUpdateClick} loading={isLoading}>
+                Approve
+              </Button>
+            ]
+          : [
+              <Button key='close' onClick={onClose}>
+                Close
+              </Button>
+            ]
+      }
       width={1200}
       style={{ padding: '24px' }}
     >
@@ -285,7 +293,12 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
                       <span className='w-2/3'>{diamond.clarity}</span>
                     </div>
                   )}
-
+                  {diamond.carat && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Carat:</div>
+                      <span className='w-2/3'>{diamond.carat}</span>
+                    </div>
+                  )}
                   {/* Quantity */}
                   {diamond.quantity && (
                     <div className='flex mb-2'>
@@ -414,6 +427,12 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Clarity:</div>
                       <span className='w-2/3'>{diamond.clarity}</span>
+                    </div>
+                  )}
+                  {diamond.totalCarat && (
+                    <div className='flex mb-2'>
+                      <div className='w-1/4 font-medium'>Carat:</div>
+                      <span className='w-2/3'>{diamond.carat}</span>
                     </div>
                   )}
 

@@ -22,22 +22,21 @@ export const jewelryApi = createApi({
   refetchOnMountOrArgChange: true,
   endpoints: (builder) => ({
     getJewelriesNoSlot: builder.query<Respone<DataResponse<Jewelry>>, void>({
-      query: () => '/Jewelrys/GetJewelryNoLot', // lấy hếc :D
+      query: () => '/Jewelrys/GetJewelryNoLot',
       providesTags(res) {
-        if (res) {
+        if (res?.data?.dataResponse) {
           return [
             ...res.data.dataResponse.map(({ id }) => ({ type: 'Jewelry' as const, id })),
             { type: 'Jewelry', id: 'LIST' }
           ]
-        } else {
-          return [{ type: 'Jewelry', id: 'LIST' }]
         }
+        return [{ type: 'Jewelry', id: 'LIST' }]
       }
     }),
     getAllJewelries: builder.query<Respone<DataResponse<Jewelry>>, void>({
       query: () => `/Jewelrys/GetJewelry`,
       providesTags(res) {
-        if (res?.data.dataResponse) {
+        if (res?.data?.dataResponse) {
           return [
             ...res.data.dataResponse.map(({ id }) => ({ type: 'Jewelry' as const, id })),
             { type: 'Jewelry', id: 'LIST' }
@@ -57,7 +56,6 @@ export const jewelryApi = createApi({
         body: convertToFormData(data),
         formData: true
       }),
-
       invalidatesTags: ['Jewelry']
     }),
     CancelByMangerToNoAuction: builder.mutation<any, { jewelryId: string; reason: string }>({
@@ -76,19 +74,20 @@ const convertToFormData = (data: UpdateJewelryRequest) => {
   Object.entries(data).forEach(([key, value]) => {
     if (value !== null && value !== undefined) {
       if (Array.isArray(value)) {
-        // Xử lý các mảng
         value.forEach((item, index) => {
-          Object.entries(item).forEach(([itemKey, itemValue]) => {
-            formData.append(`${key}[${index}].${itemKey}`, String(itemValue))
-          })
+          if (typeof item === 'object' && item !== null) {
+            Object.entries(item).forEach(([itemKey, itemValue]) => {
+              if (itemValue !== null && itemValue !== undefined) {
+                formData.append(`${key}[${index}].${itemKey}`, String(itemValue))
+              }
+            })
+          }
         })
       } else {
         formData.append(key, value.toString())
       }
     }
   })
-
-  console.log('formData api', formData)
 
   return formData
 }

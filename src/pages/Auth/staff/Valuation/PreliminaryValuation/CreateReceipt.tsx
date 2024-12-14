@@ -40,11 +40,10 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
   const [note, setnote] = useState('')
   const [khoiluong, setkhoiluong] = useState('')
   const [jewelryName, setjewlryName] = useState('')
-  const [deliveryDate, setDeliveryDate] = useState<string>(dateToString(dayjs()))
-  const [idIssuanceDate, setIdIssuanceDate] = useState<string>(dateToString(dayjs(record?.seller?.idIssuanceDate)))
-  const [idExpirationDate, setIdExpirationDate] = useState<string>(
-    dateToString(dayjs(record?.seller?.idExpirationDate))
-  )
+  const [deliveryDate] = useState<string>(dateToString(dayjs()))
+  const [idIssuanceDate, setIdIssuanceDate] = useState<string>(record?.seller?.idIssuanceDate || '')
+  const [idExpirationDate, setIdExpirationDate] = useState<string>(record?.seller?.idExpirationDate || '')
+
   const [createReceipt] = useCreateReceiptMutation()
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({ actualStatusOfJewelry: false, khoiluong: false, jewelryName: false })
@@ -63,13 +62,17 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
     // Kiểm tra validation
     const validationErrors = {
       actualStatusOfJewelry: !actualStatusOfJewelry.trim(),
-      khoiluong: !khoiluong.trim(),
-      jewelryName: !jewelryName.trim()
+      khoiluong: !khoiluong.trim() || parseFloat(khoiluong) === 0,
+      jewelryName: jewelryName.trim().length < 6 || /^\s/.test(jewelryName)
     }
     setErrors(validationErrors)
 
     if (Object.values(validationErrors).some((error) => error)) {
-      message.error('Vui lòng điền đầy đủ các trường bắt buộc!')
+      if (parseFloat(khoiluong) === 0) {
+        message.error('Khối lượng không thể bằng 0!')
+      } else {
+        message.error('Vui lòng điền đầy đủ và đúng định dạng các trường bắt buộc!')
+      }
       return
     }
 
@@ -275,20 +278,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
             <Input className='w-full mb-2 font-bold' value={record?.name} readOnly />
           </Col>
         </Row>
-        <Row gutter={16}>
-          <Col span={3}>
-            <Text strong className='block mb-2'>
-              Ngày nhận hàng:
-            </Text>
-          </Col>
-          <Col span={21}>
-            <Input
-              className='w-full mb-2 font-bold'
-              value={deliveryDate}
-              onChange={(e) => setDeliveryDate(e.target.value)}
-            />
-          </Col>
-        </Row>
+
         <Row gutter={16}>
           <Col span={12}>
             <Row gutter={16}>
@@ -320,9 +310,13 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
                   min={0}
                   step={0.1}
                   formatter={(value) => `${value} g`}
-                  parser={(value) => parseFloat(value?.replace(' g', '') || '0')}
+                  parser={(value) => parseFloat(value?.replace('', '') || '0')}
                 />
-                {errors.khoiluong && <Text className='text-red-500'>Trường này là bắt buộc.</Text>}
+                {errors.khoiluong && (
+                  <Text className='text-red-500'>
+                    {parseFloat(khoiluong) === 0 ? 'Khối lượng không thể bằng 0' : 'Khối lượng không thể bằng 0 '}
+                  </Text>
+                )}
               </Col>
             </Row>
           </Col>
@@ -337,7 +331,11 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
                   value={jewelryName}
                   onChange={(e) => setjewlryName(e.target.value)}
                 />
-                {errors.jewelryName && <Text className='text-red-500'>Trường này là bắt buộc.</Text>}
+                {errors.jewelryName && (
+                  <Text className='text-red-500'>
+                    Tên sản phẩm phải có ít nhất 6 ký tự và không được có khoảng trắng ở đầu
+                  </Text>
+                )}
               </Col>
               <Col span={24}>
                 <Text strong className='block mb-2'>

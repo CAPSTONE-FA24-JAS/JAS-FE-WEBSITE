@@ -55,6 +55,12 @@ interface FieldOption {
   options?: { name: string; value: number }[]
 }
 
+interface ValidationErrors {
+  [key: string]: {
+    [key: string]: string
+  }
+}
+
 const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
   formData,
   handleGemstoneChange,
@@ -74,6 +80,8 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
     secondaryShaphies: false
   })
 
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({})
+
   const { data: colorOptions } = useGetEnumColorDiamondsQuery()
   const { data: cutOptions } = useGetEnumCutsQuery()
   const { data: clarityOptions } = useGetEnumClaritiesQuery()
@@ -86,6 +94,7 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
     { label: 'Quantity', key: 'quantity', placeholder: 'Enter quantity' },
     { label: 'Clarity', key: 'clarity', placeholder: 'Enter clarity', options: clarityOptions?.data },
     { label: 'Dimensions', key: 'dimension', placeholder: 'Enter dimensions' },
+    { label: 'Total Carat', key: 'totalcarat', placeholder: 'Enter carat' },
     { label: 'Setting Type', key: 'settingType', placeholder: 'Enter setting type' },
     { label: 'Shape', key: 'shape', placeholder: 'Enter shape' },
     { label: 'Certificate', key: 'certificate', placeholder: 'Enter certificate' },
@@ -96,7 +105,7 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
   const shaphyFields = [
     { label: 'Name', key: 'name', placeholder: 'Enter name' },
     { label: 'Color', key: 'color', placeholder: 'Enter color', options: colorShaphyOptions?.data },
-    { label: 'Carat', key: 'carat', placeholder: 'Enter carat' },
+    { label: 'Total Carat', key: 'totalcarat', placeholder: 'Enter carat' },
     { label: 'Quantity', key: 'quantity', placeholder: 'Enter quantity' },
     { label: 'Enhancement Type', key: 'enhancementType', placeholder: 'Enter enhancement type' },
     { label: 'Setting Type', key: 'settingType', placeholder: 'Enter setting type' },
@@ -220,14 +229,89 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
     )
   }
 
+  const validateField = (value: string, fieldName: string, index: number, type: string) => {
+    const errors = { ...validationErrors }
+    const key = `${type}-${index}`
+
+    if (!errors[key]) {
+      errors[key] = {}
+    }
+
+    if (!value || value.trim() === '') {
+      errors[key][fieldName] = 'Trường này là bắt buộc'
+    } else {
+      delete errors[key][fieldName]
+      if (Object.keys(errors[key]).length === 0) {
+        delete errors[key]
+      }
+    }
+
+    setValidationErrors(errors)
+    return value.trim() !== ''
+  }
+
+  const handleInputChange = (
+    type: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies',
+    index: number,
+    field: string,
+    value: string
+  ) => {
+    if (['shape', 'quantity', 'color', 'clarity', 'totalcarat', 'dimension'].includes(field)) {
+      validateField(value, field, index, type)
+    }
+    handleGemstoneChange(type, index, field, value)
+  }
+
+  const renderInputField = (
+    field: FieldOption,
+    value: string,
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+    type: string,
+    index: number
+  ) => (
+    <div key={field.key}>
+      <label className='block font-medium mb-1'>
+        {field.label}
+        {['shape', 'quantity', 'color', 'clarity', 'totalcarat', 'dimension'].includes(field.key) && (
+          <span className='text-red-500 ml-1'>*</span>
+        )}
+      </label>
+      <input
+        type='text'
+        placeholder={field.placeholder}
+        value={value}
+        onChange={onChange}
+        className={`border rounded p-2 w-full ${
+          validationErrors[`${type}-${index}`]?.[field.key] ? 'border-red-500' : ''
+        }`}
+      />
+      {validationErrors[`${type}-${index}`]?.[field.key] && (
+        <p className='text-red-500 text-sm mt-1'>{validationErrors[`${type}-${index}`][field.key]}</p>
+      )}
+    </div>
+  )
+
   const renderSelectField = (
     field: FieldOption,
     value: string,
-    onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
+    onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void,
+    type: string,
+    index: number
   ) => (
     <div key={field.key}>
-      <label className='block font-medium mb-1'>{field.label}</label>
-      <select className='border rounded p-2 w-full' value={value} onChange={onChange}>
+      <label className='block font-medium mb-1'>
+        {field.label}
+        {['shape', 'quantity', 'color', 'clarity', 'totalcarat', 'dimension'].includes(field.key) && (
+          <span className='text-red-500 ml-1'>*</span>
+        )}
+      </label>
+      <select
+        className={`border rounded p-2 w-full ${
+          validationErrors[`${type}-${index}`]?.[field.key] ? 'border-red-500' : ''
+        }`}
+        value={value}
+        onChange={onChange}
+      >
         <option value='' disabled hidden>
           {field.placeholder}
         </option>
@@ -237,32 +321,9 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
           </option>
         ))}
       </select>
-    </div>
-  )
-
-  const handleInputChange = (
-    type: 'mainDiamonds' | 'secondaryDiamonds' | 'mainShaphies' | 'secondaryShaphies',
-    index: number,
-    field: string,
-    value: string
-  ) => {
-    handleGemstoneChange(type, index, field, value)
-  }
-
-  const renderInputField = (
-    field: FieldOption,
-    value: string,
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  ) => (
-    <div key={field.key}>
-      <label className='block font-medium mb-1'>{field.label}</label>
-      <input
-        type='text'
-        placeholder={field.placeholder}
-        value={value}
-        onChange={onChange}
-        className='border rounded p-2 w-full'
-      />
+      {validationErrors[`${type}-${index}`]?.[field.key] && (
+        <p className='text-red-500 text-sm mt-1'>{validationErrors[`${type}-${index}`][field.key]}</p>
+      )}
     </div>
   )
 
@@ -274,15 +335,23 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
     const fields = isDiamondType ? diamondFields : shaphyFields
     return data.map((detail, index) => (
       <div key={index} className='border p-4 mb-4 rounded'>
-        <h4 className='text-lg font-semibold'>{`${type} ${index + 1}`}</h4>
+        <h4 className='text-lg font-semibold'></h4>
         <div className='grid grid-cols-2 gap-4'>
           {fields.map((field: FieldOption) =>
             field.options
-              ? renderSelectField(field, String(detail[field.key as keyof typeof detail]), (e) =>
-                  handleInputChange(type, index, field.key, e.target.value)
+              ? renderSelectField(
+                  field,
+                  String(detail[field.key as keyof typeof detail]),
+                  (e) => handleInputChange(type, index, field.key, e.target.value),
+                  type,
+                  index
                 )
-              : renderInputField(field, String(detail[field.key as keyof typeof detail]), (e) =>
-                  handleInputChange(type, index, field.key, e.target.value)
+              : renderInputField(
+                  field,
+                  String(detail[field.key as keyof typeof detail]),
+                  (e) => handleInputChange(type, index, field.key, e.target.value),
+                  type,
+                  index
                 )
           )}
         </div>

@@ -49,26 +49,42 @@ const CreatePreliminaryValuationAppraiser = () => {
   }, [data])
 
   const handleEstimatePriceMinChange = (value: number | null) => {
-    console.log('Estimate Price Min:', value)
+    const newValue = value || 0
     setFormValues((prevValues) => ({
       ...prevValues,
-      estimatePriceMin: value || 0
+      estimatePriceMin: newValue
     }))
+
+    let error = ''
+    if (value === null) {
+      error = 'Estimate Price Min is required'
+    } else if (formValues.estimatePriceMax > 0 && newValue > formValues.estimatePriceMax) {
+      error = 'Minimum price cannot be higher than maximum price'
+    }
+
     setErrors((prevErrors) => ({
       ...prevErrors,
-      estimatePriceMin: value === null ? 'Estimate Price Min is required' : ''
+      estimatePriceMin: error
     }))
   }
 
   const handleEstimatePriceMaxChange = (value: number | null) => {
-    console.log('Estimate Price Max:', value)
+    const newValue = value || 0
     setFormValues((prevValues) => ({
       ...prevValues,
-      estimatePriceMax: value || 0
+      estimatePriceMax: newValue
     }))
+
+    let error = ''
+    if (value === null) {
+      error = 'Estimate Price Max is required'
+    } else if (formValues.estimatePriceMin > 0 && newValue < formValues.estimatePriceMin) {
+      error = 'Maximum price cannot be lower than minimum price'
+    }
+
     setErrors((prevErrors) => ({
       ...prevErrors,
-      estimatePriceMax: value === null ? 'Estimate Price Max is required' : ''
+      estimatePriceMax: error
     }))
   }
 
@@ -85,6 +101,14 @@ const CreatePreliminaryValuationAppraiser = () => {
       setErrors((prevErrors) => ({
         ...prevErrors,
         estimatePriceMax: 'Estimate Price Max is required'
+      }))
+      return
+    }
+
+    if (formValues.estimatePriceMin > formValues.estimatePriceMax) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        estimatePriceMin: 'Minimum price cannot be higher than maximum price'
       }))
       return
     }
