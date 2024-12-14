@@ -85,14 +85,7 @@ const LotGridView: React.FC<LotGridViewProps> = ({ lots }) => {
         return (
           <Card size='small' className='bg-gray-50'>
             <PriceDisplay label='Buy Now Price' value={lot.buyNowPrice} />
-            <Row gutter={[16, 16]}>
-              <Col span={12}>
-                <div className='mb-4 last:mb-0'>
-                  <Text className='block mb-1 text-sm text-gray-500'>Floor Fee</Text>
-                  <Text className='block text-xl font-semibold'>{lot.floorFeePercent}%</Text>
-                </div>
-              </Col>
-            </Row>
+
             <Row gutter={[16, 16]} className='mt-4'>
               <Col span={12}>
                 <Text className='block mb-1 text-sm text-gray-500'>Extendable</Text>
@@ -111,14 +104,7 @@ const LotGridView: React.FC<LotGridViewProps> = ({ lots }) => {
           <Card size='small' className='bg-gray-50'>
             <PriceDisplay label='Start Price' value={lot.startPrice} />
             <PriceDisplay label='Max Price' value={lot.finalPriceSold} />
-            <Row gutter={[16, 16]}>
-              <Col span={12}>
-                <div className='mb-4 last:mb-0'>
-                  <Text className='block mb-1 text-sm text-gray-500'>Floor Fee</Text>
-                  <Text className='block text-xl font-semibold'>{lot.floorFeePercent}%</Text>
-                </div>
-              </Col>
-            </Row>
+
             <Row gutter={[16, 16]} className='mt-4'>
               <Col span={12}>
                 <Text className='block mb-1 text-sm text-gray-500'>Extendable</Text>
@@ -148,14 +134,7 @@ const LotGridView: React.FC<LotGridViewProps> = ({ lots }) => {
                 <PriceDisplay label='Step Bid Increment' value={lot.bidIncrement} />
               </Col>
             </Row>
-            <Row gutter={[16, 16]}>
-              <Col span={12}>
-                <div className='mb-4 last:mb-0'>
-                  <Text className='block mb-1 text-sm text-gray-500'>Floor Fee</Text>
-                  <Text className='block text-xl font-semibold'>{lot.floorFeePercent}%</Text>
-                </div>
-              </Col>
-            </Row>
+
             <Row gutter={[16, 16]} className='mt-4'>
               <Col span={12}>
                 <Text className='block mb-1 text-sm text-gray-500'>Extendable</Text>
@@ -183,15 +162,6 @@ const LotGridView: React.FC<LotGridViewProps> = ({ lots }) => {
             <Row gutter={[16, 16]}>
               <Col span={12}>
                 <PriceDisplay label='Price Decrease' value={lot.bidIncrement} />
-              </Col>
-            </Row>
-
-            <Row gutter={[16, 16]}>
-              <Col span={12}>
-                <div className='mb-4 last:mb-0'>
-                  <Text className='block mb-1 text-sm text-gray-500'>Floor Fee</Text>
-                  <Text className='block text-xl font-semibold'>{lot.floorFeePercent}%</Text>
-                </div>
               </Col>
             </Row>
 

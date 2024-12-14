@@ -166,14 +166,6 @@ export default function WithdrawalRequests() {
     }
   ]
 
-  if (error) {
-    return (
-      <div className='p-4 border border-red-200 rounded-lg bg-red-50'>
-        <p className='text-red-600'>Error loading data</p>
-      </div>
-    )
-  }
-
   return (
     <div className='p-6 bg-white rounded-lg shadow-sm'>
       <div className='flex items-center justify-between mb-6'>

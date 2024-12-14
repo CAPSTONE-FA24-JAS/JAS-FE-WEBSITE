@@ -21,9 +21,6 @@ export default function LoginPage() {
         message: 'Login Success',
         description: 'Welcome back to the system'
       })
-      setTimeout(() => {
-        navigate('/')
-      }, 2000)
     }
 
     if (isError && error) {
