@@ -15,7 +15,7 @@ import { WithDraw } from '../../../../types/Withdraw.type'
 type WithdrawStatus = 'Requested' | 'InProgress' | 'Approved' | 'Cancelled'
 
 export default function WithdrawalRequests() {
-  const { data, error, isLoading, refetch } = useViewListRequestWithdrawForManagementQuery()
+  const { data, isLoading, refetch } = useViewListRequestWithdrawForManagementQuery()
   const [approveRequestNewWithdraw] = useApproveRequestNewWithdrawMutation()
   const [processRequestWithdraw] = useProcessWithdrawStaffMutation()
   const [cancelWithdraw] = useCancelWithdrawMutation()

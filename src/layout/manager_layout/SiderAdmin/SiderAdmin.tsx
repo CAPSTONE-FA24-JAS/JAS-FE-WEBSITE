@@ -50,7 +50,8 @@ export default function SiderAdmin({ onCollapse }: { onCollapse: (collapsed: boo
       ]),
       getItem('Manage Category', 'category', <AppstoreAddOutlined />),
       getItem('Manage Artist', 'artist', <SmileOutlined />),
-      getItem('Manage Blog', 'bloglist', <FileTextOutlined />)
+      getItem('Manage Blog', 'bloglist', <FileTextOutlined />),
+      getItem('General', 'general', <FileTextOutlined />)
     ]
   }
 
@@ -62,6 +63,7 @@ export default function SiderAdmin({ onCollapse }: { onCollapse: (collapsed: boo
     .set('category', '/admin/category')
     .set('artist', '/admin/artist')
     .set('bloglist', '/admin/bloglist')
+    .set('general', '/admin/general')
 
   return (
     <Sider

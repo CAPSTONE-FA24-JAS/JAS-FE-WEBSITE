@@ -23,6 +23,7 @@ import ArtistList from '../pages/Auth/manager/Artist/ArtistList'
 import BlogDetail from '../pages/Auth/manager/Blog/BlogDetail'
 import BlogTable from '../pages/Auth/manager/Blog/BlogList'
 import CategoriesComponent from '../pages/Auth/manager/Category/CategoryList'
+import GeneralSetting from '../pages/Auth/manager/General/GeneralSetting'
 import ManageAccount from '../pages/Auth/manager/ManageAccount/AccountList'
 import CreateAccount from '../pages/Auth/manager/ManageAccount/CreateAccount'
 import Overview from '../pages/Auth/manager/Overview'
@@ -92,7 +93,8 @@ const adminRoutes: RouteProps[] = [
   { path: '/admin/category', component: CategoriesComponent, layout: AdminLayout },
   { path: '/admin/artist', component: ArtistList, layout: AdminLayout },
   { path: '/admin/bloglist', component: BlogTable, layout: AdminLayout },
-  { path: '/admin/blog/:id', component: BlogDetail, layout: AdminLayout }
+  { path: '/admin/blog/:id', component: BlogDetail, layout: AdminLayout },
+  { path: '/admin/general', component: GeneralSetting, layout: AdminLayout }
 ]
 
 const staffCRoutes: RouteProps[] = [
