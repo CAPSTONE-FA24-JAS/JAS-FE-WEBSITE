@@ -2,7 +2,7 @@ import { Button, Checkbox, DatePicker, Form, Image, Input, InputNumber, Modal, n
 import dayjs from 'dayjs'
 import React, { useEffect, useState } from 'react'
 import { useGetFilterByRoleQuery } from '../../../../../services/account.services'
-import { useGetJewelriesNoSlotQuery } from '../../../../../services/jewelry.services'
+import { useGetJewelriesNoSlotQuery, useGetJewelryByIdQuery } from '../../../../../services/jewelry.services'
 import { Auction } from '../../../../../types/Auction.type'
 import { Jewelry } from '../../../../../types/Jewelry.type'
 import { CreateLot, ListLot } from '../../../../../types/Lot.type'
@@ -18,8 +18,6 @@ interface AddLotModalProps {
   onSubmit: (values: Partial<ListLot>) => void
   initialValues: ListLot
 }
-
-type AuctionType = 'Private Bid' | 'Random Draw Auction' | 'Dutch Auction' | 'Incremental Bidding Auction'
 
 const AddLotModal: React.FC<AddLotModalProps> = ({
   auctionData,
@@ -37,6 +35,10 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
   const [jewelryData, setJewelryData] = useState<Jewelry>()
   const [isExtendTimeEnabled, setIsExtendTimeEnabled] = useState(true)
   const [selectedPercentage, setSelectedPercentage] = useState<number>(0)
+
+  const { data: jewelryDataDetail, isFetching: jewelryLoadingDetail } = useGetJewelryByIdQuery(chooseJewelry ?? 0, {
+    skip: !visible || !chooseJewelry
+  })
 
   const { data: listStaff, isFetching: staffLoading } = useGetFilterByRoleQuery(3, {
     skip: !visible
@@ -57,51 +59,115 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
     }
   }
 
+  // Effect for handling jewelry selection in Add mode
   useEffect(() => {
-    if (chooseJewelry !== null && data) {
-      form.setFieldValue('type', null)
+    if (chooseJewelry !== null && data && !isEditing) {
       const selectedJewelry = data.data.dataResponse.find((jewelry) => jewelry.id === chooseJewelry)
-      setJewelryData(selectedJewelry)
-      form.setFieldValue('staffCare', selectedJewelry?.staffId)
-
-      const newAuctionType = getBidTypeFromBidForm(selectedJewelry?.bidForm)
-      console.log('newAuctionType', newAuctionType)
-
-      setAuctionType(newAuctionType)
-      form.setFieldValue('type', newAuctionType)
+      if (selectedJewelry) {
+        setJewelryData(selectedJewelry)
+        form.setFieldValue('staffCare', selectedJewelry?.staffId)
+        const newAuctionType = getBidTypeFromBidForm(selectedJewelry?.bidForm)
+        setAuctionType(newAuctionType)
+        form.setFieldValue('type', newAuctionType)
+      }
     }
-  }, [chooseJewelry, data])
+  }, [chooseJewelry, data, isEditing])
 
+  // Effect for modal visibility and initialization
   useEffect(() => {
     if (visible) {
       form.resetFields()
       setChooseJewelry(null)
-      setJewelryData(undefined)
+      setJewelryData({} as Jewelry)
       setIsExtendTimeEnabled(true)
       setSelectedPercentage(0)
       setAuctionType('')
 
-      if (initialValues) {
-        form.setFieldsValue(initialValues)
+      if (initialValues && Object.keys(initialValues).length > 0) {
+        // Set all form values for editing
+        const formValues = {
+          ...initialValues,
+          title: initialValues.title,
+          jewelry: initialValues.jewelryId,
+          deposit: initialValues.deposit,
+          startTime: initialValues.startTime ? dayjs(initialValues.startTime) : null,
+          endTime: initialValues.endTime ? dayjs(initialValues.endTime) : null,
+          type:
+            initialValues.lotType === 'Fixed_Price'
+              ? '1'
+              : initialValues.lotType === 'Secret_Auction'
+              ? '2'
+              : initialValues.lotType === 'Public_Auction'
+              ? '3'
+              : '4',
+          buyNowPrice: initialValues.buyNowPrice,
+          startPrice: initialValues.startPrice,
+          finalPriceSold: initialValues.finalPriceSold,
+          priceStep: initialValues.bidIncrement,
+          extendTime: initialValues.isExtend,
+          round: initialValues.round,
+          proofFinance: initialValues.haveFinancialProof,
+          staffCare: initialValues.staffId,
+          bidIncrementTime: initialValues.bidIncrementTime
+        }
+
+        form.setFieldsValue(formValues)
         setIsEditing(true)
-        setAuctionType(initialValues.lotType as AuctionType)
+
+        // Set auction type
+        const lotTypeValue = formValues.type
+        setAuctionType(lotTypeValue)
+
+        // Set jewelry ID for fetching detail
+        setChooseJewelry(initialValues.jewelryId)
+
+        // Set extend time state
+        setIsExtendTimeEnabled(initialValues.isExtend)
       } else {
+        form.resetFields()
+        setChooseJewelry(null)
+        setJewelryData(undefined)
+        setIsExtendTimeEnabled(true)
+        setSelectedPercentage(0)
+        setAuctionType('')
         setIsEditing(false)
-        setAuctionType('1')
       }
     }
   }, [visible, form, initialValues])
 
+  // Effect for handling jewelry detail data in Edit mode
+  useEffect(() => {
+    if (jewelryDataDetail && isEditing) {
+      setJewelryData(jewelryDataDetail.data)
+
+      // Calculate and set deposit percentage when jewelry data is loaded
+      if (initialValues?.deposit && jewelryDataDetail.data.startingPrice) {
+        const percentage = Math.round((initialValues.deposit / jewelryDataDetail.data.startingPrice) * 100)
+        setSelectedPercentage(percentage)
+      }
+    }
+  }, [jewelryDataDetail, isEditing, initialValues])
+
   const handleSubmit = () => {
-    if (form.getFieldValue('bidForm') === '3' && form.getFieldValue('priceStep') == 0) {
+    if (auctionType === '3' && form.getFieldValue('priceStep') === 0) {
       notification.error({
         message: 'Price step must be greater than 0'
       })
       return
     }
 
-    if (form.getFieldValue('bidForm') === '3' && form.getFieldValue('finalPriceSold') != 0) {
+    if (auctionType === '3' && form.getFieldValue('finalPriceSold') !== 0) {
       const valuesBetweenMinAndMax = form.getFieldValue('finalPriceSold') - form.getFieldValue('startPrice')
+      if (valuesBetweenMinAndMax < form.getFieldValue('priceStep')) {
+        notification.error({
+          message: 'Step must be less than the difference between the starting price and the final price'
+        })
+        return
+      }
+    }
+
+    if (auctionType === '4') {
+      const valuesBetweenMinAndMax = form.getFieldValue('startPrice') - form.getFieldValue('finalPriceSold')
       if (valuesBetweenMinAndMax < form.getFieldValue('priceStep')) {
         notification.error({
           message: 'Step must be less than the difference between the starting price and the final price'
@@ -151,7 +217,6 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
   }
 
   const renderAuctionTypeSpecificFields = () => {
-    console.log('auctionType', auctionType)
     switch (auctionType) {
       case '1': // fixed price auction
         return (
@@ -178,7 +243,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
           <div className='flex justify-between'>
             <Form.Item
               name='startPrice'
-              label='Price Min'
+              label='Start price'
               validateFirst={true}
               rules={[
                 { required: true, message: 'Please input the minimum price' },
@@ -221,7 +286,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
             <div className='flex justify-between'>
               <Form.Item
                 name='startPrice'
-                label='Price Min'
+                label='Start price'
                 validateFirst={true}
                 rules={[
                   { required: true, message: 'Please input the minimum price' },
@@ -314,7 +379,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
               <div className='flex justify-between'>
                 <Form.Item
                   name='startPrice'
-                  label='Price Max' // Giá khởi điểm - cao nhất
+                  label='Price Max'
                   validateFirst={true}
                   rules={[
                     { required: true, message: 'Please input the maximum price' },
@@ -350,7 +415,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
 
                 <Form.Item
                   name='finalPriceSold'
-                  label='Price Min' // Giá mục tiêu - thấp nhất
+                  label='Price Min'
                   validateFirst={true}
                   rules={[
                     { required: true, message: 'Please input the minimum price' },
@@ -438,11 +503,24 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
     <Modal
       forceRender
       open={visible}
-      title={!isEditing ? 'Edit Lot Auction' : 'Add Lot Auction'}
+      title={isEditing ? 'Edit Lot Auction' : 'Add Lot Auction'}
       onCancel={onCancel}
-      loading={jewelryLoading && staffLoading}
+      loading={jewelryLoading && staffLoading && jewelryLoadingDetail}
       footer={[
-        <Button key='cancel' onClick={onCancel}>
+        <Button
+          key='cancel'
+          onClick={() => {
+            // Reset all states here before calling onCancel
+            form.resetFields()
+            setChooseJewelry(null)
+            setJewelryData(undefined)
+            setIsExtendTimeEnabled(true)
+            setSelectedPercentage(0)
+            setAuctionType('')
+            setIsEditing(false)
+            onCancel()
+          }}
+        >
           Cancel
         </Button>,
         <Button key='submit' type='primary' onClick={handleSubmit} loading={isLoading}>
@@ -455,9 +533,8 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
         <Form.Item name='title' label='Title Lots' rules={[{ required: true, message: 'Please input the title' }]}>
           <Input />
         </Form.Item>
-
         <Form.Item name='jewelry' label='Jewelry' rules={[{ required: true, message: 'Please select the Jewelry' }]}>
-          <Select onChange={handleJewelryChange} optionLabelProp='label'>
+          <Select onChange={handleJewelryChange} optionLabelProp='label' disabled={isEditing}>
             {data?.data.dataResponse.map((jewelry) => (
               <Option key={jewelry.id} value={jewelry.id} label={`${jewelry.id} - ${jewelry.name}`}>
                 <JewelryOption jewelry={jewelry} />
@@ -465,10 +542,8 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
             ))}
           </Select>
         </Form.Item>
-
-        {jewelryData && (
+        {jewelryData && jewelryData.imageJewelries && (
           <>
-            {' '}
             <div className='p-2 mb-4 border rounded'>
               <div className='flex items-center gap-3'>
                 <div className='flex-shrink-0 w-12 h-12 overflow-hidden'>
@@ -549,12 +624,11 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
             </div>
           </>
         )}
-
         <div className='flex justify-between'>
           <Form.Item
             name='startTime'
             label='Start Time:'
-            initialValue={dayjs(auctionData.startTime)}
+            initialValue={auctionData.startTime ? dayjs(auctionData.startTime) : null}
             rules={[{ required: true, message: 'Please select the start time' }]}
             className='w-[48%]'
           >
@@ -564,42 +638,35 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
           <Form.Item
             name='endTime'
             label='End Time(expected):'
-            initialValue={dayjs(auctionData.endTime)}
+            initialValue={auctionData.endTime ? dayjs(auctionData.endTime) : null}
             rules={[{ required: true, message: 'Please select the end time' }]}
             className='w-[48%]'
           >
             <DatePicker disabled showTime className='w-full' />
           </Form.Item>
         </div>
-
         <Form.Item name='type' label='Type' rules={[{ required: true, message: 'Please select the type' }]}>
-          <Select
-            value={auctionType}
-            onChange={(value) => setAuctionType(value)}
-            disabled={!auctionType == null ? true : false}
-          >
+          <Select value={auctionType} onChange={(value) => setAuctionType(value)} disabled={isEditing}>
             <Option value='1'>Fixed Price Auction</Option>
             <Option value='2'>Secret Auction</Option>
             <Option value='3'>Public Auction</Option>
             <Option value='4'>Auction Price GraduallyReduced</Option>
           </Select>
         </Form.Item>
-
         {renderAuctionTypeSpecificFields()}
-
         {auctionType ? (
           <div className='flex justify-start gap-5 mb-4'>
             {auctionType === '3' ? (
               <>
                 <div className='flex-col'>
                   <Form.Item initialValue={true} name='extendTime' valuePropName='checked' className='mb-0'>
-                    <Checkbox defaultChecked onChange={handleExtendTimeChange}>
+                    <Checkbox defaultChecked onChange={handleExtendTimeChange} disabled={isEditing}>
                       Extend time
                     </Checkbox>
                   </Form.Item>
                   {isExtendTimeEnabled && (
                     <Form.Item name='round' label='Extend Rounds' rules={[{ type: 'number' }]} className='mb-0'>
-                      <InputNumber min={1} className='w-24' />
+                      <InputNumber min={1} className='w-24' disabled={isEditing} />
                     </Form.Item>
                   )}
                 </div>
@@ -609,13 +676,14 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
             )}
 
             <Form.Item initialValue={true} name='proofFinance' valuePropName='checked' className='mb-0'>
-              <Checkbox defaultChecked>Proof finance</Checkbox>
+              <Checkbox defaultChecked disabled={isEditing}>
+                Proof finance
+              </Checkbox>
             </Form.Item>
           </div>
         ) : (
           ''
         )}
-
         <Form.Item
           name='staffCare'
           label='Staff care'
@@ -623,7 +691,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
           className='w-full'
           initialValue={jewelryData?.staffId}
         >
-          <Select>
+          <Select disabled={isEditing}>
             {listStaff?.data.map((staff) => (
               <Option key={staff.staffDTO.id} value={staff.staffDTO.id}>
                 {staff.staffDTO.firstName} {staff.staffDTO.lastName}

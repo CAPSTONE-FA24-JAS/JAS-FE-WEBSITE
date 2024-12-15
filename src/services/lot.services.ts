@@ -160,6 +160,62 @@ export const lotApi = createApi({
     }),
     getWinnerForLot: build.query<Respone<WinnerForLotMethod4[]>, number>({
       query: (lotId) => `CustomerLots/GetWinnerForLot?lotId=${lotId}`
+    }),
+    updateFixPriceLot: build.mutation<Respone<ListLot>, Partial<CreateLot>>({
+      query: (body) => ({
+        url: 'Lot/UpdateLotFixedPrice',
+        method: 'PUT',
+        params: { id: body.id },
+        body: {
+          title: body.title,
+          deposit: body.deposit,
+          buyNowPrice: body.buyNowPrice,
+          haveFinancialProof: body.haveFinancialProof,
+          staffId: body.staffId
+        }
+      }),
+      invalidatesTags: [{ type: 'Lot', id: 'LIST' }]
+    }),
+    updateSecretLot: build.mutation<Respone<ListLot>, Partial<CreateLot>>({
+      query: (body) => ({
+        url: 'Lot/UpdateLotSercet',
+        method: 'PUT',
+        params: { id: body.id },
+        body: {
+          title: body.title,
+          startPrice: body.startPrice,
+          deposit: body.deposit,
+          haveFinancialProof: body.haveFinancialProof,
+          staffId: body.staffId
+        }
+      }),
+      invalidatesTags: [{ type: 'Lot', id: 'LIST' }]
+    }),
+    updatePublicLot: build.mutation<Respone<ListLot>, Partial<CreateLot>>({
+      query: (body) => {
+        const requestBody: any = {
+          title: body.title,
+          startPrice: Number(body.startPrice),
+          finalPriceSold: Number(body.finalPriceSold),
+          bidIncrement: Number(body.bidIncrement),
+          deposit: Number(body.deposit),
+          isExtend: body.isExtend,
+          haveFinancialProof: body.haveFinancialProof,
+          staffId: body.staffId,
+          isHaveFinalPrice: body.isHaveFinalPrice
+        }
+
+        // Only add round if it exists
+        if (body.round !== undefined) {
+          requestBody.round = body.round
+        }
+
+        return {
+          url: 'Lot/UpdateLotPublicAuction',
+          method: 'PUT',
+          body: requestBody
+        }
+      }
     })
   })
 })
@@ -175,5 +231,7 @@ export const {
   useGetWinnerForLotQuery,
   useOpenAndPauseLotMutation,
   useCancelLotMutation,
-  useGetLotByAuctionIdRawQuery
+  useGetLotByAuctionIdRawQuery,
+  useUpdateFixPriceLotMutation,
+  useUpdateSecretLotMutation
 } = lotApi
