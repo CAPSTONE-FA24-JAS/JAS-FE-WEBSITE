@@ -98,7 +98,8 @@ export default function InvoiceTab() {
       title: 'Total Price',
       dataIndex: 'totalPrice',
       key: 'totalPrice',
-      render: (price: number | null) => price !== null && price !== undefined ? `${price.toLocaleString()} VND` : 'N/A'
+      render: (price: number | null) =>
+        price !== null && price !== undefined ? `${price.toLocaleString()} VND` : 'N/A'
     },
     {
       title: 'Status',

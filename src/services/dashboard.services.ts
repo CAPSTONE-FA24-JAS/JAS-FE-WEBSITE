@@ -38,8 +38,20 @@ export const dashboardApi = createApi({
     getTotalAccountActive: build.query<Respone<number>, void>({
       query: () => 'DashBoard/TotalAccountActive'
     }),
-    getFloorFee: build.query<Respone<Floor>, void>({
+    getFloorFee: build.query<Respone<Floor[]>, void>({
       query: () => 'FloorFeePercents/GetFloorFees'
+    }),
+    updateFloorFees: build.mutation<Respone<void>, Partial<Floor>>({
+      query: (floorFee) => ({
+        url: 'FloorFeePercents/UpdateFloorFees',
+        method: 'PUT',
+        body: {
+          id: floorFee.id,
+          from: floorFee.from,
+          to: floorFee.to,
+          percent: floorFee.percent
+        }
+      })
     })
   })
 })
@@ -51,5 +63,6 @@ export const {
   useGetInvoiceInYearQuery,
   useGetTotalAccountsQuery,
   useGetTotalAccountActiveQuery,
-  useGetFloorFeeQuery
+  useGetFloorFeeQuery,
+  useUpdateFloorFeesMutation
 } = dashboardApi
