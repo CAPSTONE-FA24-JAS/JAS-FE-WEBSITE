@@ -59,7 +59,6 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
   ]
 
   const handleCreate = async () => {
-    // Kiểm tra validation
     const validationErrors = {
       actualStatusOfJewelry: !actualStatusOfJewelry.trim(),
       khoiluong: !khoiluong.trim() || parseFloat(khoiluong) === 0,
@@ -69,9 +68,9 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
 
     if (Object.values(validationErrors).some((error) => error)) {
       if (parseFloat(khoiluong) === 0) {
-        message.error('Khối lượng không thể bằng 0!')
+        message.error('Weight cannot be zero!')
       } else {
-        message.error('Vui lòng điền đầy đủ và đúng định dạng các trường bắt buộc!')
+        message.error('Please fill in all required fields correctly!')
       }
       return
     }
@@ -94,7 +93,6 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
       const documents = responseData?.valuationDocuments || []
       console.log('Documents:', documents)
 
-      // Filter documents to get the most recent one
       const filteredDocuments = documents.filter((document: any) => document.valuationDocumentType === 'Reciept')
       filteredDocuments.sort(
         (a: any, b: any) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime()
@@ -103,7 +101,6 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
       const fileDocumentUrl = mostRecentDocument?.documentLink
 
       if (fileDocumentUrl) {
-        // Open the URL in a new tab
         window.open(fileDocumentUrl, '_blank')
       } else {
         console.error('No file document URL found for the specified valuationDocumentTypeId.')
@@ -297,7 +294,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
                     </Option>
                   ))}
                 </Select>
-                {errors.actualStatusOfJewelry && <Text className='text-red-500'>Trường này là bắt buộc.</Text>}
+                {errors.actualStatusOfJewelry && <Text className='text-red-500'>This field is required.</Text>}
               </Col>
               <Col span={24}>
                 <Text strong className='block mb-2'>
@@ -314,7 +311,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
                 />
                 {errors.khoiluong && (
                   <Text className='text-red-500'>
-                    {parseFloat(khoiluong) === 0 ? 'Khối lượng không thể bằng 0' : 'Khối lượng không thể bằng 0 '}
+                    {parseFloat(khoiluong) === 0 ? 'Weight cannot be zero' : 'Weight cannot be zero'}
                   </Text>
                 )}
               </Col>
@@ -333,7 +330,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
                 />
                 {errors.jewelryName && (
                   <Text className='text-red-500'>
-                    Tên sản phẩm phải có ít nhất 6 ký tự và không được có khoảng trắng ở đầu
+                    Product name must be at least 6 characters and cannot start with a space
                   </Text>
                 )}
               </Col>

@@ -238,7 +238,9 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
     }
 
     if (!value || value.trim() === '') {
-      errors[key][fieldName] = 'Trường này là bắt buộc'
+      errors[key][fieldName] = 'This field is required'
+    } else if (fieldName === 'dimension' && isNaN(Number(value))) {
+      errors[key][fieldName] = 'Please enter a valid number'
     } else {
       delete errors[key][fieldName]
       if (Object.keys(errors[key]).length === 0) {
@@ -247,7 +249,7 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
     }
 
     setValidationErrors(errors)
-    return value.trim() !== ''
+    return value.trim() !== '' && (fieldName !== 'dimension' || !isNaN(Number(value)))
   }
 
   const handleInputChange = (

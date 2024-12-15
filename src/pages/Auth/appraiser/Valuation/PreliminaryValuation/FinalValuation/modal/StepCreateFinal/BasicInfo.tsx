@@ -66,6 +66,12 @@ const BasicInfoStep: React.FC<BasicInfoProps> = ({ formData, handleFormChange })
     return value.trim().length > 0
   }
 
+  const handleSelectChange = (key: string, value: any) => {
+    const newValue = value > 0 ? value : null
+    handleFormChange(key, newValue)
+    setErrors((prev) => ({ ...prev, [key]: !validateField(key, newValue) }))
+  }
+
   if (isLoadingKeyCharacteristics || isLoadingCategories || isLoadingArtists) {
     return (
       <div className='flex justify-center items-center'>
@@ -113,7 +119,7 @@ const BasicInfoStep: React.FC<BasicInfoProps> = ({ formData, handleFormChange })
                 Category <span className='text-red-500'>*</span>
               </label>
               <Select
-                value={formData[key] > 0 ? formData[key] : undefined}
+                value={formData[key] > 0 ? formData[key] : null}
                 onChange={(value) => {
                   handleFormChange(key, value)
                   setErrors((prev) => ({ ...prev, [key]: !validateField(key, value) }))
@@ -129,7 +135,7 @@ const BasicInfoStep: React.FC<BasicInfoProps> = ({ formData, handleFormChange })
                   </Option>
                 ))}
               </Select>
-              {errors[key] && <span className='text-red-500 text-sm'>Trường này là bắt buộc</span>}
+              {errors[key] && <span className='text-red-500 text-sm'>This field is required</span>}
             </div>
           )
         }
@@ -139,11 +145,8 @@ const BasicInfoStep: React.FC<BasicInfoProps> = ({ formData, handleFormChange })
             <div key={key}>
               <label className='block font-extrabold text-red-600 mb-2'>Artist</label>
               <Select
-                value={formData[key] > 0 ? formData[key] : undefined}
-                onChange={(value) => {
-                  handleFormChange(key, value)
-                  setErrors((prev) => ({ ...prev, [key]: !validateField(key, value) }))
-                }}
+                value={formData[key] > 0 ? formData[key] : null}
+                onChange={(value) => handleSelectChange(key, value)}
                 className={`w-full h-10 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ${
                   errors[key] ? 'border-red-500' : ''
                 }`}
@@ -187,7 +190,7 @@ const BasicInfoStep: React.FC<BasicInfoProps> = ({ formData, handleFormChange })
                 }`}
                 placeholder={`Enter ${key.replace(/([A-Z])/g, ' ').toLowerCase()}`}
               />
-              {errors[key] && <span className='text-red-500 text-sm'>Tên phải có ít nhất 6 ký tự</span>}
+              {errors[key] && <span className='text-red-500 text-sm'>Name must be at least 6 characters</span>}
             </div>
           )
         }
@@ -199,7 +202,7 @@ const BasicInfoStep: React.FC<BasicInfoProps> = ({ formData, handleFormChange })
                 For Gender <span className='text-red-500'>*</span>
               </label>
               <Select
-                value={formData[key]}
+                value={formData[key] || null}
                 onChange={(value) => {
                   handleFormChange(key, value)
                   setErrors((prev) => ({ ...prev, [key]: !validateField(key, value) }))
@@ -213,7 +216,7 @@ const BasicInfoStep: React.FC<BasicInfoProps> = ({ formData, handleFormChange })
                 <Option value='Female'>Female</Option>
                 <Option value='Other'>Other</Option>
               </Select>
-              {errors[key] && <span className='text-red-500 text-sm'>Trường này là bắt buộc</span>}
+              {errors[key] && <span className='text-red-500 text-sm'>This field is required</span>}
             </div>
           )
         }
@@ -297,7 +300,7 @@ const BasicInfoStep: React.FC<BasicInfoProps> = ({ formData, handleFormChange })
                         />
                         {['weight', 'ring size', 'measurements'].includes(characteristic.name.toLowerCase()) &&
                           characteristicData.description === '0' && (
-                            <span className='text-red-500 text-sm'>{characteristic.name} không được bằng 0</span>
+                            <span className='text-red-500 text-sm'>{characteristic.name} cannot be zero</span>
                           )}
                       </div>
                     )
@@ -333,7 +336,7 @@ const BasicInfoStep: React.FC<BasicInfoProps> = ({ formData, handleFormChange })
               }`}
               placeholder={`Enter ${key.replace(/([A-Z])/g, ' ').toLowerCase()}`}
             />
-            {errors[key] && <span className='text-red-500 text-sm'>Trường này là bắt buộc</span>}
+            {errors[key] && <span className='text-red-500 text-sm'>This field is required</span>}
           </div>
         )
       })}

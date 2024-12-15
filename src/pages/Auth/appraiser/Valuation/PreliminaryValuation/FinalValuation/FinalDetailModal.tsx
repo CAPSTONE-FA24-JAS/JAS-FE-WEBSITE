@@ -97,10 +97,13 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
             <strong className='w-1/3'>Phone:</strong>
             <span>{record?.seller?.accountDTO?.phoneNumber}</span>
           </div>
-          <div className='flex mb-4'>
-            <strong className='w-1/3'>Artist:</strong>
-            <span className='text-blue-800 '>{record?.jewelry?.artist?.name}</span>
-          </div>
+          {record?.jewelry?.artist?.name ? (
+             <div className='flex mb-4'>
+             <strong className='w-1/3'>Artist:</strong>
+             <span className='text-blue-800 '>{record?.jewelry?.artist?.name}</span>
+           </div>
+          ) : null}
+         
           <div className='flex mb-4'>
             <strong className='w-1/3'>Category:</strong>
             <span className='text-blue-800 '>{record?.jewelry?.category?.name}</span>
@@ -146,6 +149,10 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
                 record?.jewelry?.specificPrice || 0
               )}
             </span>
+          </div>
+          <div className='flex mb-4'>
+            <strong className='w-1/3'>Bid Form:</strong>
+            <span className='text-red-700 font-bold'>{record?.jewelry?.bidForm || 0} </span>
           </div>
 
           <div>
