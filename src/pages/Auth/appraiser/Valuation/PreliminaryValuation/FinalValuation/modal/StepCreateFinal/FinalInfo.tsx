@@ -1,6 +1,7 @@
 import { Image, message } from 'antd'
 import React, { ChangeEvent, useState } from 'react'
 import { ValuationGemstoneData } from '../../../../../../../../types/Gemstones.type'
+import { DeleteOutlined } from '@ant-design/icons'
 
 interface FinalStepsProps {
   formDataPrice: ValuationGemstoneData
@@ -24,9 +25,9 @@ const FinalStepsStep: React.FC<FinalStepsProps> = ({ formDataPrice, handleImageC
 
     if (name === 'estimatePriceMin') {
       if (!value) {
-        newErrors.estimatePriceMin = 'Vui lòng nhập giá tối thiểu'
+        newErrors.estimatePriceMin = 'Please enter the minimum price'
       } else if (numValue >= max && max !== 0) {
-        newErrors.estimatePriceMin = 'Giá tối thiểu phải nhỏ hơn giá tối đa'
+        newErrors.estimatePriceMin = 'Minimum price must be less than maximum price'
       } else {
         newErrors.estimatePriceMin = ''
       }
@@ -34,9 +35,9 @@ const FinalStepsStep: React.FC<FinalStepsProps> = ({ formDataPrice, handleImageC
 
     if (name === 'estimatePriceMax') {
       if (!value) {
-        newErrors.estimatePriceMax = 'Vui lòng nhập giá tối đa'
+        newErrors.estimatePriceMax = 'Please enter the maximum price'
       } else if (numValue <= min && min !== 0) {
-        newErrors.estimatePriceMax = 'Giá tối đa phải lớn hơn giá tối thiểu'
+        newErrors.estimatePriceMax = 'Maximum price must be greater than minimum price'
       } else {
         newErrors.estimatePriceMax = ''
       }
@@ -44,9 +45,9 @@ const FinalStepsStep: React.FC<FinalStepsProps> = ({ formDataPrice, handleImageC
 
     if (name === 'specificPrice') {
       if (!value) {
-        newErrors.specificPrice = 'Vui lòng nhập giá cụ thể'
+        newErrors.specificPrice = 'Please enter the specific price'
       } else if ((numValue < min || numValue > max) && min !== 0 && max !== 0) {
-        newErrors.specificPrice = 'Giá cụ thể phải nằm trong khoảng giá tối thiểu và tối đa'
+        newErrors.specificPrice = 'Specific price must be within the minimum and maximum price range'
       } else {
         newErrors.specificPrice = ''
       }
@@ -59,8 +60,8 @@ const FinalStepsStep: React.FC<FinalStepsProps> = ({ formDataPrice, handleImageC
     if (e.target.files) {
       const filesArray = Array.from(e.target.files)
 
-      if (selectedImages.length + filesArray.length > 5) {
-        message.error('You can only upload a maximum of 5 images.')
+      if (selectedImages.length + filesArray.length > 4) {
+        message.error('You can only upload a maximum of 4 images.')
         return
       }
 
@@ -73,6 +74,12 @@ const FinalStepsStep: React.FC<FinalStepsProps> = ({ formDataPrice, handleImageC
   const handleInputChange = (name: string, value: string) => {
     handleValidation(name, value)
     handleFormChange(name, value)
+  }
+
+  const handleRemoveImage = (index: number) => {
+    const updatedImages = selectedImages.filter((_, i) => i !== index)
+    setSelectedImages(updatedImages)
+    handleImageChange(updatedImages)
   }
 
   return (
@@ -142,12 +149,20 @@ const FinalStepsStep: React.FC<FinalStepsProps> = ({ formDataPrice, handleImageC
               <div className='mb-4 col-span-4'>
                 <div className='grid grid-cols-4 gap-4'>
                   {selectedImages.map((file, index) => (
-                    <Image
-                      key={index}
-                      src={URL.createObjectURL(file)}
-                      alt={`Uploaded image ${index + 1}`}
-                      className='object-cover rounded-lg h-30 w-20 mb-2'
-                    />
+                    <div key={index} className='relative'>
+                      <Image
+                        src={URL.createObjectURL(file)}
+                        alt={`Uploaded image ${index + 1}`}
+                        className='object-cover rounded-lg h-30 w-20 mb-2'
+                      />
+                      <button
+                        type='button'
+                        className='absolute top-0 right-0 p-1 bg-red-500 text-white rounded-full'
+                        onClick={() => handleRemoveImage(index)}
+                      >
+                        <DeleteOutlined />
+                      </button>
+                    </div>
                   ))}
                 </div>
               </div>

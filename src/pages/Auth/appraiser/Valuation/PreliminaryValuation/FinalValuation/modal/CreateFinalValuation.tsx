@@ -221,7 +221,7 @@ export default function CreateFinalValuation() {
 
       if (gemstone) {
         if (!gemstone.details[index]) {
-          gemstone.details[index] = {} as any // Khởi tạo đối tượng nếu chưa tồn tại
+          gemstone.details[index] = {} as any 
         }
 
         gemstone.details[index] = {
@@ -229,13 +229,12 @@ export default function CreateFinalValuation() {
           [field]: value
         }
 
-        // Kiểm tra nếu tất cả các trường đều rỗng
         const isEmpty = Object.values(gemstone.details[index]).every(
           (val) => val === '' || val === null || val === undefined
         )
 
         if (isEmpty) {
-          gemstone.details.splice(index, 1) // Xóa đối tượng nếu tất cả các trường đều rỗng
+          gemstone.details.splice(index, 1) 
         }
       }
 
@@ -302,12 +301,13 @@ export default function CreateFinalValuation() {
 
       if (hasEmptyFields) {
         notification.error({
-          message: 'Lỗi Validation',
-          description: 'Vui lòng điền đầy đủ thông tin các trường bắt buộc'
+          message: 'Validation Error',
+          description: 'Please fill in all required fields'
         })
         return
       }
     }
+    console.log('next', formData)
 
     if (currentStep === 1) {
       const requiredDiamondFields = ['shape', 'quantity', 'color', 'clarity', 'totalcarat', 'dimension']
@@ -322,8 +322,8 @@ export default function CreateFinalValuation() {
 
       if (activeGemstones.length === 0) {
         notification.error({
-          message: 'Lỗi Validation',
-          description: 'Vui lòng thêm ít nhất một loại đá quý'
+          message: 'Validation Error',
+          description: 'Please add at least one type of gemstone'
         })
         return
       }
@@ -337,8 +337,8 @@ export default function CreateFinalValuation() {
             if (!gemstone[field] || gemstone[field].toString().trim() === '') {
               hasError = true
               notification.error({
-                message: 'Lỗi Validation',
-                description: `Vui lòng điền đầy đủ thông tin trường ${field} cho ${type} #${index + 1}`
+                message: 'Validation Error',
+                description: `Please fill in the ${field} field for ${type} #${index + 1}`
               })
             }
           })
@@ -360,8 +360,8 @@ export default function CreateFinalValuation() {
   const handleSubmit = async () => {
     if (!formData.estimatePriceMin || !formData.estimatePriceMax || !formData.specificPrice) {
       notification.error({
-        message: 'Lỗi Validation',
-        description: 'Vui lòng nhập đầy đủ thông tin giá (Estimate Price Min, Estimate Price Max, Specific Price)'
+        message: 'Validation Error',
+        description: 'Please enter all price information (Estimate Price Min, Estimate Price Max, Specific Price)'
       })
       return
     }
@@ -371,7 +371,11 @@ export default function CreateFinalValuation() {
       const formDataToSend = new FormData()
       formDataToSend.append('name', formData.name || '')
       formDataToSend.append('videoLink', formData.videoLink || '')
-      formDataToSend.append('artistId', formData.artistId.toString())
+
+      if (formData.artistId && formData.artistId !== 0) {
+        formDataToSend.append('artistId', formData.artistId.toString())
+      }
+
       formDataToSend.append('categoryId', formData.categoryId.toString())
       formDataToSend.append('forGender', formData.forGender)
       formDataToSend.append('valuationId', formData.valuationId)
@@ -475,7 +479,7 @@ export default function CreateFinalValuation() {
       console.log('Payload gửi đến API:', formDataToSend)
 
       const response = await createFinalValuation(formDataToSend).unwrap()
-      console.log('Phản hồi API:', response)
+      console.log('API Response:', response)
 
       notification.success({
         message: 'Success',

@@ -39,17 +39,17 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
     const numValue = Number(cleanValue)
 
     if (!value.trim()) {
-      message.error('Vui lòng nhập hạn mức')
+      message.error('Please enter a limit amount')
       return false
     }
 
     if (!/^\d+$/.test(cleanValue)) {
-      message.error('Vui lòng chỉ nhập số')
+      message.error('Please enter numbers only')
       return false
     }
 
     if (numValue <= 0) {
-      message.error('Hạn mức phải là số dương')
+      message.error('The limit must be a positive number')
       return false
     }
 
@@ -58,7 +58,6 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
 
   const handleLimitBidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    // Chỉ cho phép nhập số và dấu chấm
     if (value === '' || /^\d*\.?\d*$/.test(value)) {
       setLimitBid(value)
     }

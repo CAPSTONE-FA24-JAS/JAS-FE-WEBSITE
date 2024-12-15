@@ -129,7 +129,9 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
       open={isVisible}
       onCancel={onClose}
       footer={
-        valuationData?.data?.status === 'Evaluated'
+        valuationData?.data?.status === 'Evaluated' &&
+        valuationData?.data?.jewelry?.bidForm &&
+        valuationData?.data?.jewelry?.startingPrice > 0
           ? [
               <Button key='reject' onClick={handleRejectClick} loading={isRejectLoading} danger>
                 Reject
@@ -163,7 +165,7 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
           <div className='absolute top-56 right-0 flex items-center justify-center pr-3'>
             <Button icon={<RightOutlined />} onClick={nextImage} className='bg-gray-300 hover:bg-gray-400' />
           </div>
-          <div className='flex ml-10 mt-10'>
+          <div className='flex mt-10 ml-10 flex-wrap gap-y-2'>
             {images.map((image: string, index: number) => (
               <img
                 key={index}
@@ -195,10 +197,12 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
             <strong className='w-1/3'>Phone:</strong>
             <span>{valuationData?.data?.seller?.accountDTO?.phoneNumber || 'No Phone Available'}</span>
           </div>
-          <div className='flex mb-4'>
-            <strong className='w-1/3'>Artist:</strong>
-            <span className=' text-blue-800'>{valuationData?.data?.jewelry?.artist?.name || 0} </span>
-          </div>
+          {valuationData?.data?.jewelry?.artist?.name ? (
+            <div className='flex mb-4'>
+              <strong className='w-1/3'>Artist:</strong>
+              <span className=' text-blue-800'>{valuationData?.data?.jewelry?.artist?.name} </span>
+            </div>
+          ) : null}
           <div className='flex mb-4'>
             <strong className='w-1/3'>Category:</strong>
             <span className=' text-blue-800'>{valuationData?.data?.jewelry?.category?.name || 0} </span>
