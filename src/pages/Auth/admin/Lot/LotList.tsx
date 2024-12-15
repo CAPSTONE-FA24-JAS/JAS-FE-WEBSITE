@@ -10,7 +10,9 @@ import {
   useCreateLotFixedPriceMutation,
   useCreateLotPublicAuctionMutation,
   useCreateLotSecretAuctionMutation,
-  useGetLotByAuctionIdRawQuery
+  useGetLotByAuctionIdRawQuery,
+  useUpdateFixPriceLotMutation,
+  useUpdateSecretLotMutation
 } from '../../../../services/lot.services'
 import { RoleType } from '../../../../slice/authLoginAPISlice'
 import { RootState } from '../../../../store'
@@ -43,6 +45,8 @@ const LotList = () => {
   const [createSerect, { isLoading: loadingSecret }] = useCreateLotSecretAuctionMutation()
   const [createPublic, { isLoading: loadingPublice }] = useCreateLotPublicAuctionMutation()
   const [createPriceGraduallyReduced, { isLoading: loadingReduce }] = useCreateLotAuctionPriceGraduallyReducedMutation()
+  const [updateFixPriceLot, { isLoading: loadingUpdateFixPriceLot }] = useUpdateFixPriceLotMutation()
+  const [updateSecretLot, { isLoading: loadingUpdateSecretLot }] = useUpdateSecretLotMutation()
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table')
 
   const roleId = useSelector((state: RootState) => state.authLoginAPI.roleId)
@@ -243,14 +247,17 @@ const LotList = () => {
       key: 'action',
       fixed: 'right',
       width: 100,
-      render: (_, record) =>
-        auctionData?.data.status === 'Waiting' ||
-        (auctionData?.data.status === 'UpComing' && (
-          <Space size='small'>
-            <Button icon={<EditOutlined />} size='small' onClick={() => handleEdit(record)} />
-            <Button icon={<DeleteOutlined />} size='small' danger />
-          </Space>
-        ))
+      render: (_, record) => {
+        if (auctionData?.data.status === 'Waiting' || auctionData?.data.status === 'UpComing') {
+          return (
+            <Space size='small'>
+              <Button icon={<EditOutlined />} size='small' onClick={() => handleEdit(record)} />
+              <Button icon={<DeleteOutlined />} size='small' danger />
+            </Space>
+          )
+        }
+        return null
+      }
     }
   ]
   const handleAdd = () => {
@@ -270,8 +277,51 @@ const LotList = () => {
 
   const handleModalSubmit = async (values: Partial<CreateLot>) => {
     if (editingLot) {
-      // Handle edit logic
-      console.log('Editing lot:', { ...editingLot, ...values })
+      try {
+        // Handle edit logic based on lot type
+        switch (editingLot.lotType) {
+          case 'Fixed_Price':
+            await updateFixPriceLot({
+              id: editingLot.id,
+              title: values.title,
+              buyNowPrice: values.buyNowPrice || 0,
+              haveFinancialProof: values.haveFinancialProof || editingLot.haveFinancialProof
+            }).unwrap()
+            notification.success({
+              message: 'Success',
+              description: 'Fixed Price Lot updated successfully!'
+            })
+            break
+
+          case 'Secret_Auction':
+            await updateSecretLot({
+              id: editingLot.id,
+              title: values.title,
+              round: values.round || 0,
+              startPrice: values.startPrice || 0,
+              haveFinancialProof: values.haveFinancialProof || false
+            }).unwrap()
+            notification.success({
+              message: 'Success',
+              description: 'Secret Auction Lot updated successfully!'
+            })
+            break
+
+          // Add other cases for Public_Auction and Auction_Price_GraduallyReduced if needed
+
+          default:
+            notification.warning({
+              message: 'Warning',
+              description: 'Invalid lot type for editing'
+            })
+            break
+        }
+      } catch (error: any) {
+        notification.error({
+          message: 'Error',
+          description: error.data?.message || 'Failed to update lot. Please try again.'
+        })
+      }
     } else {
       try {
         console.log('Adding new lot:', values)
@@ -430,7 +480,14 @@ const LotList = () => {
 
       {auctionData && (
         <AddLotModal
-          isLoading={loadingFixedPrice || loadingSecret || loadingPublice || loadingReduce}
+          isLoading={
+            loadingFixedPrice ||
+            loadingSecret ||
+            loadingPublice ||
+            loadingReduce ||
+            loadingUpdateFixPriceLot ||
+            loadingUpdateSecretLot
+          }
           auctionData={auctionData.data}
           visible={modalVisible}
           onCancel={handleModalCancel}

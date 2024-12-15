@@ -30,7 +30,6 @@ export default function Lots() {
 
   if (lots.length === 0) {
   } else {
-    console.log('Dữ liệu lots:', lots)
   }
 
   const allLotDTOs = lots.reduce((acc, lot: LotLanding) => {
@@ -39,12 +38,21 @@ export default function Lots() {
 
   if (allLotDTOs.length === 0) {
   } else {
-    console.log('Dữ liệu lotDTOs:', allLotDTOs)
   }
+
+  // Danh sách tất cả các danh mục
+  const allCategories = [
+    { id: 4, name: 'Earrings' },
+    { id: 3, name: 'Necklace' },
+    { id: 2, name: 'Bracelet' },
+    { id: 1, name: 'Ring' }
+  ];
 
   // Filter lots based on search term and category
   const filteredLots = allLotDTOs.filter(
-    (dto) => selectedCategory === 'All' || dto.lotType === selectedCategory // Chỉ lọc theo loại lotType nếu cần
+    (dto) =>
+      (selectedCategory === 'All' || dto.jewelry.category.name === selectedCategory) &&
+      dto.title.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const handlePageChange = (pageNumber: number) => {
@@ -152,12 +160,11 @@ export default function Lots() {
         />
         <select value={selectedCategory} onChange={handleCategoryChange} className='px-4 py-2 border rounded-lg'>
           <option value='All'>All Categories</option>
-          {/* Map dynamic categories if available */}
-          {/* {[...new Set(lots.map((lot: LotLanding) => lot.lotType))].map((category) => (
-            // <option key={category} value={category}>
-            //   {category}
-            // </option>
-          ))} */}
+          {allCategories.map((category) => (
+            <option key={category.id} value={category.name}>
+              {category.name}
+            </option>
+          ))}
         </select>
       </div>
 

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
-import { useViewCompanyTransactionsQuery } from '../../../../services/overview.services'
-import { Table, Tag, Typography } from 'antd'
+import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons'
+import { Table, Tag, Tooltip, Typography } from 'antd'
+import type { Key } from 'antd/es/table/interface'
 import moment from 'moment'
-import type { Key } from 'antd/es/table/interface' // Import Key type
+import React, { useEffect, useState } from 'react'
+import { useViewCompanyTransactionsQuery } from '../../../../services/overview.services'
 import { parsePriceVND } from '../../../../utils/convertTypeDayjs'
 
 const { Text } = Typography
@@ -26,7 +27,16 @@ function TransactionsComponent() {
   if (isLoading) return <p className='py-4 text-lg text-center'>Loading transactions...</p>
   if (error) return <p className='py-4 text-lg text-center text-red-500'>Error loading transactions.</p>
 
-  const transactionTypes = Array.from(new Set(transactions.map((transaction) => transaction.transactionType)))
+  const transactionTypes = [
+    { text: 'AddWallet', value: 'AddWallet' },
+    { text: 'WithDrawWallet', value: 'WithDrawWallet' },
+    { text: 'DepositWallet', value: 'DepositWallet' },
+    { text: 'RefundDeposit', value: 'RefundDeposit' },
+    { text: 'BuyPay', value: 'BuyPay' },
+    { text: 'SellerPay', value: 'SellerPay' },
+    { text: 'Banktransfer', value: 'Banktransfer' },
+    { text: 'RefundInvoice', value: 'RefundInvoice' }
+  ]
 
   const columns = [
     {
@@ -35,9 +45,18 @@ function TransactionsComponent() {
       key: 'transactionType',
       width: '33%',
       align: 'center' as 'left' | 'right' | 'center',
-      filters: transactionTypes.map((type) => ({ text: type, value: type })),
+      filters: transactionTypes,
       onFilter: (value: Key | boolean, record: Transaction) => record.transactionType === value,
-      render: (type: string) => <Tag color={type === 'DepositWallet' ? 'green' : 'red'}>{type}</Tag>
+      render: (type: string) => {
+        const isGreen = ['AddWallet', 'DepositWallet', 'BuyPay', 'SellerPay', 'Banktransfer'].includes(type)
+        const color = isGreen ? 'green' : 'red'
+        const icon = isGreen ? <ArrowUpOutlined /> : <ArrowDownOutlined />
+        return (
+          <Tag color={color} icon={icon}>
+            {type}
+          </Tag>
+        )
+      }
     },
     {
       title: 'Amount',
@@ -45,11 +64,15 @@ function TransactionsComponent() {
       key: 'amount',
       width: '33%',
       align: 'center' as 'left' | 'right' | 'center',
-      render: (amount: number) => (
-        <Text className={`font-semibold ${amount < 0 ? 'text-red-600' : 'text-green-600'}`}>
-          {parsePriceVND(amount)}
-        </Text>
-      )
+      render: (amount: number, record: Transaction) => {
+        const isGreen = ['AddWallet', 'DepositWallet', 'BuyPay', 'SellerPay', 'Banktransfer'].includes(record.transactionType)
+        const formattedAmount = parsePriceVND(amount)
+        return (
+          <Text className={`font-semibold ${isGreen ? 'text-green-600' : 'text-red-600'}`}>
+            {isGreen ? formattedAmount : `-${formattedAmount}`}
+          </Text>
+        )
+      }
     },
     {
       title: 'Transaction Time',
@@ -57,7 +80,11 @@ function TransactionsComponent() {
       key: 'transactionTime',
       width: '33%',
       align: 'center' as 'left' | 'right' | 'center',
-      render: (time: string | null) => (time ? moment(time).format('YYYY-MM-DD HH:mm') : 'N/A')
+      render: (time: string | null) => (
+        <Tooltip title={time ? moment(time).format('LLLL') : 'N/A'}>
+          {time ? moment(time).format('YYYY-MM-DD HH:mm') : 'N/A'}
+        </Tooltip>
+      )
     }
   ]
 
@@ -91,7 +118,7 @@ function TransactionsComponent() {
           showSizeChanger: true
         }}
         className='border rounded-lg'
-        rowClassName='hover:bg-gray-50 transition-colors duration-200'
+        rowClassName={(record) => (['AddWallet', 'DepositWallet', 'BuyPay', 'SellerPay', 'Banktransfer'].includes(record.transactionType) ? 'bg-green-50' : 'bg-red-50')}
         scroll={{ x: true }}
       />
     </div>

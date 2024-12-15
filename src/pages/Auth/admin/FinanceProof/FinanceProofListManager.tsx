@@ -14,21 +14,25 @@ const FinanceProofListManager = () => {
 
   const financeProofData = financeProofResponse?.data || []
 
-  const filteredData = financeProofData.filter((item) => {
-    const matchesSearch = item.customerName.toLowerCase().includes(searchText.toLowerCase())
-    if (tabKey === 'all') {
-      return matchesSearch
-    }
-    return matchesSearch && item.status.toLowerCase() === tabKey.toLowerCase()
-  })
+  const filteredData = financeProofData
+    .filter((item) => {
+      const matchesSearch = item.customerName.toLowerCase().includes(searchText.toLowerCase())
+      if (tabKey === 'all') {
+        return matchesSearch
+      }
+      return matchesSearch && item.status.toLowerCase() === tabKey.toLowerCase()
+    })
+    .sort((a, b) => {
+      // Sort by startDate in descending order (newest first)
+      return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+      // Changed from a - b to b - a to get descending order
+    })
 
   const columns: TableProps<FinanceProof>['columns'] = [
     {
       title: 'ID',
       dataIndex: 'id',
-      key: 'id',
-      sorter: (a, b) => a.id - b.id,
-      defaultSortOrder: 'ascend'
+      key: 'id'
     },
     {
       title: 'Customer Name',
@@ -45,13 +49,15 @@ const FinanceProofListManager = () => {
       title: 'Start Date',
       dataIndex: 'startDate',
       key: 'startDate',
-      render: (text) => (text ? parseDate(text, 'dd/mm/yyyy') : 'N/A')
+      render: (text) => (text ? parseDate(text, 'dd/mm/yyyy') : 'N/A'),
+      sorter: (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
     },
     {
       title: 'Expire Date',
       dataIndex: 'expireDate',
       key: 'expireDate',
-      render: (text) => (text ? parseDate(text, 'dd/mm/yyyy') : 'N/A')
+      render: (text) => (text ? parseDate(text, 'dd/mm/yyyy') : 'N/A'),
+      sorter: (a, b) => new Date(a.expireDate).getTime() - new Date(b.expireDate).getTime()
     },
     {
       title: 'Reason',

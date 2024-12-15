@@ -21,8 +21,10 @@ export interface ListLot {
   auctionId: number
   title: string
   round: number
+  bidIncrementTime: number
 }
 export interface CreateLot {
+  id?: number
   title: string
   deposit: number
   buyNowPrice: number

@@ -18,6 +18,8 @@ interface FinalDetailProps {
 const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate, record }) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [errorMessage, setErrorMessage] = useState('')
+
   const images = record?.jewelry?.imageJewelries?.map((img: any) => img.imageLink) || [
     'https://via.placeholder.com/150?text=No+Image'
   ]
@@ -27,6 +29,7 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
   const [loading, setLoading] = useState(false)
 
   const { data: auctionMethods, isLoading, isError, refetch } = useViewListLotTypeQuery(undefined)
+  console.log('auctionMethods', auctionMethods)
   const [requestFinalValuationForManager] = useRequestFinalValuationForManagerMutation()
 
   const nextImage = () => {
@@ -60,7 +63,10 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
       await requestFinalValuationForManager(requestData).unwrap()
       notification.success({ message: 'Success', description: 'Final valuation requested successfully.' })
 
-      await refetch()
+      setStartingPrice(undefined)
+      setBidForm(undefined)
+
+      refetch()
       onUpdate()
       onCancel()
     } catch (error) {
@@ -76,9 +82,11 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
         <Button key='cancel' onClick={onCancel}>
           Cancel
         </Button>,
-        <Button key='update' type='primary' onClick={handleUpdate} loading={loading}>
-          Send
-        </Button>
+        (record.jewelry.startingPrice === null && record.jewelry.bidForm === null) ? (
+          <Button key='update' type='primary' onClick={handleUpdate} loading={loading}>
+            Send
+          </Button>
+        ) : null
       ]
     }
     return [
@@ -115,7 +123,7 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
             <Button icon={<RightOutlined />} onClick={nextImage} className='bg-gray-300 hover:bg-gray-400' />
           </div>
 
-          <div className='flex mt-10 ml-10'>
+          <div className='flex mt-10 ml-10 flex-wrap gap-y-2'>
             {images.map((image: string, index: number) => (
               <img
                 key={index}
@@ -221,6 +229,12 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
                   record?.jewelry?.specificPrice || 0
                 )}
               </span>
+            </div>
+          )}
+          {record?.jewelry?.bidForm && (
+            <div className='flex mb-4'>
+              <strong className='w-1/3'>Bid Form:</strong>
+              <span className='text-red-700 font-bold'>{record?.jewelry?.bidForm || 0} </span>
             </div>
           )}
 
@@ -691,27 +705,41 @@ const FinalDetail: React.FC<FinalDetailProps> = ({ isVisible, onCancel, onUpdate
 
           {record?.status === 'Evaluated' && (
             <>
-              <div className='mb-4'>
-                <strong>Giá khởi điểm:</strong>
-                <Input
-                  placeholder='Nhập giá khởi điểm'
-                  className='mt-2'
-                  value={startingPrice}
-                  onChange={(e) => setStartingPrice(Number(e.target.value))}
-                />
-              </div>
+              {(record.jewelry.startingPrice === null && record.jewelry.bidForm === null) ? (
+                <>
+                  <div className='mb-4'>
+                    <strong>Starting Price:</strong>
+                    <Input
+                      placeholder='Enter starting price'
+                      className='mt-2'
+                      value={startingPrice}
+                      onChange={(e) => {
+                        const value = e.target.value
+                        if (/^\d*$/.test(value)) {
+                          setErrorMessage('')
+                          setStartingPrice(value ? Number(value) : undefined)
+                        } else {
+                          setErrorMessage('Please enter number')
+                        }
+                      }}
+                    />
+                    {errorMessage && <p className='text-red-500 text-sm mt-1'>{errorMessage}</p>}
+                  </div>
 
-              <div className='mb-4'>
-                <strong>Phương thức đấu giá:</strong>
-                <br />
-                <Select placeholder='Chọn phương thức đấu giá' className='mt-2' onChange={(value) => setBidForm(value)}>
-                  {lotTypes.map((method: any) => (
-                    <Option key={method.value} value={method.value}>
-                      {method.name}
-                    </Option>
-                  ))}
-                </Select>
-              </div>
+                  <div className='mb-4'>
+                    <strong>Bid Form:</strong>
+                    <br />
+                    <Select placeholder='Select bid form' className='mt-2' onChange={(value) => setBidForm(value)}>
+                      {lotTypes.map((method: any) => (
+                        <Option key={method.value} value={method.value}>
+                          {method.name}
+                        </Option>
+                      ))}
+                    </Select>
+                  </div>
+                 
+                </>
+              ) : null}
             </>
           )}
         </div>
