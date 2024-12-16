@@ -1,4 +1,4 @@
-import { CaretRightOutlined, PauseOutlined, StopOutlined } from '@ant-design/icons'
+import { CaretRightOutlined, PauseOutlined, StopOutlined, LoadingOutlined } from '@ant-design/icons'
 import React, { useMemo } from 'react'
 
 interface HeaderControlsProps {
@@ -7,6 +7,8 @@ interface HeaderControlsProps {
   handlePause: () => void
   handleStart: () => void
   handleCancel: () => void
+  isUpdatingStatus?: boolean
+  isCancelling?: boolean
 }
 
 export const HeaderControls: React.FC<HeaderControlsProps> = ({
@@ -14,7 +16,9 @@ export const HeaderControls: React.FC<HeaderControlsProps> = ({
   status,
   handlePause,
   handleStart,
-  handleCancel
+  handleCancel,
+  isUpdatingStatus = false,
+  isCancelling = false
 }) => {
   // Map trạng thái hiển thị
   const statusMap = useMemo<Record<string, { display: string; color: string }>>(
@@ -36,7 +40,7 @@ export const HeaderControls: React.FC<HeaderControlsProps> = ({
   const { display: displayStatus, color: statusColor } = useMemo(
     () =>
       statusMap[normalizedStatus] || {
-        display: status, // Use original status text as fallback
+        display: status,
         color: 'text-gray-500'
       },
     [normalizedStatus, statusMap]
@@ -47,21 +51,21 @@ export const HeaderControls: React.FC<HeaderControlsProps> = ({
     () => ({
       pause: {
         visible: normalizedStatus === 'auctioning',
-        enabled: normalizedStatus === 'auctioning',
+        enabled: normalizedStatus === 'auctioning' && !isUpdatingStatus,
         tooltip: normalizedStatus !== 'auctioning' ? 'Can only pause during auction' : ''
       },
       start: {
         visible: normalizedStatus === 'pause',
-        enabled: normalizedStatus === 'pause',
+        enabled: normalizedStatus === 'pause' && !isUpdatingStatus,
         tooltip: normalizedStatus !== 'pause' ? 'Can only start when paused' : ''
       },
       cancel: {
         visible: ['auctioning', 'pause'].includes(normalizedStatus),
-        enabled: ['auctioning', 'pause'].includes(normalizedStatus),
+        enabled: ['auctioning', 'pause'].includes(normalizedStatus) && !isCancelling,
         tooltip: !['auctioning', 'pause'].includes(normalizedStatus) ? 'Cannot cancel in current state' : ''
       }
     }),
-    [normalizedStatus]
+    [normalizedStatus, isUpdatingStatus, isCancelling]
   )
 
   const ButtonComponent: React.FC<{
@@ -70,20 +74,22 @@ export const HeaderControls: React.FC<HeaderControlsProps> = ({
     tooltip: string
     icon: React.ReactNode
     testId: string
-  }> = ({ onClick, disabled, tooltip, icon, testId }) => (
+    loading?: boolean
+  }> = ({ onClick, disabled, tooltip, icon, testId, loading = false }) => (
     <button
       className={`
-        flex items-center justify-center p-2 text-center
+        flex items-center justify-center p-2 text-center relative
         ${backgroundColor} rounded-3xl
         ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-95 active:brightness-90'}
         transition-all duration-200
+        min-w-[36px] min-h-[36px]
       `}
       onClick={onClick}
-      disabled={disabled}
+      disabled={disabled || loading}
       title={tooltip}
       data-testid={testId}
     >
-      {icon}
+      {loading ? <LoadingOutlined style={{ fontSize: '20px' }} className='animate-spin' /> : icon}
     </button>
   )
 
@@ -98,6 +104,7 @@ export const HeaderControls: React.FC<HeaderControlsProps> = ({
             tooltip={buttonStates.pause.tooltip}
             icon={<PauseOutlined style={{ fontSize: '20px' }} />}
             testId='pause-button'
+            loading={isUpdatingStatus}
           />
         )}
 
@@ -109,6 +116,7 @@ export const HeaderControls: React.FC<HeaderControlsProps> = ({
             tooltip={buttonStates.start.tooltip}
             icon={<CaretRightOutlined style={{ fontSize: '20px' }} />}
             testId='start-button'
+            loading={isUpdatingStatus}
           />
         )}
 
@@ -120,6 +128,7 @@ export const HeaderControls: React.FC<HeaderControlsProps> = ({
             tooltip={buttonStates.cancel.tooltip}
             icon={<StopOutlined style={{ fontSize: '20px' }} />}
             testId='cancel-button'
+            loading={isCancelling}
           />
         )}
       </div>
@@ -131,7 +140,10 @@ export const HeaderControls: React.FC<HeaderControlsProps> = ({
             normalizedStatus === 'auctioning' ? 'bg-green-600 animate-pulse' : statusColor.replace('text-', 'bg-')
           }`}
         />
-        <span className='text-sm'>Status: {displayStatus}</span>
+        <span className='text-sm'>
+          Status: {displayStatus}
+          {(isUpdatingStatus || isCancelling) && <LoadingOutlined className='ml-2 animate-spin' />}
+        </span>
       </div>
     </div>
   )
