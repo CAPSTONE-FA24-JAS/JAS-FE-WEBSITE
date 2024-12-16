@@ -35,6 +35,8 @@ import Index from '../pages/Auth/staff/Mission/LiveBidding'
 import CreateAuthorization from '../pages/Auth/staff/Valuation/AuthorizationLetter'
 import ValuationTabs from '../pages/Auth/staff/Valuation/ValuationList'
 import AboutUs from '../pages/clientPages/AboutUs'
+import BlogDetailHome from '../pages/clientPages/Blog/BlogDetailHome'
+import BlogHomepage from '../pages/clientPages/Blog/BlogHomePage'
 import HomePage from '../pages/clientPages/Homepage'
 import Lots from '../pages/clientPages/LotList/Lots'
 import LotDetail from '../pages/clientPages/LotList/modal/DetailLot'
@@ -59,6 +61,8 @@ const publicRoutes: RouteProps[] = [
   { path: '/pastauction', component: PastAuctionMain, layout: ClientLayout },
   { path: '//upcoming-auctions', component: UpComingMain, layout: ClientLayout },
   { path: '/lots/:auctionId', component: Lots, layout: ClientLayout },
+  { path: '/blog', component: BlogHomepage, layout: ClientLayout },
+  { path: '/blog/:id', component: BlogDetailHome, layout: ClientLayout },
   { path: '/detaillot/:id', component: LotDetail, layout: ClientLayout },
   { path: '/about', component: AboutUs, layout: ClientLayout }
 ]
@@ -75,7 +79,9 @@ const managerRoutes: RouteProps[] = [
   { path: '/manager/transaction', component: TransactionsComponent, layout: ManagerLayout },
   { path: '/manager/lotdetailmanager/:id', component: Index, layout: ManagerLayout },
   { path: '/manager/jewelrys', component: JewelryList, layout: ManagerLayout },
-  { path: '/manager/jewelry/:id', component: JewelryDetail, layout: ManagerLayout }
+  { path: '/manager/jewelry/:id', component: JewelryDetail, layout: ManagerLayout },
+  { path: '/manager/bloglist', component: BlogTable, layout: ManagerLayout },
+  { path: '/manager/blog/:id', component: BlogDetail, layout: ManagerLayout },
 ]
 const appraiserRoutes: RouteProps[] = [
   { path: '/appraiser/requestConsign', component: RequestPreliminaryList, layout: AppraiserLayout },
@@ -92,8 +98,6 @@ const adminRoutes: RouteProps[] = [
   { path: '/admin/createAccount', component: CreateAccount, layout: AdminLayout },
   { path: '/admin/category', component: CategoriesComponent, layout: AdminLayout },
   { path: '/admin/artist', component: ArtistList, layout: AdminLayout },
-  { path: '/admin/bloglist', component: BlogTable, layout: AdminLayout },
-  { path: '/admin/blog/:id', component: BlogDetail, layout: AdminLayout },
   { path: '/admin/general', component: GeneralSetting, layout: AdminLayout }
 ]
 

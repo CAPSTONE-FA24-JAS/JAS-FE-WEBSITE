@@ -60,7 +60,8 @@ export default function SiderManager({ onCollapse }: { onCollapse: (collapsed: b
       getItem('Auction', 'auctionlist', <RiAuctionLine className='text-base' />, [
         getItem('Auction List', 'auctionListSub', <RiAuctionLine className='text-base' />) // You can change this if needed
       ]),
-      getItem('Finance Proof', 'financeProof', <TbZoomMoney className='text-base' />)
+      getItem('Finance Proof', 'financeProof', <TbZoomMoney className='text-base' />),
+      getItem('Blog', 'bloglist', <TbZoomMoney className='text-base' />)
     ]
   }
 
@@ -76,6 +77,7 @@ export default function SiderManager({ onCollapse }: { onCollapse: (collapsed: b
     .set('auctionListSub', '/manager/auctionlist')
     .set('financeProof', '/manager/financeProofManager')
     .set('jewelrys', '/manager/jewelrys')
+    .set('bloglist', '/manager/bloglist')
 
   return (
     <Sider

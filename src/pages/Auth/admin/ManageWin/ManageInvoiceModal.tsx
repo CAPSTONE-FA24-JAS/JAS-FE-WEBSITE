@@ -1,4 +1,4 @@
-import { Avatar, Button, Modal, notification, Input } from 'antd'
+import { Avatar, Button, Modal, notification } from 'antd'
 import { useState } from 'react'
 import {
   useCancelInvoiceByManagerMutation,
@@ -111,7 +111,7 @@ export default function ManageInvoiceModal({
   const platformFee = invoiceDetails.free ?? 'N/A'
   const deposit = invoiceDetails.myBidDTO?.lotDTO?.deposit ?? 'N/A'
   const shippingFee = invoiceDetails.feeShip ?? 'N/A'
-  const ReceiveAtCompany = invoiceDetails.isReceiveAtCompany ? 'In Company' : 'COD'
+  const ReceiveAtCompany = invoiceDetails.isReceiveAtCompany ? 'In Company' : 'Home Delivery'
   const reason = invoiceDetails.note ?? 'N/A'
   const linkBillTransaction = invoiceDetails.linkBillTransaction ?? 'N/A'
   const historyTimes = invoiceDetails.myBidDTO?.historyCustomerLots || []
@@ -251,7 +251,7 @@ export default function ManageInvoiceModal({
           <p>
             <strong>Deposit:</strong>
           </p>
-          <p className='font-bold text-gray-600'>{deposit.toLocaleString()}₫</p>
+          <p className='font-bold text-gray-600'>-{deposit.toLocaleString()}₫</p>
         </div>
         <div className='flex justify-between mb-2'>
           <p>
@@ -520,13 +520,24 @@ export default function ManageInvoiceModal({
         onCancel={() => setCancelModalVisible(false)}
         onOk={handleCancel}
       >
-        <p>Please provide a reason for cancellation:</p>
-        <Input.TextArea
-          value={cancelReason}
-          onChange={(e) => setCancelReason(e.target.value)}
-          rows={4}
-          placeholder='Enter reason here...'
-        />
+        <p className='mb-4'>Please select a reason for cancellation:</p>
+        <div className='flex flex-col'>
+          {['Overdue payment', 'The customer refuses to receive the goods', 'Jewelry matters', 'Other'].map((reason) => (
+            <div
+              key={reason}
+              className={`flex items-center mb-2 p-2 border rounded ${cancelReason === reason ? 'bg-blue-100' : ''}`}
+              onClick={() => setCancelReason(reason)}
+            >
+              <input
+                type='checkbox'
+                checked={cancelReason === reason}
+                onChange={() => setCancelReason(reason)}
+                className='mr-2'
+              />
+              <label>{reason}</label>
+            </div>
+          ))}
+        </div>
       </Modal>
 
       <Modal open={isImageModalVisible} onCancel={() => setImageModalVisible(false)} footer={null} centered width={800}>

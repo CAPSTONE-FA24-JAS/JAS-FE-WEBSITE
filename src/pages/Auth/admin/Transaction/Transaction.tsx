@@ -12,6 +12,7 @@ interface Transaction {
   transactionType: string
   amount: number
   transactionTime: string | null
+  customerName: string
 }
 
 function TransactionsComponent() {
@@ -43,12 +44,12 @@ function TransactionsComponent() {
       title: 'Transaction Type',
       dataIndex: 'transactionType',
       key: 'transactionType',
-      width: '33%',
+      width: '25%',
       align: 'center' as 'left' | 'right' | 'center',
       filters: transactionTypes,
       onFilter: (value: Key | boolean, record: Transaction) => record.transactionType === value,
       render: (type: string) => {
-        const isGreen = ['AddWallet', 'DepositWallet', 'BuyPay', 'SellerPay', 'Banktransfer'].includes(type)
+        const isGreen = ['AddWallet', 'DepositWallet', 'BuyPay', 'Banktransfer'].includes(type)
         const color = isGreen ? 'green' : 'red'
         const icon = isGreen ? <ArrowUpOutlined /> : <ArrowDownOutlined />
         return (
@@ -62,10 +63,10 @@ function TransactionsComponent() {
       title: 'Amount',
       dataIndex: 'amount',
       key: 'amount',
-      width: '33%',
+      width: '25%',
       align: 'center' as 'left' | 'right' | 'center',
       render: (amount: number, record: Transaction) => {
-        const isGreen = ['AddWallet', 'DepositWallet', 'BuyPay', 'SellerPay', 'Banktransfer'].includes(record.transactionType)
+        const isGreen = ['AddWallet', 'DepositWallet', 'BuyPay', 'Banktransfer'].includes(record.transactionType)
         const formattedAmount = parsePriceVND(amount)
         return (
           <Text className={`font-semibold ${isGreen ? 'text-green-600' : 'text-red-600'}`}>
@@ -75,10 +76,20 @@ function TransactionsComponent() {
       }
     },
     {
+      title: 'Customer Name',
+      dataIndex: 'customerName',
+      key: 'customerName',
+      width: '25%',
+      align: 'center' as 'left' | 'right' | 'center',
+      render: (customerName: string) => (
+        <Text strong>{customerName}</Text>
+      )
+    },
+    {
       title: 'Transaction Time',
       dataIndex: 'transactionTime',
       key: 'transactionTime',
-      width: '33%',
+      width: '25%',
       align: 'center' as 'left' | 'right' | 'center',
       render: (time: string | null) => (
         <Tooltip title={time ? moment(time).format('LLLL') : 'N/A'}>
@@ -92,7 +103,7 @@ function TransactionsComponent() {
     const sortOrder = e.target.value
     const sortedTransactions = [...transactions].sort((a, b) => {
       if (!a.transactionTime || !b.transactionTime) return 0
-      return sortOrder === 'asc'
+      return sortOrder === 'desc'
         ? new Date(a.transactionTime).getTime() - new Date(b.transactionTime).getTime()
         : new Date(b.transactionTime).getTime() - new Date(a.transactionTime).getTime()
     })
@@ -110,7 +121,7 @@ function TransactionsComponent() {
       </div>
       <Table
         columns={columns}
-        dataSource={transactions}
+        dataSource={transactions.slice().reverse()}
         rowKey={(record) => record.transactionTime || String(record.amount)}
         bordered
         pagination={{
@@ -118,7 +129,7 @@ function TransactionsComponent() {
           showSizeChanger: true
         }}
         className='border rounded-lg'
-        rowClassName={(record) => (['AddWallet', 'DepositWallet', 'BuyPay', 'SellerPay', 'Banktransfer'].includes(record.transactionType) ? 'bg-green-50' : 'bg-red-50')}
+        rowClassName={(record) => (['AddWallet', 'DepositWallet', 'BuyPay', 'Banktransfer'].includes(record.transactionType) ? 'bg-green-50' : 'bg-red-50')}
         scroll={{ x: true }}
       />
     </div>

@@ -35,15 +35,21 @@ interface CreateReceiptProps {
 
 const { Option } = Select
 
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const year = date.getUTCFullYear();
+  return `${day}-${month}-${year}`;
+};
+
 const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCreate, record, refetch }) => {
   const [actualStatusOfJewelry, setActualStatusOfJewelry] = useState(record?.actualStatusOfJewelry || '')
   const [note, setnote] = useState('')
   const [khoiluong, setkhoiluong] = useState('')
   const [jewelryName, setjewlryName] = useState('')
   const [deliveryDate] = useState<string>(dateToString(dayjs()))
-  const [idIssuanceDate, setIdIssuanceDate] = useState<string>(record?.seller?.idIssuanceDate || '')
-  const [idExpirationDate, setIdExpirationDate] = useState<string>(record?.seller?.idExpirationDate || '')
-
+  
   const [createReceipt] = useCreateReceiptMutation()
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({ actualStatusOfJewelry: false, khoiluong: false, jewelryName: false })
@@ -231,8 +237,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
           <Col span={21}>
             <Input
               className='w-full mb-2 font-bold'
-              value={idIssuanceDate}
-              onChange={(e) => setIdIssuanceDate(e.target.value)}
+              value={record?.seller?.idIssuanceDate ? formatDate(record.seller.idIssuanceDate) : ''}
               readOnly
             />
           </Col>
@@ -246,8 +251,7 @@ const CreateReceipt: React.FC<CreateReceiptProps> = ({ isVisible, onCancel, onCr
           <Col span={21}>
             <Input
               className='w-full mb-2 font-bold'
-              value={idExpirationDate}
-              onChange={(e) => setIdExpirationDate(e.target.value)}
+              value={record?.seller?.idExpirationDate ? formatDate(record.seller.idExpirationDate) : ''}
               readOnly
             />
           </Col>
