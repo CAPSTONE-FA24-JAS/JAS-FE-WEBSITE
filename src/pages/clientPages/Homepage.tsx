@@ -1,6 +1,5 @@
 import Highlights from '../../components/CardHomePage/Hightlights'
 import LeadingPage from '../../components/CardHomePage/Leading'
-import RecentPosts from '../../components/CardHomePage/RecentPosts'
 import Testimonials from '../../components/CardHomePage/Testimonials'
 import UpComing from './Upcoming/modal/UpComing'
 
@@ -22,10 +21,10 @@ export default function HomePage() {
       <div className='mb-20'>
         <Highlights />
       </div>
-      <hr className='my-10 border-gray-300 mx-28' /> {/* Gray line with margin */}
+      {/* <hr className='my-10 border-gray-300 mx-28' /> 
       <div className='mb-20'>
         <RecentPosts />
-      </div>
+      </div> */}
     </div>
   )
 }

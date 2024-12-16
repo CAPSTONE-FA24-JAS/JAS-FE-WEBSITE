@@ -80,3 +80,15 @@ export interface EnumClarities {
   name: string
   value: number
 }
+export interface DataResponseEnumShapes {
+  code: number
+  message: string
+  isSuccess: boolean
+  data: EnumShapes[]
+  errorMessages: any
+}
+
+export interface EnumShapes {
+  name: string
+  value: number
+}

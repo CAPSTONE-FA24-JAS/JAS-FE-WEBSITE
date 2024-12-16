@@ -27,17 +27,19 @@ export const overviewApi = createApi({
     viewListLotByAuction: build.query({
       query: (auctionId: number) => `Lot/ViewListLotByAuction?auctionId=${auctionId}`
     }),
-    // New endpoint to get lot details by ID
     viewDetailLotById: build.query({
       query: (id: number) => `Lot/ViewDetailLotById?Id=${id}`
+    }),
+    viewAuctionsByStatus: build.query({
+      query: (statusId: number) => `Auction/GetAuctionsByStatus?statusId=${statusId}`
     })
   })
 })
 
-// Export the hooks to use the queries
 export const {
   useViewCompanyTransactionsQuery,
   useViewAuctionQuery,
   useViewListLotByAuctionQuery,
-  useViewDetailLotByIdQuery // New hook for the lot detail query
+  useViewDetailLotByIdQuery,
+  useViewAuctionsByStatusQuery
 } = overviewApi

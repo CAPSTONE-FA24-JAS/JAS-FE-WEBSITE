@@ -204,7 +204,7 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
                   {diamond.carat && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Carat:</div>
-                      <span className='w-2/3'>{diamond.carat}</span>
+                      <span className='w-2/3'>{diamond.carat} carat</span>
                     </div>
                   )}
                   {/* Quantity */}
@@ -227,7 +227,7 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
                   {diamond.dimension && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Dimension:</div>
-                      <span className='w-2/3'>{diamond.dimension}</span>
+                      <span className='w-2/3'>{diamond.dimension} mm</span>
                     </div>
                   )}
 
@@ -340,8 +340,8 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
                   )}
                   {diamond.totalCarat && (
                     <div className='flex mb-2'>
-                      <div className='w-1/4 font-medium'>Carat:</div>
-                      <span className='w-2/3'>{diamond.totalCarat}</span>
+                      <div className='w-1/4 font-medium'>Total Carat:</div>
+                      <span className='w-2/3'>{diamond.totalCarat} carat</span>
                     </div>
                   )}
                   {diamond.quantity && (
@@ -361,7 +361,7 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
                   {diamond.dimension && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Dimension:</div>
-                      <span className='w-2/3'>{diamond.dimension}</span>
+                      <span className='w-2/3'>{diamond.dimension} mm</span>
                     </div>
                   )}
 
@@ -458,7 +458,7 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
                   {sapphire.carat && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Carat:</div>
-                      <span className='w-2/3'>{sapphire.carat}</span>
+                      <span className='w-2/3'>{sapphire.carat} carat</span>
                     </div>
                   )}
                   {sapphire.enhancementType && (
@@ -482,7 +482,7 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
                   {sapphire.dimension && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Dimension:</div>
-                      <span className='w-2/3'>{sapphire.dimension}</span>
+                      <span className='w-2/3'>{sapphire.dimension} mm</span>
                     </div>
                   )}
                   {sapphire.imageShaphies?.length > 0 && (
@@ -546,10 +546,10 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
                       <span className='w-2/3'>{sapphire.color}</span>
                     </div>
                   )}
-                  {sapphire.carat && (
+                  {sapphire.totalCarat && (
                     <div className='flex mb-2'>
-                      <div className='w-1/4 font-medium'>Carat:</div>
-                      <span className='w-2/3'>{sapphire.carat}</span>
+                      <div className='w-1/4 font-medium'>Total Carat:</div>
+                      <span className='w-2/3'>{sapphire.totalCarat} carat</span>
                     </div>
                   )}
                   {sapphire.enhancementType && (
@@ -573,7 +573,7 @@ const FinalDetailModal: React.FC<FinalDetailModalProps> = ({ isVisible, onCancel
                   {sapphire.dimension && (
                     <div className='flex mb-2'>
                       <div className='w-1/4 font-medium'>Dimension:</div>
-                      <span className='w-2/3'>{sapphire.dimension}</span>
+                      <span className='w-2/3'>{sapphire.dimension} mm</span>
                     </div>
                   )}
                   {sapphire.imageShaphies?.length > 0 && (
