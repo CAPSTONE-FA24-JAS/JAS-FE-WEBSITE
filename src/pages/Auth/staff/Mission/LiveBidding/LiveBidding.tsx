@@ -31,6 +31,8 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
   status
 }) => {
   const [statusLot, setStatusLot] = useState<string>(status || '')
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
+  const [isCancelling, setIsCancelling] = useState(false)
   const [updateStatusLot] = useOpenAndPauseLotMutation()
   const [cancelLot] = useCancelLotMutation()
 
@@ -67,15 +69,22 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
     return reduction.toFixed(1)
   }
 
-  const handleStatusUpdate = async (status: AuctionLotStatus) => {
+  const handleStatusUpdate = async (status: AuctionLotStatus, typeLot: string) => {
+    setIsUpdatingStatus(true)
     try {
-      await updateStatusLot({ lotid: itemLot.id, status }).unwrap()
+      const res = await updateStatusLot({ lotid: itemLot.id, status }).unwrap()
+      if (typeLot == 'Fixed_Price' || (typeLot == 'Secret_Auction' && res?.code === 200)) {
+        setStatusLot(status === AuctionLotStatus.Auctioning ? 'Auctioning' : 'Pause')
+      }
     } catch (error) {
       console.error('Failed to update status:', error)
+    } finally {
+      setIsUpdatingStatus(false)
     }
   }
 
   const handleCancelAuction = async () => {
+    setIsCancelling(true)
     try {
       const result = await cancelLot(itemLot.id).unwrap()
       if (result?.code === 200) {
@@ -83,6 +92,8 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
       }
     } catch (error) {
       console.error('Failed to cancel auction:', error)
+    } finally {
+      setIsCancelling(false)
     }
   }
 
@@ -180,9 +191,11 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
           <HeaderControls
             backgroundColor='bg-red-500'
             status={statusLot}
-            handlePause={() => handleStatusUpdate(AuctionLotStatus.Pause)}
-            handleStart={() => handleStatusUpdate(AuctionLotStatus.Auctioning)}
+            handlePause={() => handleStatusUpdate(AuctionLotStatus.Pause, itemLot.lotType)}
+            handleStart={() => handleStatusUpdate(AuctionLotStatus.Auctioning, itemLot.lotType)}
             handleCancel={handleCancelAuction}
+            isCancelling={isCancelling}
+            isUpdatingStatus={isUpdatingStatus}
           />
         </div>
         <div className='p-4 bg-gray-100 rounded-b-lg'>
@@ -205,9 +218,11 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
           <HeaderControls
             backgroundColor='bg-purple-500'
             status={statusLot}
-            handlePause={() => handleStatusUpdate(AuctionLotStatus.Pause)}
-            handleStart={() => handleStatusUpdate(AuctionLotStatus.Auctioning)}
+            handlePause={() => handleStatusUpdate(AuctionLotStatus.Pause, itemLot.lotType)}
+            handleStart={() => handleStatusUpdate(AuctionLotStatus.Auctioning, itemLot.lotType)}
             handleCancel={handleCancelAuction}
+            isCancelling={isCancelling}
+            isUpdatingStatus={isUpdatingStatus}
           />
           <div className='grid grid-cols-2 gap-4 mt-2'>
             <div className='p-3 bg-purple-500 rounded'>
@@ -250,9 +265,11 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
           <HeaderControls
             backgroundColor='bg-blue-500'
             status={statusLot}
-            handlePause={() => handleStatusUpdate(AuctionLotStatus.Pause)}
-            handleStart={() => handleStatusUpdate(AuctionLotStatus.Auctioning)}
+            handlePause={() => handleStatusUpdate(AuctionLotStatus.Pause, itemLot.lotType)}
+            handleStart={() => handleStatusUpdate(AuctionLotStatus.Auctioning, itemLot.lotType)}
             handleCancel={handleCancelAuction}
+            isCancelling={isCancelling}
+            isUpdatingStatus={isUpdatingStatus}
           />
           <p className='mt-2 text-4xl font-bold'>
             {sortedSecretBids[0]?.bidPrice ? (
@@ -289,9 +306,11 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
           <HeaderControls
             backgroundColor='bg-green-500'
             status={statusLot}
-            handlePause={() => handleStatusUpdate(AuctionLotStatus.Pause)}
-            handleStart={() => handleStatusUpdate(AuctionLotStatus.Auctioning)}
+            handlePause={() => handleStatusUpdate(AuctionLotStatus.Pause, itemLot.lotType)}
+            handleStart={() => handleStatusUpdate(AuctionLotStatus.Auctioning, itemLot.lotType)}
             handleCancel={handleCancelAuction}
+            isCancelling={isCancelling}
+            isUpdatingStatus={isUpdatingStatus}
           />
           <p className='mt-2 text-4xl font-bold'>{itemLot.buyNowPrice ? parsePriceVND(itemLot.buyNowPrice) : 'N/A'}</p>
         </div>

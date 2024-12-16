@@ -305,7 +305,7 @@ const AuctionModal: React.FC<AuctionModalProps> = ({ visible, onCancel, id, setE
             }}
             render={({ field, fieldState: { error } }) => (
               <Form.Item label='Description' validateStatus={error ? 'error' : ''} help={error?.message}>
-                <Input.TextArea {...field} className='w-full' />
+                <Input.TextArea {...field} className='w-full' autoSize />
               </Form.Item>
             )}
           />

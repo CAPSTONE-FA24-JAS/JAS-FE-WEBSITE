@@ -44,6 +44,16 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
     skip: !visible
   })
 
+  const getLotTypeValue = (lotType: string): string => {
+    const lotTypeMap: { [key: string]: string } = {
+      Fixed_Price: '1',
+      Secret_Auction: '2',
+      Public_Auction: '3',
+      Auction_Price_GraduallyReduced: '4'
+    }
+    return lotTypeMap[lotType] || ''
+  }
+
   const getBidTypeFromBidForm = (bidForm: string | undefined): string => {
     switch (bidForm) {
       case 'Fixed Price':
@@ -81,9 +91,12 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
       setJewelryData({} as Jewelry)
       setIsExtendTimeEnabled(true)
       setSelectedPercentage(0)
-      setAuctionType('')
 
       if (initialValues && Object.keys(initialValues).length > 0) {
+        // Set auction type first before other form values
+        const lotTypeValue = getLotTypeValue(initialValues.lotType)
+        setAuctionType(lotTypeValue)
+
         // Set all form values for editing
         const formValues = {
           ...initialValues,
@@ -92,14 +105,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
           deposit: initialValues.deposit,
           startTime: initialValues.startTime ? dayjs(initialValues.startTime) : null,
           endTime: initialValues.endTime ? dayjs(initialValues.endTime) : null,
-          type:
-            initialValues.lotType === 'Fixed_Price'
-              ? '1'
-              : initialValues.lotType === 'Secret_Auction'
-              ? '2'
-              : initialValues.lotType === 'Public_Auction'
-              ? '3'
-              : '4',
+          type: lotTypeValue,
           buyNowPrice: initialValues.buyNowPrice,
           startPrice: initialValues.startPrice,
           finalPriceSold: initialValues.finalPriceSold,
@@ -113,15 +119,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
 
         form.setFieldsValue(formValues)
         setIsEditing(true)
-
-        // Set auction type
-        const lotTypeValue = formValues.type
-        setAuctionType(lotTypeValue)
-
-        // Set jewelry ID for fetching detail
         setChooseJewelry(initialValues.jewelryId)
-
-        // Set extend time state
         setIsExtendTimeEnabled(initialValues.isExtend)
       } else {
         form.resetFields()
@@ -148,21 +146,29 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
     }
   }, [jewelryDataDetail, isEditing, initialValues])
 
-  const handleSubmit = () => {
+  const validatePriceStep = () => {
+    if (isEditing) {
+      setAuctionType(() => form.getFieldValue('type'))
+    }
+
     if (auctionType === '3' && form.getFieldValue('priceStep') === 0) {
       notification.error({
         message: 'Price step must be greater than 0'
       })
-      return
+      return false
     }
 
-    if (auctionType === '3' && form.getFieldValue('finalPriceSold') !== 0) {
+    if (
+      auctionType === '3' &&
+      form.getFieldValue('finalPriceSold') !== 0 &&
+      form.getFieldValue('finalPriceSold') !== null
+    ) {
       const valuesBetweenMinAndMax = form.getFieldValue('finalPriceSold') - form.getFieldValue('startPrice')
       if (valuesBetweenMinAndMax < form.getFieldValue('priceStep')) {
         notification.error({
           message: 'Step must be less than the difference between the starting price and the final price'
         })
-        return
+        return false
       }
     }
 
@@ -172,31 +178,80 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
         notification.error({
           message: 'Step must be less than the difference between the starting price and the final price'
         })
-        return
+        return false
       }
     }
 
-    form.validateFields().then((values) => {
-      const FormatValues: CreateLot = {
-        title: values.title,
-        deposit: values.deposit,
-        buyNowPrice: values.buyNowPrice,
-        isExtend: values.extendTime,
-        haveFinancialProof: values.proofFinance,
-        staffId: values.staffCare,
-        jewelryId: values.jewelry,
-        auctionId: auctionData.id,
-        startPrice: values.startPrice,
-        finalPriceSold: values.finalPriceSold,
-        bidIncrement: values.priceStep,
-        lotTypeValue: Number(auctionType),
-        bidIncrementTime: values.bidIncrementTime,
-        round: values.round,
-        isHaveFinalPrice: values.finalPriceSold != 0 || values.finalPriceSold ? true : false
-      }
-      onSubmit(FormatValues)
-      form.resetFields()
-    })
+    return true
+  }
+
+  const handleCreate = async (values: any) => {
+    const createValues: CreateLot = {
+      title: values.title,
+      deposit: values.deposit,
+      buyNowPrice: values.buyNowPrice || 0,
+      isExtend: values.extendTime,
+      haveFinancialProof: values.proofFinance,
+      staffId: values.staffCare,
+      jewelryId: values.jewelry,
+      auctionId: auctionData.id,
+      startPrice: values.startPrice,
+      finalPriceSold: values.finalPriceSold,
+      bidIncrement: values.priceStep,
+      lotTypeValue: Number(auctionType),
+      bidIncrementTime: values.bidIncrementTime,
+      round: values.round,
+      isHaveFinalPrice: values.finalPriceSold !== 0 && values.finalPriceSold ? true : false
+    }
+
+    console.log('Create Values:', createValues)
+    onSubmit(createValues)
+    form.resetFields()
+  }
+
+  const handleEdit = async (values: any) => {
+    console.log('edit Values:', values)
+
+    const editValues: CreateLot = {
+      title: values.title,
+      deposit: values.deposit,
+      buyNowPrice: values.buyNowPrice || 0,
+      isExtend: values.extendTime,
+      haveFinancialProof: values.proofFinance,
+      staffId: values.staffCare,
+      jewelryId: values.jewelry,
+      auctionId: auctionData.id,
+      startPrice: values.startPrice,
+      finalPriceSold: values.finalPriceSold,
+      bidIncrement: values.priceStep,
+      lotTypeValue: Number(auctionType),
+      bidIncrementTime: values.bidIncrementTime,
+      round: values.round,
+      isHaveFinalPrice: values.finalPriceSold !== 0 && values.finalPriceSold ? true : false
+    }
+
+    console.log('Edit Values:', editValues)
+    onSubmit(editValues)
+    form.resetFields()
+  }
+
+  const handleSubmit = () => {
+    if (!validatePriceStep()) {
+      return
+    }
+
+    form
+      .validateFields()
+      .then((values) => {
+        if (isEditing) {
+          handleEdit(values)
+        } else {
+          handleCreate(values)
+        }
+      })
+      .catch((error) => {
+        console.error('Validation failed:', error)
+      })
   }
 
   const handleJewelryChange = (value: number) => {
@@ -222,7 +277,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
         return (
           <Form.Item
             name='buyNowPrice'
-            label='buyNowPrice'
+            label='Buy now price'
             rules={[{ required: true, message: 'Please input the price' }]}
             className='w-full'
             initialValue={jewelryData?.startingPrice ? jewelryData.startingPrice : 0}
@@ -336,7 +391,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
                       const minValue = Number(minPrice)
                       return maxValue > minValue
                         ? Promise.resolve()
-                        : Promise.reject(new Error('Maximum price must be greater than minimum price'))
+                        : Promise.reject(new Error('Maximum price must be greater than minimumprice'))
                     }
                   })
                 ]}
@@ -510,7 +565,6 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
         <Button
           key='cancel'
           onClick={() => {
-            // Reset all states here before calling onCancel
             form.resetFields()
             setChooseJewelry(null)
             setJewelryData(undefined)
@@ -530,7 +584,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
       width={600}
     >
       <Form form={form} layout='vertical'>
-        <Form.Item name='title' label='Title Lots' rules={[{ required: true, message: 'Please input the title' }]}>
+        <Form.Item name='title' label='Title lot' rules={[{ required: true, message: 'Please input the title' }]}>
           <Input />
         </Form.Item>
         <Form.Item name='jewelry' label='Jewelry' rules={[{ required: true, message: 'Please select the Jewelry' }]}>
@@ -650,7 +704,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
             <Option value='1'>Fixed Price Auction</Option>
             <Option value='2'>Secret Auction</Option>
             <Option value='3'>Public Auction</Option>
-            <Option value='4'>Auction Price GraduallyReduced</Option>
+            <Option value='4'>Reverse Auction</Option>
           </Select>
         </Form.Item>
         {renderAuctionTypeSpecificFields()}
@@ -660,13 +714,13 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
               <>
                 <div className='flex-col'>
                   <Form.Item initialValue={true} name='extendTime' valuePropName='checked' className='mb-0'>
-                    <Checkbox defaultChecked onChange={handleExtendTimeChange} disabled={isEditing}>
+                    <Checkbox defaultChecked onChange={handleExtendTimeChange}>
                       Extend time
                     </Checkbox>
                   </Form.Item>
                   {isExtendTimeEnabled && (
-                    <Form.Item name='round' label='Extend Rounds' rules={[{ type: 'number' }]} className='mb-0'>
-                      <InputNumber min={1} className='w-24' disabled={isEditing} />
+                    <Form.Item name='round' label='Extend rounds' rules={[{ type: 'number' }]} className='mb-0'>
+                      <InputNumber min={1} className='w-24' />
                     </Form.Item>
                   )}
                 </div>
@@ -676,9 +730,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
             )}
 
             <Form.Item initialValue={true} name='proofFinance' valuePropName='checked' className='mb-0'>
-              <Checkbox defaultChecked disabled={isEditing}>
-                Proof finance
-              </Checkbox>
+              <Checkbox defaultChecked>Proof finance</Checkbox>
             </Form.Item>
           </div>
         ) : (
@@ -691,7 +743,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
           className='w-full'
           initialValue={jewelryData?.staffId}
         >
-          <Select disabled={isEditing}>
+          <Select>
             {listStaff?.data.map((staff) => (
               <Option key={staff.staffDTO.id} value={staff.staffDTO.id}>
                 {staff.staffDTO.firstName} {staff.staffDTO.lastName}
