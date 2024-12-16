@@ -7,7 +7,7 @@ import { parsePriceVND } from '../../../../utils/convertTypeDayjs'
 const FloorFeeTable = () => {
   const [form] = Form.useForm()
   const [editingKey, setEditingKey] = useState<number | null>(null)
-  const { data: floorFeesResponse, isLoading } = useGetFloorFeeQuery()
+  const { data: floorFeesResponse, isLoading, refetch, isFetching } = useGetFloorFeeQuery()
   const [updateFloorFee] = useUpdateFloorFeesMutation()
 
   const sortedData = Array.isArray(floorFeesResponse?.data)
@@ -50,6 +50,7 @@ const FloorFeeTable = () => {
 
       await updateFloorFee(updatedData).unwrap()
       setEditingKey(null)
+      refetch()
       message.success('Floor fee updated successfully')
     } catch (error) {
       message.error('Failed to update floor fee')
@@ -155,7 +156,7 @@ const FloorFeeTable = () => {
             <InputNumber min={0} max={100} formatter={(value) => `${value}%`} className='w-full' />
           </Form.Item>
         ) : (
-          `${record.percent}%`
+          `${record.percent * 100}%`
         )
       }
     },
@@ -182,7 +183,14 @@ const FloorFeeTable = () => {
 
   return (
     <Form form={form}>
-      <Table bordered dataSource={sortedData} columns={columns} rowKey='id' loading={isLoading} pagination={false} />
+      <Table
+        bordered
+        dataSource={sortedData}
+        columns={columns}
+        rowKey='id'
+        loading={isLoading || isFetching}
+        pagination={false}
+      />
     </Form>
   )
 }

@@ -11,7 +11,9 @@ import {
   useCreateLotPublicAuctionMutation,
   useCreateLotSecretAuctionMutation,
   useGetLotByAuctionIdRawQuery,
+  useUpdateAuctionPriceGraduallyReducedLotMutation,
   useUpdateFixPriceLotMutation,
+  useUpdatePublicLotMutation,
   useUpdateSecretLotMutation
 } from '../../../../services/lot.services'
 import { RoleType } from '../../../../slice/authLoginAPISlice'
@@ -47,6 +49,9 @@ const LotList = () => {
   const [createPriceGraduallyReduced, { isLoading: loadingReduce }] = useCreateLotAuctionPriceGraduallyReducedMutation()
   const [updateFixPriceLot, { isLoading: loadingUpdateFixPriceLot }] = useUpdateFixPriceLotMutation()
   const [updateSecretLot, { isLoading: loadingUpdateSecretLot }] = useUpdateSecretLotMutation()
+  const [updatePublicLot, { isLoading: loadingUpdatePublic }] = useUpdatePublicLotMutation()
+  const [updatePriceGraduallyReduced, { isLoading: loadingUpdateReveres }] =
+    useUpdateAuctionPriceGraduallyReducedLotMutation()
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table')
 
   const roleId = useSelector((state: RootState) => state.authLoginAPI.roleId)
@@ -158,13 +163,6 @@ const LotList = () => {
       width: 100,
       render: (value) => parsePriceVND(value)
     },
-    // {
-    //   title: 'Buy Now Price (M1)',
-    //   dataIndex: 'buyNowPrice',
-    //   key: 'buyNowPrice',
-    //   width: 120,
-    //   render: (value) => parsePriceVND(value)
-    // },
     {
       title: 'Minimum Price (Reverse)',
       dataIndex: 'finalPriceSold',
@@ -177,6 +175,25 @@ const LotList = () => {
         }
         return '-'
       }
+    },
+    {
+      title: 'Bid Decrement Time (Seconds)',
+      dataIndex: 'bidIncrementTime',
+      key: 'bidIncrementTime',
+      width: 140,
+      render: (value, record) => {
+        if (record.lotType === 'Auction_Price_GraduallyReduced') {
+          return value
+        }
+        return '-'
+      }
+    },
+    {
+      title: 'Staff',
+      dataIndex: 'staff',
+      key: 'staff',
+      width: 100,
+      render: (staff) => staff?.name || '-'
     },
     {
       title: 'Financial Proof',
@@ -266,6 +283,8 @@ const LotList = () => {
   }
 
   const handleEdit = (lot: ListLot) => {
+    console.log('Edit lot:', lot)
+
     setEditingLot(lot)
     setModalVisible(true)
   }
@@ -284,8 +303,12 @@ const LotList = () => {
             await updateFixPriceLot({
               id: editingLot.id,
               title: values.title,
+              deposit: values.deposit || 0,
               buyNowPrice: values.buyNowPrice || 0,
-              haveFinancialProof: values.haveFinancialProof || editingLot.haveFinancialProof
+              haveFinancialProof: values.haveFinancialProof,
+              staffId: values.staffId,
+              jewelryId: values.jewelryId || editingLot.jewelryId,
+              auctionId: values.auctionId || editingLot.auctionId
             }).unwrap()
             notification.success({
               message: 'Success',
@@ -299,7 +322,11 @@ const LotList = () => {
               title: values.title,
               round: values.round || 0,
               startPrice: values.startPrice || 0,
-              haveFinancialProof: values.haveFinancialProof || false
+              haveFinancialProof: values.haveFinancialProof || false,
+              staffId: values.staffId,
+              auctionId: values.auctionId || editingLot.auctionId,
+              jewelryId: values.jewelryId || editingLot.jewelryId,
+              deposit: values.deposit || editingLot.deposit
             }).unwrap()
             notification.success({
               message: 'Success',
@@ -307,7 +334,46 @@ const LotList = () => {
             })
             break
 
-          // Add other cases for Public_Auction and Auction_Price_GraduallyReduced if needed
+          case 'Public_Auction':
+            await updatePublicLot({
+              id: editingLot.id,
+              title: values.title,
+              startPrice: values.startPrice || 0,
+              finalPriceSold: values.finalPriceSold || 0,
+              bidIncrement: values.bidIncrement || 0,
+              haveFinancialProof: values.haveFinancialProof || false,
+              staffId: values.staffId,
+              auctionId: values.auctionId || editingLot.auctionId,
+              jewelryId: values.jewelryId || editingLot.jewelryId,
+              deposit: values.deposit || editingLot.deposit,
+              isHaveFinalPrice: values.isHaveFinalPrice || false,
+              round: values.round || 0,
+              isExtend: values.isExtend
+            }).unwrap()
+            notification.success({
+              message: 'Success',
+              description: 'Public Auction Lot updated successfully!'
+            })
+            break
+          case 'Auction_Price_GraduallyReduced':
+            await updatePriceGraduallyReduced({
+              id: editingLot.id,
+              title: values.title,
+              startPrice: values.startPrice,
+              finalPriceSold: values.finalPriceSold,
+              bidIncrement: values.bidIncrement,
+              deposit: values.deposit,
+              haveFinancialProof: values.haveFinancialProof,
+              staffId: values.staffId,
+              jewelryId: values.jewelryId,
+              auctionId: values.auctionId,
+              bidIncrementTime: values.bidIncrementTime
+            }).unwrap()
+            notification.success({
+              message: 'Success',
+              description: 'Reverse Auction Lot created successfully!'
+            })
+            break
 
           default:
             notification.warning({
@@ -486,7 +552,9 @@ const LotList = () => {
             loadingPublice ||
             loadingReduce ||
             loadingUpdateFixPriceLot ||
-            loadingUpdateSecretLot
+            loadingUpdateSecretLot ||
+            loadingUpdatePublic ||
+            loadingUpdateReveres
           }
           auctionData={auctionData.data}
           visible={modalVisible}

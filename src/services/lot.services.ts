@@ -165,13 +165,15 @@ export const lotApi = createApi({
       query: (body) => ({
         url: 'Lot/UpdateLotFixedPrice',
         method: 'PUT',
-        params: { id: body.id },
         body: {
+          id: body.id,
           title: body.title,
+          staffId: body.staffId,
+          jewelryId: body.jewelryId,
+          auctionId: body.auctionId,
           deposit: body.deposit,
           buyNowPrice: body.buyNowPrice,
-          haveFinancialProof: body.haveFinancialProof,
-          staffId: body.staffId
+          haveFinancialProof: body.haveFinancialProof
         }
       }),
       invalidatesTags: [{ type: 'Lot', id: 'LIST' }]
@@ -180,13 +182,15 @@ export const lotApi = createApi({
       query: (body) => ({
         url: 'Lot/UpdateLotSercet',
         method: 'PUT',
-        params: { id: body.id },
         body: {
+          id: body.id,
           title: body.title,
-          startPrice: body.startPrice,
+          staffId: body.staffId,
+          jewelryId: body.jewelryId,
+          auctionId: body.auctionId,
           deposit: body.deposit,
-          haveFinancialProof: body.haveFinancialProof,
-          staffId: body.staffId
+          startPrice: body.startPrice,
+          haveFinancialProof: body.haveFinancialProof
         }
       }),
       invalidatesTags: [{ type: 'Lot', id: 'LIST' }]
@@ -194,14 +198,17 @@ export const lotApi = createApi({
     updatePublicLot: build.mutation<Respone<ListLot>, Partial<CreateLot>>({
       query: (body) => {
         const requestBody: any = {
+          id: body.id,
           title: body.title,
-          startPrice: Number(body.startPrice),
-          finalPriceSold: Number(body.finalPriceSold),
-          bidIncrement: Number(body.bidIncrement),
-          deposit: Number(body.deposit),
-          isExtend: body.isExtend,
-          haveFinancialProof: body.haveFinancialProof,
           staffId: body.staffId,
+          jewelryId: body.jewelryId,
+          auctionId: body.auctionId,
+          isExtend: body.isExtend,
+          deposit: body.deposit,
+          startPrice: body.startPrice,
+          finalPriceSold: body.finalPriceSold,
+          bidIncrement: body.bidIncrement,
+          haveFinancialProof: body.haveFinancialProof,
           isHaveFinalPrice: body.isHaveFinalPrice
         }
 
@@ -216,6 +223,25 @@ export const lotApi = createApi({
           body: requestBody
         }
       }
+    }),
+    updateAuctionPriceGraduallyReducedLot: build.mutation<Respone<ListLot>, Partial<CreateLot>>({
+      query: (body) => ({
+        url: 'Lot/UpdateLotGraduallyReduce',
+        method: 'PUT',
+        body: {
+          id: body.id,
+          title: body.title,
+          staffId: body.staffId,
+          jewelryId: body.jewelryId,
+          auctionId: body.auctionId,
+          startPrice: body.startPrice,
+          finalPriceSold: body.finalPriceSold,
+          bidIncrement: body.bidIncrement,
+          deposit: body.deposit,
+          haveFinancialProof: body.haveFinancialProof,
+          bidIncrementTime: body.bidIncrementTime
+        }
+      })
     })
   })
 })
@@ -233,5 +259,7 @@ export const {
   useCancelLotMutation,
   useGetLotByAuctionIdRawQuery,
   useUpdateFixPriceLotMutation,
-  useUpdateSecretLotMutation
+  useUpdateSecretLotMutation,
+  useUpdatePublicLotMutation,
+  useUpdateAuctionPriceGraduallyReducedLotMutation
 } = lotApi
