@@ -106,6 +106,7 @@ const JewelryList = () => {
             break
           case 'Auction Price GraduallyReduced':
             color = 'orange'
+            bidForm = 'Revserse Auction'
             break
         }
         return <Tag color={color}>{bidForm}</Tag>
