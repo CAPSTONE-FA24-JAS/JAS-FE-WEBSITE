@@ -439,6 +439,23 @@ export default function ManageInvoiceModal({
           </div>
         )}
 
+        {status === 'Rejected' && (
+          <div className='flex justify-between mb-2'>
+            <p>
+              <strong>Reason Reject:</strong>
+            </p>
+            <p className='font-bold text-gray-600'>{reason}</p>
+          </div>
+        )}
+        {status === 'Closed' && (
+          <div className='flex justify-between mb-2'>
+            <p>
+              <strong>Reason Reject:</strong>
+            </p>
+            <p className='font-bold text-gray-600'>{reason}</p>
+          </div>
+        )}
+
         {status === 'CreateInvoice' && (
           <div className='flex justify-end' style={{ marginTop: 20 }}>
             <Button type='primary' onClick={() => setCancelModalVisible(true)}>
@@ -522,21 +539,23 @@ export default function ManageInvoiceModal({
       >
         <p className='mb-4'>Please select a reason for cancellation:</p>
         <div className='flex flex-col'>
-          {['Overdue payment', 'The customer refuses to receive the goods', 'Jewelry matters', 'Other'].map((reason) => (
-            <div
-              key={reason}
-              className={`flex items-center mb-2 p-2 border rounded ${cancelReason === reason ? 'bg-blue-100' : ''}`}
-              onClick={() => setCancelReason(reason)}
-            >
-              <input
-                type='checkbox'
-                checked={cancelReason === reason}
-                onChange={() => setCancelReason(reason)}
-                className='mr-2'
-              />
-              <label>{reason}</label>
-            </div>
-          ))}
+          {['Overdue payment', 'The customer refuses to receive the goods', 'Jewelry matters', 'Other'].map(
+            (reason) => (
+              <div
+                key={reason}
+                className={`flex items-center mb-2 p-2 border rounded ${cancelReason === reason ? 'bg-blue-100' : ''}`}
+                onClick={() => setCancelReason(reason)}
+              >
+                <input
+                  type='checkbox'
+                  checked={cancelReason === reason}
+                  onChange={() => setCancelReason(reason)}
+                  className='mr-2'
+                />
+                <label>{reason}</label>
+              </div>
+            )
+          )}
         </div>
       </Modal>
 

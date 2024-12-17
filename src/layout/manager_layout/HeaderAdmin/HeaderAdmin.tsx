@@ -49,14 +49,7 @@ export default function HeaderAdmin({ collapsed }: { collapsed: boolean }) {
       <div className='flex items-center justify-end gap-3'>
         {isLoading ? <Spin className='mr-4' /> : <NotificationAdmin accountId={staffId} />}
         <Dropdown menu={{ items }} placement='bottomRight' trigger={['click']} arrow>
-          <Avatar
-            className='cursor-pointer'
-            size='large'
-            icon={<UserOutlined />}
-            src={
-              'https://t.vietgiaitri.com/2021/4/8/tham-tu-lung-danh-conan-nhung-tay-ban-tia-thien-xa-trong-conan-ai-se-gop-mat-tai-phan-phim-moi-nhat-f81-5724169.jpeg'
-            }
-          />
+          <Avatar className='cursor-pointer' size='large' icon={<UserOutlined />} />
         </Dropdown>
         {roleId === RoleType.ADMIN && <span className='font-bold'>Admin</span>}
         {roleId === RoleType.MANAGER && <span className='font-bold'>Manager</span>}
