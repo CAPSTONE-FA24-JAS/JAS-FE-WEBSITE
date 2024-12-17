@@ -399,7 +399,7 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
                 }
                 setVisibleGemstones((prev) => ({ ...prev, [gemstoneType]: true }))
               }}
-              className='p-2 text-sm font-bold text-gray-600 rounded-lg hover:text-blue-600 bg-slate-400'
+              className='w-48 h-10 text-center text-sm font-bold text-gray-600 rounded-lg hover:text-blue-600 bg-slate-400'
             >
               {`Add ${label}`}
             </button>
