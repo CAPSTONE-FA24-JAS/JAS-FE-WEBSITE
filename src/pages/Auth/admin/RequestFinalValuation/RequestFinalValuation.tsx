@@ -25,7 +25,7 @@ const RequestFinalValuation = () => {
   const [searchText, setSearchText] = useState<string>('')
   const location = useLocation()
   const navigate = useNavigate()
-  const [modalVisible, setModalVisible] = useState<boolean>(false)
+  const [_modalVisible, setModalVisible] = useState<boolean>(false)
   const { data, refetch } = useGetValuationsQuery()
 
   const finalValuationData: Valuation[] =
