@@ -133,7 +133,7 @@ const JewelryList = () => {
       width: 100,
       render: (_, record) => (
         <Space size='small'>
-          {record.status === 'Authorized' && (
+          {record.status === 'Authorized' && roleId == RoleType.MANAGER && (
             <Button onClick={() => handleCancel(record.id)} type='primary' danger size='small'>
               Cancel
             </Button>
