@@ -2,7 +2,6 @@ import { Row, Col, Space } from 'antd'
 import { ReactElement } from 'react'
 import SaleInfoCards from './SaleInfoSection/SaleInfoCards'
 import RevenueChart from './Revenue/Revenue'
-import TopProducts from './TopJewelry/TopJewelry'
 
 export default function Dashboard(): ReactElement {
   return (
@@ -15,9 +14,9 @@ export default function Dashboard(): ReactElement {
         <RevenueChart />
       </Col>
 
-      <Col span={24}>
+      {/* <Col span={24}>
         <TopProducts />
-      </Col>
+      </Col> */}
 
       {/* Optional Space */}
       <Col xs={24} lg={8}>
