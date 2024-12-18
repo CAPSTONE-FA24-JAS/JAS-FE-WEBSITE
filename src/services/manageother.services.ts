@@ -57,6 +57,7 @@ interface Blog {
   title: string
   content: string
   date: string
+  imageBlogDTOs?: { imageLink: string }[]; // Thêm thuộc tính này
 }
 
 interface BlogsResponse {
@@ -122,7 +123,7 @@ interface TopSellersResponse {
   code: number
   message: string
   isSuccess: boolean
-  data: TopSeller[] // Array of TopSeller data
+  data: TopSeller[] 
   errorMessages: string | null
 }
 
@@ -182,21 +183,23 @@ export const manageotherApi = createApi({
         }
 
         const formData = new FormData()
-        formData.append('Title', Title)
-        formData.append('Content', Content)
-        formData.append('AccountId', String(AccountId))
 
-        // Append each image file to the FormData object
-        fileImages.forEach((file, index) => {
-          formData.append(`fileImages[${index}]`, file)
+        fileImages.forEach((file) => {
+          formData.append(`fileImages`, file)
         })
 
         return {
-          url: 'Blog/CreateNewBlog',
+          url: `Blog/CreateNewBlog?Title=${encodeURIComponent(Title)}&Content=${encodeURIComponent(Content)}&AccountId=${AccountId}`,
           method: 'POST',
           body: formData
         }
       }
+    }),
+    removeBlog: build.mutation<void, number>({
+      query: (blogId) => ({
+        url: `Blog/RemoveBlog?blogId=${blogId}`,
+        method: 'DELETE'
+      })
     })
   })
 })
@@ -210,5 +213,6 @@ export const {
   useViewBlogDetailQuery,
   useViewTopJewelryAuctionsQuery,
   useViewTopSellersQuery,
-  useCreateBlogMutation
+  useCreateBlogMutation,
+  useRemoveBlogMutation
 } = manageotherApi

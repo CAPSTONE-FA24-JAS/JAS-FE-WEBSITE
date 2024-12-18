@@ -10,7 +10,8 @@ import {
   useGetEnumClaritiesQuery,
   useGetEnumColorDiamondsQuery,
   useGetEnumColorShapphiesQuery,
-  useGetEnumCutsQuery
+  useGetEnumCutsQuery,
+  useGetEnumShapesQuery
 } from '../../../../../../../../services/createfinalvaluation.services'
 
 interface GemstoneDetailsProps {
@@ -86,6 +87,7 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
   const { data: cutOptions } = useGetEnumCutsQuery()
   const { data: clarityOptions } = useGetEnumClaritiesQuery()
   const { data: colorShaphyOptions } = useGetEnumColorShapphiesQuery()
+  const { data: shapeOptions } = useGetEnumShapesQuery()
 
   const diamondFields = [
     { label: 'Name', key: 'name', placeholder: 'Enter name' },
@@ -96,7 +98,7 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
     { label: 'Dimensions', key: 'dimension', placeholder: 'Enter dimensions' },
     { label: 'Total Carat', key: 'totalcarat', placeholder: 'Enter carat' },
     { label: 'Setting Type', key: 'settingType', placeholder: 'Enter setting type' },
-    { label: 'Shape', key: 'shape', placeholder: 'Enter shape' },
+    { label: 'Shape', key: 'shape', placeholder: 'Enter shape', options: shapeOptions?.data },
     { label: 'Certificate', key: 'certificate', placeholder: 'Enter certificate' },
     { label: 'Fluorescence', key: 'fluorescence', placeholder: 'Enter fluorescence' },
     { label: 'Length/Width Ratio', key: 'lengthWidthRatio', placeholder: 'Enter length/width ratio' }
@@ -397,7 +399,7 @@ const GemstoneDetails: React.FC<GemstoneDetailsProps> = ({
                 }
                 setVisibleGemstones((prev) => ({ ...prev, [gemstoneType]: true }))
               }}
-              className='p-2 text-sm font-bold text-gray-600 rounded-lg hover:text-blue-600 bg-slate-400'
+              className='w-48 h-10 text-center text-sm font-bold text-gray-600 rounded-lg hover:text-blue-600 bg-slate-400'
             >
               {`Add ${label}`}
             </button>

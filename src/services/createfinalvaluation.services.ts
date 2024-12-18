@@ -8,6 +8,7 @@ import {
   DataResponseEnumColorDiamonds,
   DataResponseEnumColorShapphies,
   DataResponseEnumCuts,
+  DataResponseEnumShapes,
   DataResponseKeyCharacteristic
 } from '../types/KeyCharacteristic'
 import baseUrl from '../utils/http'
@@ -58,6 +59,9 @@ export const createFinal = createApi({
     getEnumClarities: build.query<DataResponseEnumClarities, void>({
       query: () => 'Jewelrys/ViewEnumClarities'
     }),
+    getEnumShapes: build.query<DataResponseEnumShapes, void>({
+      query: () => 'Jewelrys/ViewEnumShape'
+    }),
 
     createFinalValuation: build.mutation<ValuationGemstoneData, any>({
       query: (payload) => ({
@@ -85,5 +89,6 @@ export const {
   useGetEnumColorShapphiesQuery,
   useGetEnumColorDiamondsQuery,
   useGetEnumCutsQuery,
-  useGetEnumClaritiesQuery
+  useGetEnumClaritiesQuery,
+  useGetEnumShapesQuery
 } = createFinal

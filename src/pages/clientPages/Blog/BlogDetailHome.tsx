@@ -1,26 +1,20 @@
-import { useParams, useNavigate } from 'react-router-dom'
-import { useViewBlogDetailQuery } from '../../../../services/manageother.services'
-import { useState } from 'react'
-import { LeftOutlined, RightOutlined } from '@ant-design/icons'
+import { useParams, useNavigate } from 'react-router-dom';
+import { useViewBlogDetailQuery } from '../../../services/manageother.services';
+import { useState } from 'react';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 
-const BlogDetail = () => {
-  const { id } = useParams()
-  const blogId = id ? parseInt(id, 10) : null
+const BlogDetailHome = () => {
+  const { id } = useParams();
+  const { data, isLoading } = useViewBlogDetailQuery(id);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const navigate = useNavigate();
 
-  const { data, error, isLoading } = useViewBlogDetailQuery(blogId)
+  if (isLoading) return <div>Loading...</div>;
 
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
-  const [currentIndex, setCurrentIndex] = useState<number>(0)
+  if (!data || !data.isSuccess) return <div>No data available</div>;
 
-  const navigate = useNavigate()
-
-  if (isLoading) return <div className='text-center py-8'>Loading...</div>
-  if (error || !data) return <div className='text-center py-8 text-red-500'>Error loading blog details</div>
-
-  if (!data?.isSuccess || !data?.data) return <div className='text-center py-8 text-yellow-500'>No data available</div>
-
-  const { title, content, imageBlogDTOs } = data.data
-
+  const { title, content, imageBlogDTOs } = data.data;
   const currentImage = selectedImage || (imageBlogDTOs.length > 0 ? imageBlogDTOs[currentIndex].imageLink : '');
 
   const handleNext = () => {
@@ -40,10 +34,10 @@ const BlogDetail = () => {
   };
 
   return (
-    <div className='container mx-auto px-4 py-8'>
+    <div className='container mx-auto px-44 py-8'>
       <button 
         onClick={() => navigate(-1)}
-        className='mb-4 flex items-center text-black  '
+        className='mb-4 flex items-center text-black'
       >
         <LeftOutlined className='mr-2' />
         Back
@@ -87,7 +81,7 @@ const BlogDetail = () => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default BlogDetail
+export default BlogDetailHome;

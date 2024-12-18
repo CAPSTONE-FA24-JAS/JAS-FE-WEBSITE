@@ -146,7 +146,7 @@ interface ValuationDocument {
 
 // Interfaces for Images
 export interface UpdateImageJewelryDTO {
-  id: number
+  id?: number
   imageLink: string
   title: string
   thumbnailImage: string

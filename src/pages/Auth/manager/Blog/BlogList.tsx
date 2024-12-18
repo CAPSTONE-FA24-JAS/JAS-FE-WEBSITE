@@ -1,8 +1,8 @@
 import { DeleteOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Image, Modal, Table, Tooltip } from 'antd'
+import { Button, Image, Modal, Table, Tooltip, notification } from 'antd'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useViewBlogsQuery } from '../../../../services/manageother.services'
+import { useViewBlogsQuery, useRemoveBlogMutation } from '../../../../services/manageother.services'
 import CreateBlogPage from './CreateBlog'
 
 type Blog = {
@@ -16,6 +16,7 @@ const BlogTable = () => {
   const [blogs, setBlogs] = useState<Blog[]>([])
   const [isModalVisible, setIsModalVisible] = useState(false)
   const navigate = useNavigate()
+  const [removeBlog] = useRemoveBlogMutation()
 
   const { data, error, isLoading } = useViewBlogsQuery()
 
@@ -30,9 +31,16 @@ const BlogTable = () => {
       setBlogs(formattedBlogs)
     }
   }, [data])
-
+  const handleRemoveBlog = async (id: number) => {
+    await removeBlog(id)
+    setBlogs(blogs.filter((blog) => blog.id !== id))
+    notification.success({
+      message: 'Success',
+      description: 'Blog has been successfully deleted.',
+    });
+  }
   const handleView = (id: number) => {
-    navigate(`/admin/blog/${id}`)
+    navigate(`/manager/blog/${id}`)
   }
 
   const handleCreate = () => {
@@ -42,6 +50,18 @@ const BlogTable = () => {
   const handleCancel = () => {
     setIsModalVisible(false)
   }
+
+  const refetchBlogs = () => {
+    if (data?.isSuccess && data?.data) {
+      const formattedBlogs: Blog[] = data.data.map((blog: any) => ({
+        id: blog.id,
+        image: blog.imageBlogDTOs?.[0]?.imageLink,
+        nameBlog: blog.title,
+        createDate: new Date().toLocaleDateString()
+      }));
+      setBlogs(formattedBlogs);
+    }
+  };
 
   const columns = [
     {
@@ -78,7 +98,7 @@ const BlogTable = () => {
             <Button icon={<EyeOutlined />} onClick={() => handleView(record.id)} className='mr-2' />
           </Tooltip>
           <Tooltip title='Delete Blog'>
-            <Button icon={<DeleteOutlined />} />
+            <Button icon={<DeleteOutlined />} onClick={() => handleRemoveBlog(record.id)}   />
           </Tooltip>
         </div>
       ),
@@ -108,12 +128,12 @@ const BlogTable = () => {
         dataSource={blogs}
         rowKey='id'
         bordered
-        pagination={false}
+        pagination={{ pageSize: 4 }}
         style={{ tableLayout: 'fixed' }}
       />
 
       <Modal title='Create New Blog' open={isModalVisible} onCancel={handleCancel} footer={null} width={700}>
-        <CreateBlogPage />
+        <CreateBlogPage refetchBlogs={refetchBlogs} setIsModalVisible={setIsModalVisible} />
       </Modal>
     </div>
   )
