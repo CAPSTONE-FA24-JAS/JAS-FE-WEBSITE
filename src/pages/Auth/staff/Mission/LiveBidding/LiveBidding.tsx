@@ -134,7 +134,7 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
         </span>
         <span className='flex-1 font-bold text-right text-green-600'>{parsePriceVND(bid.currentPrice)}</span>
         <span className='flex-1 font-semibold text-center text-gray-700'>
-          {bid.status === 'Processing' ? 'Pending' : bid.status}
+          {bid.status === 'Processing' ? 'Processing' : bid.status}
         </span>
       </div>
     )
@@ -177,17 +177,14 @@ const LiveBidding: React.FC<LiveBiddingProps> = ({
   }
 
   const PublicAuction = () => {
-    const isAuctionEndSold = itemLot.status === 'Sold'
-    const isAuctionEndPassed = itemLot.status === 'Passed'
     const topBid = sortedBids.find((bid) => bid.status === 'Success') || sortedBids[0]
 
     return (
       <>
+        <AuctionEndStatus />
         <div className='p-4 text-white bg-red-600 rounded-t-lg'>
-          <h2 className='mb-4 text-2xl font-bold text-gray-800'>
-            {isAuctionEndSold ? 'The winner is:' : isAuctionEndPassed ? 'No winner' : 'Top bid:'}
-          </h2>
-          {!isAuctionEndPassed && topBid && <TopBidDisplay bid={topBid} />}
+          <h2 className='mb-4 text-2xl font-bold text-gray-800'>Top Bid:</h2>
+          {topBid && <TopBidDisplay bid={topBid} />}
           <HeaderControls
             backgroundColor='bg-red-500'
             status={statusLot}

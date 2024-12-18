@@ -7,13 +7,11 @@ import { useNavigate } from 'react-router-dom'
 import { logoutUser, RoleType } from '../../../slice/authLoginAPISlice'
 import { RootState } from '../../../store'
 import NotificationAppraiser from './NotificationAppraiser'
-// import { RootState } from 'store';
 
 export default function HeaderAppraiser({ collapsed }: { collapsed: boolean }) {
   const navigate = useNavigate()
   const dispatch = useDispatch()
-
-  const [isLoading, setIsLoading] = useState(true) // Track the loading state for notifications
+  const [isLoading, setIsLoading] = useState(true)
 
   const handleLogout = () => {
     localStorage.removeItem('userLogin')
@@ -21,43 +19,66 @@ export default function HeaderAppraiser({ collapsed }: { collapsed: boolean }) {
     navigate('/')
   }
 
-  // Retrieve staffId and roleId from Redux or localStorage as a fallback
+  // Retrieve user data with null checks
   const user = useSelector((state: RootState) => state.authLoginAPI)
-  const staffId = user?.id || JSON.parse(localStorage.getItem('userLogin') || '{}').id
+  const storedUser = JSON.parse(localStorage.getItem('userLogin') || '{}')
+  const staffId = user?.id || storedUser?.id
   const roleId = user?.roleId
+  const firstName = user?.account?.user?.staffDTO?.firstName || ''
+  const lastName = user?.account?.user?.staffDTO?.lastName || ''
 
-  // Update loading state after the notifications are loaded
+  const getRoleLabel = (roleId: RoleType | undefined): string => {
+    switch (roleId) {
+      case RoleType.ADMIN:
+        return 'Admin'
+      case RoleType.MANAGER:
+        return 'Manager'
+      case RoleType.STAFFC:
+        return 'Staff'
+      case RoleType.APPRAISER:
+        return 'Appraiser'
+      case RoleType.CUSTOMER:
+        return 'Customer'
+      case RoleType.GUEST:
+        return 'Guest'
+      default:
+        return ''
+    }
+  }
+
+  const roleLabel = getRoleLabel(roleId)
+
   useEffect(() => {
-    setIsLoading(false) // Set loading to false once notifications have loaded
+    setIsLoading(false)
   }, [])
 
   const items: MenuProps['items'] = [
     {
       key: '1',
       icon: <LogoutOutlined />,
-      label: <span onClick={handleLogout}>Đăng xuất</span>
+      label: <span onClick={handleLogout}>Log out</span>
     }
   ]
 
   return (
     <Header
-      className={`fixed z-50  flex justify-end px-5 bg-white border-b border-gray-200`}
+      className={`fixed z-50 flex justify-end px-5 bg-white border-b border-gray-200`}
       style={{
         width: collapsed ? '100%' : 'calc(100% - 256px)'
       }}
     >
-      {' '}
       <div className='flex items-center justify-end gap-3'>
+        {roleLabel && <div className='px-3 py-1 text-sm font-bold text-black rounded-full'>{roleLabel}</div>}
+
         {isLoading ? <Spin className='mr-4' /> : <NotificationAppraiser accountId={staffId} />}
         <Dropdown menu={{ items }} placement='bottomRight' trigger={['click']} arrow>
           <Avatar className='cursor-pointer' size='large' icon={<UserOutlined />} />
         </Dropdown>
-        {roleId === RoleType.ADMIN && <span className='font-bold'>Admin</span>}
-        {roleId === RoleType.MANAGER && <span className='font-bold'>Manager</span>}
-        {roleId === RoleType.STAFFC && <span className='font-bold'>Staff</span>}
-        {roleId === RoleType.APPRAISER && <span className='font-bold'>Appraiser</span>}
-        {roleId === RoleType.CUSTOMER && <span className='font-bold'>Customer</span>}
-        {roleId === RoleType.GUEST && <span className='font-bold'>Guest</span>}
+        {(firstName || lastName) && (
+          <span>
+            {firstName} {lastName}
+          </span>
+        )}
       </div>
     </Header>
   )

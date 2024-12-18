@@ -146,12 +146,7 @@ const FinancialProofModal: React.FC<FinancialProofModalProps> = ({ visible, onCl
             <p>Create Date: {parseDate(financeProof.data.startDate, 'dd/mm/yyyy hh:mm:ss')}</p>
             <p>Expired Date: {parseDate(financeProof.data.expireDate, 'dd/mm/yyyy hh:mm:ss')}</p>
             {financeProof.data.priceLimit > 0 && (
-              <Input
-                placeholder='Limit Amount'
-                value={parsePriceVND(financeProof.data.priceLimit)}
-                disabled
-                suffix='VND'
-              />
+              <Input placeholder='Limit Amount' value={parsePriceVND(financeProof.data.priceLimit)} disabled />
             )}
             <Divider />
             <div className='flex flex-row items-start gap-4'>
