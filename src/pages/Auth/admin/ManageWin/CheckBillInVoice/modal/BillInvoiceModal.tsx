@@ -70,6 +70,7 @@ export default function BillInvoiceModal({
   const lotCode = invoiceDetails.myBidDTO?.lotDTO?.id ?? 'N/A'
   const customerLotCode = invoiceDetails.myBidDTO?.id ?? 'N/A'
   const nameLot = invoiceDetails.myBidDTO?.lotDTO?.title ?? 'N/A'
+  const lotType = invoiceDetails.myBidDTO?.lotDTO?.lotType ?? 'N/A'
   const bidPrice = invoiceDetails.myBidDTO?.yourMaxBidPrice ?? 'N/A'
   const platformFee = invoiceDetails.free ?? 'N/A'
   const shippingFee = invoiceDetails.feeShip ?? 'N/A'
@@ -170,7 +171,7 @@ export default function BillInvoiceModal({
           <p>
             <strong>Type of production:</strong>
           </p>
-          <p className='font-bold text-gray-600'></p>
+          <p className='font-bold text-gray-600'>{lotType}</p>
         </div>
         <div className='flex justify-between mb-2'>
           <p>
