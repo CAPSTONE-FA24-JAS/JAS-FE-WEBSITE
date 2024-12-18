@@ -265,15 +265,17 @@ const LotList = () => {
       fixed: 'right',
       width: 100,
       render: (_, record) => {
-        if (auctionData?.data.status === 'Waiting' || auctionData?.data.status === 'UpComing') {
-          return (
-            <Space size='small'>
-              <Button icon={<EditOutlined />} size='small' onClick={() => handleEdit(record)} />
-              <Button icon={<DeleteOutlined />} size='small' danger />
-            </Space>
-          )
+        if (roleId === RoleType.MANAGER) {
+          if (auctionData?.data.status === 'Waiting' || auctionData?.data.status === 'UpComing') {
+            return (
+              <Space size='small'>
+                <Button icon={<EditOutlined />} size='small' onClick={() => handleEdit(record)} />
+                <Button icon={<DeleteOutlined />} size='small' danger />
+              </Space>
+            )
+          }
+          return null
         }
-        return null
       }
     }
   ]

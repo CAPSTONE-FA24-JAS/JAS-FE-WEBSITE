@@ -124,9 +124,13 @@ const Index = () => {
   const formatTimeDisplay = useMemo(() => {
     const { days, hours, minutes, seconds } = timeLeft
 
+    if (data?.data.status === 'Cancelled' || data?.data.status === 'Pass' || data?.data.status === 'Sold') {
+      return ''
+    }
+
     if (data?.data.status === 'UpComing' || data?.data.status === 'Waiting') {
       if (days > 0) {
-        return `Start in: ${days}d ${hours}h ${minutes}m`
+        return `Start in: ${days}d ${hours}h ${minutes}m ${seconds}s`
       } else if (hours > 0) {
         return `Start in: ${hours}h ${minutes}m ${seconds}s`
       } else if (minutes > 0) {
@@ -137,7 +141,7 @@ const Index = () => {
     }
 
     if (days > 0) {
-      return `${days}d ${hours}h ${minutes}m`
+      return `${days}d ${hours}h ${minutes}m ${seconds}s`
     } else if (hours > 0) {
       return `${hours}h ${minutes}m ${seconds}s`
     } else if (minutes > 0) {
@@ -230,7 +234,7 @@ const Index = () => {
         {canViewLiveBidding && (
           <div className='w-full'>
             <div className='text-lg font-bold text-center'>
-              {(data && data?.data.status === 'Waiting') || data?.data.status === 'UpComing' ? '' : 'Time Left'}{' '}
+              {(data && data?.data.status === 'Waiting') || data?.data.status === 'UpComing' ? '' : 'Time Left '}
               {formatTimeDisplay}
             </div>
             {data?.data ? renderLiveBidding() : <div>No lot data available</div>}

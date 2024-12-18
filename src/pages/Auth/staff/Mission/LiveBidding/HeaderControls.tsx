@@ -35,6 +35,7 @@ export const HeaderControls: React.FC<HeaderControlsProps> = ({
 
   // Normalize status to lowercase for consistent comparison
   const normalizedStatus = status.toLowerCase()
+  console.log('normalizedStatus', normalizedStatus)
 
   // Get display status and color
   const { display: displayStatus, color: statusColor } = useMemo(

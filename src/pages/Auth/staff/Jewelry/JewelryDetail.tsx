@@ -1,5 +1,5 @@
 import { ArrowLeftOutlined, EditOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons'
-import { Button, Card, Descriptions, Form, Image, Input, InputNumber, Select, Spin, Upload } from 'antd'
+import { Button, Card, Descriptions, Form, Image, Input, InputNumber, message, Select, Spin, Upload } from 'antd'
 import type { UploadFile } from 'antd/es/upload/interface'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -12,7 +12,7 @@ import {
   useGetEnumCutsQuery,
   useGetKeyCharacteristicsQuery
 } from '../../../../services/createfinalvaluation.services'
-import { useGetJewelryByIdQuery } from '../../../../services/jewelry.services'
+import { useGetJewelryByIdQuery, useUpdateJewelryMutation } from '../../../../services/jewelry.services'
 
 export const JewelryDetail = () => {
   const { id } = useParams<{ id: string }>()
@@ -37,7 +37,7 @@ export const JewelryDetail = () => {
   const { data: clarities } = useGetEnumClaritiesQuery()
   const { data: keyCharacteristics } = useGetKeyCharacteristicsQuery()
 
-  // const [updateJewelry, { isLoading: isUpdating }] = useUpdateJewelryMutation()
+  const [updateJewelry] = useUpdateJewelryMutation()
 
   useEffect(() => {
     if (jewelry?.data) {
@@ -224,182 +224,182 @@ export const JewelryDetail = () => {
       secondaryShaphies: [...currentShaphies, newShaphy]
     })
   }
-  // const handleSave = async () => {
-  //   try {
-  //     const values = await form.validateFields()
-  //     const formData = new FormData()
-
-  //     // Append basic jewelry data
-  //     const jewelryData = {
-  //       id: Number(id),
-  //       name: values.name,
-  //       description: values.description,
-  //       title: values.title,
-  //       forGender: values.forGender,
-  //       videoLink: values.videoLink,
-  //       estimatePriceMin: values.estimatePriceMin,
-  //       estimatePriceMax: values.estimatePriceMax,
-  //       startingPrice: values.startingPrice,
-  //       specificPrice: values.specificPrice,
-  //       bidForm: values.bidForm,
-  //       time_Bidding: values.time_Bidding,
-  //       artistId: values.artistId,
-  //       categoryId: values.categoryId,
-  //       keyCharacteristicDetails: values.keyCharacteristicDetails
-  //     }
-  //     formData.append('jewelryData', JSON.stringify(jewelryData))
-
-  //     // Append jewelry images
-  //     jewelryFiles.forEach((file, index) => {
-  //       if (file.originFileObj) {
-  //         formData.append(`jewelry_images_${index}`, file.originFileObj)
-  //       }
-  //     })
-
-  //     // Handle main diamond files
-  //     Object.entries(mainDiamondFiles).forEach(([key, files]) => {
-  //       files.forEach((file, fileIndex) => {
-  //         if (file.originFileObj) {
-  //           const [, index, fileType] = key.split('-')
-  //           formData.append(`mainDiamond_${index}_${fileType}_${fileIndex}`, file.originFileObj)
-  //         }
-  //       })
-  //     })
-
-  //     // Handle secondary diamond files
-  //     Object.entries(secondaryDiamondFiles).forEach(([key, files]) => {
-  //       files.forEach((file, fileIndex) => {
-  //         if (file.originFileObj) {
-  //           const [, index, fileType] = key.split('-')
-  //           formData.append(`secondaryDiamond_${index}_${fileType}_${fileIndex}`, file.originFileObj)
-  //         }
-  //       })
-  //     })
-
-  //     // Handle main shaphy files
-  //     Object.entries(mainShaphyFiles).forEach(([key, files]) => {
-  //       files.forEach((file, fileIndex) => {
-  //         if (file.originFileObj) {
-  //           const [, index, fileType] = key.split('-')
-  //           formData.append(`mainShaphy_${index}_${fileType}_${fileIndex}`, file.originFileObj)
-  //         }
-  //       })
-  //     })
-
-  //     // Handle secondary shaphy files
-  //     Object.entries(secondaryShaphyFiles).forEach(([key, files]) => {
-  //       files.forEach((file, fileIndex) => {
-  //         if (file.originFileObj) {
-  //           const [, index, fileType] = key.split('-')
-  //           formData.append(`secondaryShaphy_${index}_${fileType}_${fileIndex}`, file.originFileObj)
-  //         }
-  //       })
-  //     })
-
-  //     // Send the formData to your API
-  //     const updateRequest = {
-  //       id: Number(id),
-  //       name: values.name,
-  //       description: values.description,
-  //       title: values.title,
-  //       forGender: values.forGender,
-  //       videoLink: values.videoLink,
-  //       estimatePriceMin: values.estimatePriceMin,
-  //       estimatePriceMax: values.estimatePriceMax,
-  //       startingPrice: values.startingPrice,
-  //       specificPrice: values.specificPrice,
-  //       bidForm: values.bidForm,
-  //       time_Bidding: values.time_Bidding,
-  //       artistId: values.artistId,
-  //       categoryId: values.categoryId,
-  //       updateKeyCharacteristicDetailDTOs: values.keyCharacteristicDetails,
-  //       updateImageJewelryDTOs: jewelryFiles.map((file, index) => ({
-  //         id: index, // Assuming you have an id for each image, replace with actual id if available
-  //         imageLink: file.originFileObj,
-  //         title: file.name,
-  //         thumbnailImage: '' // Add the actual thumbnail image if available
-  //       })),
-  //       updateMainDiamondDTOs: values.mainDiamonds.map((diamond: any, index: any) => ({
-  //         ...diamond,
-  //         documentDiamonds:
-  //           mainDiamondFiles[`mainDiamonds-${index}-docs`]?.map((file) => ({
-  //             documentLink: file.originFileObj,
-  //             documentTitle: file.name
-  //           })) || [],
-  //         imageDiamonds:
-  //           mainDiamondFiles[`mainDiamonds-${index}-imgs`]?.map((file) => ({
-  //             imageLink: file.originFileObj,
-  //             imageTitle: file.name
-  //           })) || []
-  //       })),
-  //       updateSecondaryDiamondDTOs: values.secondaryDiamonds.map((diamond: any, index: any) => ({
-  //         ...diamond,
-  //         documentDiamonds:
-  //           secondaryDiamondFiles[`secondaryDiamonds-${index}-docs`]?.map((file) => ({
-  //             documentLink: file.originFileObj,
-  //             documentTitle: file.name
-  //           })) || [],
-  //         imageDiamonds:
-  //           secondaryDiamondFiles[`secondaryDiamonds-${index}-imgs`]?.map((file) => ({
-  //             imageLink: file.originFileObj,
-  //             imageTitle: file.name
-  //           })) || []
-  //       })),
-  //       updateMainShaphieDTOs: values.mainShaphies.map((shaphy: any, index: any) => ({
-  //         ...shaphy,
-  //         documentShaphies:
-  //           mainShaphyFiles[`mainShaphies-${index}-docs`]?.map((file) => ({
-  //             documentLink: file.originFileObj,
-  //             documentTitle: file.name
-  //           })) || [],
-  //         imageShaphies:
-  //           mainShaphyFiles[`mainShaphies-${index}-imgs`]?.map((file) => ({
-  //             imageLink: file.originFileObj,
-  //             imageTitle: file.name
-  //           })) || []
-  //       })),
-  //       updateSecondaryShaphieDTOs: values.secondaryShaphies.map((shaphy: any, index: any) => ({
-  //         ...shaphy,
-  //         documentShaphies:
-  //           secondaryShaphyFiles[`secondaryShaphies-${index}-docs`]?.map((file) => ({
-  //             documentLink: file.originFileObj,
-  //             documentTitle: file.name
-  //           })) || [],
-  //         imageShaphies:
-  //           secondaryShaphyFiles[`secondaryShaphies-${index}-imgs`]?.map((file) => ({
-  //             imageLink: file.originFileObj,
-  //             imageTitle: file.name
-  //           })) || []
-  //       })),
-  //       valuation: values.valuation
-  //     }
-
-  //     const result = await updateJewelry(updateRequest).unwrap()
-
-  //     if (result.isSuccess) {
-  //       message.success('Jewelry updated successfully')
-  //       setIsEditing(false)
-  //       // Reset file states after successful update
-  //       setMainDiamondFiles({})
-  //       setSecondaryDiamondFiles({})
-  //       setMainShaphyFiles({})
-  //       setSecondaryShaphyFiles({})
-  //       setJewelryFiles([])
-  //     } else {
-  //       message.error('Failed to update jewelry')
-  //     }
-  //   } catch (error) {
-  //     if (error instanceof Error) {
-  //       message.error(`Error: ${error.message}`)
-  //     } else {
-  //       message.error('An error occurred while updating')
-  //     }
-  //     console.error('Update error:', error)
-  //   }
-  // }
   const handleSave = async () => {
-    console.log('form', form)
+    try {
+      const values = await form.validateFields()
+      const formData = new FormData()
+
+      // Append basic jewelry data
+      const jewelryData = {
+        id: Number(id),
+        name: values.name,
+        description: values.description,
+        title: values.title,
+        forGender: values.forGender,
+        videoLink: values.videoLink,
+        estimatePriceMin: values.estimatePriceMin,
+        estimatePriceMax: values.estimatePriceMax,
+        startingPrice: values.startingPrice,
+        specificPrice: values.specificPrice,
+        bidForm: values.bidForm,
+        time_Bidding: values.time_Bidding,
+        artistId: values.artistId,
+        categoryId: values.categoryId,
+        keyCharacteristicDetails: values.keyCharacteristicDetails
+      }
+      formData.append('jewelryData', JSON.stringify(jewelryData))
+
+      // Append jewelry images
+      jewelryFiles.forEach((file, index) => {
+        if (file.originFileObj) {
+          formData.append(`jewelry_images_${index}`, file.originFileObj)
+        }
+      })
+
+      // Handle main diamond files
+      Object.entries(mainDiamondFiles).forEach(([key, files]) => {
+        files.forEach((file, fileIndex) => {
+          if (file.originFileObj) {
+            const [, index, fileType] = key.split('-')
+            formData.append(`mainDiamond_${index}_${fileType}_${fileIndex}`, file.originFileObj)
+          }
+        })
+      })
+
+      // Handle secondary diamond files
+      Object.entries(secondaryDiamondFiles).forEach(([key, files]) => {
+        files.forEach((file, fileIndex) => {
+          if (file.originFileObj) {
+            const [, index, fileType] = key.split('-')
+            formData.append(`secondaryDiamond_${index}_${fileType}_${fileIndex}`, file.originFileObj)
+          }
+        })
+      })
+
+      // Handle main shaphy files
+      Object.entries(mainShaphyFiles).forEach(([key, files]) => {
+        files.forEach((file, fileIndex) => {
+          if (file.originFileObj) {
+            const [, index, fileType] = key.split('-')
+            formData.append(`mainShaphy_${index}_${fileType}_${fileIndex}`, file.originFileObj)
+          }
+        })
+      })
+
+      // Handle secondary shaphy files
+      Object.entries(secondaryShaphyFiles).forEach(([key, files]) => {
+        files.forEach((file, fileIndex) => {
+          if (file.originFileObj) {
+            const [, index, fileType] = key.split('-')
+            formData.append(`secondaryShaphy_${index}_${fileType}_${fileIndex}`, file.originFileObj)
+          }
+        })
+      })
+
+      // Send the formData to your API
+      const updateRequest = {
+        id: Number(id),
+        name: values.name,
+        description: values.description,
+        title: values.title,
+        forGender: values.forGender,
+        videoLink: values.videoLink,
+        estimatePriceMin: values.estimatePriceMin,
+        estimatePriceMax: values.estimatePriceMax,
+        startingPrice: values.startingPrice,
+        specificPrice: values.specificPrice,
+        bidForm: values.bidForm,
+        time_Bidding: values.time_Bidding,
+        artistId: values.artistId,
+        categoryId: values.categoryId,
+        updateKeyCharacteristicDetailDTOs: values.keyCharacteristicDetails,
+        updateImageJewelryDTOs: jewelryFiles.map((file, index) => ({
+          id: index, // Assuming you have an id for each image, replace with actual id if available
+          imageLink: file.originFileObj ? URL.createObjectURL(file.originFileObj) : '',
+          title: file.name,
+          thumbnailImage: '' // Add the actual thumbnail image if available
+        })),
+        updateMainDiamondDTOs: values.mainDiamonds.map((diamond: any, index: any) => ({
+          ...diamond,
+          documentDiamonds:
+            mainDiamondFiles[`mainDiamonds-${index}-docs`]?.map((file) => ({
+              documentLink: file.originFileObj,
+              documentTitle: file.name
+            })) || [],
+          imageDiamonds:
+            mainDiamondFiles[`mainDiamonds-${index}-imgs`]?.map((file) => ({
+              imageLink: file.originFileObj,
+              imageTitle: file.name
+            })) || []
+        })),
+        updateSecondaryDiamondDTOs: values.secondaryDiamonds.map((diamond: any, index: any) => ({
+          ...diamond,
+          documentDiamonds:
+            secondaryDiamondFiles[`secondaryDiamonds-${index}-docs`]?.map((file) => ({
+              documentLink: file.originFileObj,
+              documentTitle: file.name
+            })) || [],
+          imageDiamonds:
+            secondaryDiamondFiles[`secondaryDiamonds-${index}-imgs`]?.map((file) => ({
+              imageLink: file.originFileObj,
+              imageTitle: file.name
+            })) || []
+        })),
+        updateMainShaphieDTOs: values.mainShaphies.map((shaphy: any, index: any) => ({
+          ...shaphy,
+          documentShaphies:
+            mainShaphyFiles[`mainShaphies-${index}-docs`]?.map((file) => ({
+              documentLink: file.originFileObj,
+              documentTitle: file.name
+            })) || [],
+          imageShaphies:
+            mainShaphyFiles[`mainShaphies-${index}-imgs`]?.map((file) => ({
+              imageLink: file.originFileObj,
+              imageTitle: file.name
+            })) || []
+        })),
+        updateSecondaryShaphieDTOs: values.secondaryShaphies.map((shaphy: any, index: any) => ({
+          ...shaphy,
+          documentShaphies:
+            secondaryShaphyFiles[`secondaryShaphies-${index}-docs`]?.map((file) => ({
+              documentLink: file.originFileObj,
+              documentTitle: file.name
+            })) || [],
+          imageShaphies:
+            secondaryShaphyFiles[`secondaryShaphies-${index}-imgs`]?.map((file) => ({
+              imageLink: file.originFileObj,
+              imageTitle: file.name
+            })) || []
+        })),
+        valuation: values.valuation
+      }
+
+      const result = await updateJewelry(updateRequest).unwrap()
+
+      if (result.isSuccess) {
+        message.success('Jewelry updated successfully')
+        setIsEditing(false)
+        // Reset file states after successful update
+        setMainDiamondFiles({})
+        setSecondaryDiamondFiles({})
+        setMainShaphyFiles({})
+        setSecondaryShaphyFiles({})
+        setJewelryFiles([])
+      } else {
+        message.error('Failed to update jewelry')
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        message.error(`Error: ${error.message}`)
+      } else {
+        message.error('An error occurred while updating')
+      }
+      console.error('Update error:', error)
+    }
   }
+  // const handleSave = async () => {
+  //   console.log('form', form)
+  // }
 
   const renderDiamondDocuments = (field: any, fieldName: string, files: any, setFiles: any) => (
     <div className='mb-4'>
@@ -848,7 +848,7 @@ export const JewelryDetail = () => {
                 <Select.Option value='Fixed_Price'>Fixed Price</Select.Option>
                 <Select.Option value='Secret_Auction'>Secret Auction</Select.Option>
                 <Select.Option value='Public_Auction'>Public Auction</Select.Option>
-                <Select.Option value='Auction_Price_GraduallyReduced'>Gradually Reduced Price</Select.Option>
+                <Select.Option value='Auction_Price_GraduallyReduced'>Revserse Auction</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item name='time_Bidding' label='Bidding Time'>
