@@ -1,57 +1,28 @@
 import { FilePdfOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons'
-import { Button, Modal } from 'antd'
+import { Button, Modal, Spin } from 'antd'
 import React, { useState } from 'react'
+import { useGetValuationByIdQuery } from '../../../../services/valuation.services'
 
-// Định nghĩa interface cho ImageValuation
-interface ImageValuation {
-  imageLink: string
-  defaultImage: string | null
-}
-
-// Định nghĩa interface cho ValuationDocument
-interface ValuationDocument {
-  documentLink: string
-}
-
-// Định nghĩa interface cho Seller
-interface Seller {
-  firstName: string
-  lastName: string
-  accountDTO: {
-    email: string
-    phoneNumber: string
-  }
-}
-
-// Định nghĩa interface cho Record
-interface Record {
-  id: string
-  name: string
-  seller: Seller
-  height: number
-  width: number
-  depth: number
-  description: string
-  estimatePriceMin: number
-  estimatePriceMax: number
-  status: string
-  imageValuations: ImageValuation[]
-  valuationDocuments: ValuationDocument[]
-}
-
-// Sử dụng interface Record trong PreliminaryValuationDetailProps
-interface PreliminaryValuationDetailProps {
+interface ManageValuationDetailProps {
+  recordId: number
   isVisible: boolean
   onCancel: () => void
-  onUpdate: () => void
-  record: Record
-  status: string
+  setStatus: (status: string) => void
+  refetch: () => void
 }
 
-const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({ isVisible, onCancel, record }) => {
+const ManageValuationDetail: React.FC<ManageValuationDetailProps> = ({ recordId, isVisible, onCancel }) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const images = record?.imageValuations || [
+
+  const {
+    data: valuationData,
+    isLoading: valuationLoading,
+    error: valuationError
+  } = useGetValuationByIdQuery({ id: recordId })
+  console.log('Valuation Data: ', valuationData)
+
+  const images = valuationData?.data?.imageValuations || [
     { imageLink: 'https://via.placeholder.com/150?text=No+Image', defaultImage: null }
   ]
 
@@ -65,9 +36,9 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
   const openModal = () => setIsModalVisible(true)
   const closeModal = () => setIsModalVisible(false)
   const handleReceiptLinkClick = () => {
-    if (record?.status === 'RecivedJewelry') {
-      if (record?.valuationDocuments?.length > 0) {
-        const receiptLink = record.valuationDocuments[0]?.documentLink
+    if (valuationData?.data?.status === 'RecivedJewelry') {
+      if (valuationData?.data?.valuationDocuments?.length > 0) {
+        const receiptLink = valuationData?.data?.valuationDocuments[0]?.documentLink
 
         if (receiptLink) {
           window.open(receiptLink, '_blank')
@@ -106,11 +77,19 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
       )
     }
   }
+  if (valuationLoading) {
+    return <Spin tip='Loading...' />
+  }
+
+  if (valuationError) {
+    return <p>Error fetching valuation details</p>
+  }
+
   return (
     <Modal
       title='Preliminary Valuation Detail'
-      open={isVisible}
       onCancel={onCancel}
+      open={isVisible}
       footer={[
         <Button key='cancel' onClick={onCancel}>
           Cancel
@@ -148,7 +127,7 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
             <Button icon={<RightOutlined />} onClick={nextImage} className='bg-gray-300 hover:bg-gray-400' />
           </div>
           <div className='flex ml-10 mt-10'>
-            {record?.imageValuations?.map(renderImageOrLink) || <p>No images available</p>}
+            {valuationData?.data?.imageValuations?.map(renderImageOrLink) || <p>No images available</p>}
           </div>
         </div>
         <Modal open={isModalVisible} footer={null} onCancel={closeModal} width='40%'>
@@ -159,56 +138,56 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
           />
         </Modal>
         <div>
-          <p className='mb-2 text-xl font-bold'>{record?.id}</p>
-          <p className='mb-6 text-xl font-bold'>{record?.name}</p>
+          <p className='mb-2 text-xl font-bold'>{valuationData?.data?.id}</p>
+          <p className='mb-6 text-xl font-bold'>{valuationData?.data?.name}</p>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Customer Name:</strong>
             <span>
-              {record?.seller?.firstName} {record?.seller?.lastName}
+              {valuationData?.data?.seller?.firstName} {valuationData?.data?.seller?.lastName}
             </span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Email:</strong>
-            <span>{record?.seller?.accountDTO?.email}</span>
+            <span>{valuationData?.data?.seller?.accountDTO?.email}</span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Phone:</strong>
-            <span>{record?.seller?.accountDTO?.phoneNumber}</span>
+            <span>{valuationData?.data?.seller?.accountDTO?.phoneNumber}</span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Height:</strong>
-            <span>{record?.height} cm</span>
+            <span>{valuationData?.data?.height} cm</span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Width:</strong>
-            <span>{record?.width} cm</span>
+            <span>{valuationData?.data?.width} cm</span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Depth:</strong>
-            <span>{record?.depth} cm</span>
+            <span>{valuationData?.data?.depth} cm</span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Description:</strong>
-            <span>{record?.description}</span>
+            <span>{valuationData?.data?.description}</span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Estimate Price:</strong>
             <span className='font-bold text-red-800'>
               {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
-                record?.estimatePriceMin || 0
+                valuationData?.data?.estimatePriceMin || 0
               )}{' '}
               -{' '}
               {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
-                record?.estimatePriceMax || 0
+                valuationData?.data?.estimatePriceMax || 0
               )}
             </span>
           </div>
 
           <div className='flex mb-4'>
             <strong className='w-1/3'>Status:</strong>
-            <span className='font-bold text-red-800'>{record?.status}</span>
+            <span className='font-bold text-red-800'>{valuationData?.data?.status}</span>
           </div>
-          {record?.status === 'RecivedJewelry' && (
+          {valuationData?.data?.status === 'RecivedJewelry' && (
             <div className='flex mb-4'>
               <strong className='w-1/3'>Receipt:</strong>
               <p className='italic text-blue-500 cursor-pointer' onClick={handleReceiptLinkClick}>
@@ -231,4 +210,4 @@ const PreliminaryValuationDetail: React.FC<PreliminaryValuationDetailProps> = ({
   )
 }
 
-export default PreliminaryValuationDetail
+export default ManageValuationDetail

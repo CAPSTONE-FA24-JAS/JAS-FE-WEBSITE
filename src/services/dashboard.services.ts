@@ -26,6 +26,9 @@ export const dashboardApi = createApi({
     getTotalRevenue: build.query({
       query: () => 'DashBoard/TotalRevenue'
     }),
+    getTotalRevenueInvoice: build.query({
+      query: () => 'DashBoard/TotalRevenueInvoice'
+    }),
     getRevenueInYear: build.query({
       query: (year: number) => `DashBoard/DashBoardRevenueInYear?year=${year}`
     }),
@@ -59,6 +62,7 @@ export const dashboardApi = createApi({
 export const {
   useGetTotalInvoiceQuery,
   useGetTotalRevenueQuery,
+  useGetTotalRevenueInvoiceQuery,
   useGetRevenueInYearQuery,
   useGetInvoiceInYearQuery,
   useGetTotalAccountsQuery,

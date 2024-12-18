@@ -1,6 +1,6 @@
-import { LeftOutlined, RightOutlined } from '@ant-design/icons'
+import { EyeOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { Image as AntImage, Button, Modal, notification, Spin } from 'antd'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   useGetValuationByIdQuery,
   useRejectJewelryByManagerMutation,
@@ -48,6 +48,28 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
 
   const [updateStatus, { isLoading }] = useUpdateJewelryStatusByManagerMutation()
   const [rejectStatus, { isLoading: isRejectLoading }] = useRejectJewelryByManagerMutation()
+
+  const linkAuthorized = () => {
+    const authorizedDoc = valuationData?.data?.valuationDocuments?.find(
+      (document: any) => document.valuationDocumentType === 'Authorized'
+    )
+    return authorizedDoc?.documentLink || ''
+  }
+
+  useEffect(() => {
+    linkAuthorized()
+  }, [valuationData])
+
+  const handleOpenDocument = (fileUrl: string) => {
+    if (!fileUrl) {
+      notification.error({
+        message: 'Document Error',
+        description: 'No document link available.'
+      })
+      return
+    }
+    window.open(fileUrl, '_blank')
+  }
 
   const handleUpdateClick = async () => {
     const jewelryId = valuationData?.data?.jewelry?.id
@@ -159,13 +181,13 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
               className='w-[450px] h-[500px] object-cover rounded-lg'
             />{' '}
           </div>
-          <div className='absolute top-56 left-0 flex items-center justify-center pl-3'>
+          <div className='absolute left-0 flex items-center justify-center pl-3 top-56'>
             <Button icon={<LeftOutlined />} onClick={prevImage} className='bg-gray-300 hover:bg-gray-400' />
           </div>
-          <div className='absolute top-56 right-0 flex items-center justify-center pr-3'>
+          <div className='absolute right-0 flex items-center justify-center pr-3 top-56'>
             <Button icon={<RightOutlined />} onClick={nextImage} className='bg-gray-300 hover:bg-gray-400' />
           </div>
-          <div className='flex mt-10 ml-10 flex-wrap gap-y-2'>
+          <div className='flex flex-wrap mt-10 ml-10 gap-y-2'>
             {images.map((image: string, index: number) => (
               <img
                 key={index}
@@ -178,7 +200,7 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
           </div>
         </div>
         <Modal open={isModalVisible} footer={null} onCancel={closeModal} width='40%'>
-          <img src={images[currentImageIndex]} alt='product zoomed' className='w-full h-auto object-contain' />
+          <img src={images[currentImageIndex]} alt='product zoomed' className='object-contain w-full h-auto' />
         </Modal>
         <div>
           <p className='mb-2 text-xl font-bold'>{valuationData?.data?.id || 'N/A'}</p>
@@ -200,18 +222,18 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
           {valuationData?.data?.jewelry?.artist?.name ? (
             <div className='flex mb-4'>
               <strong className='w-1/3'>Artist:</strong>
-              <span className=' text-blue-800'>{valuationData?.data?.jewelry?.artist?.name} </span>
+              <span className='text-blue-800 '>{valuationData?.data?.jewelry?.artist?.name} </span>
             </div>
           ) : null}
           <div className='flex mb-4'>
             <strong className='w-1/3'>Category:</strong>
-            <span className=' text-blue-800'>{valuationData?.data?.jewelry?.category?.name || 0} </span>
+            <span className='text-blue-800 '>{valuationData?.data?.jewelry?.category?.name || 0} </span>
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Video Link:</strong>
             <a
               href={valuationData?.data?.jewelry?.videoLink || '#'}
-              className='text-blue-800 truncate max-w-xs'
+              className='max-w-xs text-blue-800 truncate'
               target='_blank'
               rel='noopener noreferrer'
               style={{ display: 'inline-block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
@@ -241,7 +263,7 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Final Price:</strong>
-            <span className='text-red-700 font-bold'>
+            <span className='font-bold text-red-700'>
               {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
                 valuationData?.data?.jewelry?.specificPrice || 0
               )}
@@ -249,10 +271,10 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
           </div>
           <div className='flex mb-4'>
             <strong className='w-1/3'>Bid Form:</strong>
-            <span className='text-red-700 font-bold'>{valuationData?.data?.jewelry?.bidForm || 0} </span>
+            <span className='font-bold text-red-700'>{valuationData?.data?.jewelry?.bidForm || 0} </span>
           </div>
           <div>
-            <strong className='w-full block mb-4'>Key Characteristics</strong>
+            <strong className='block w-full mb-4'>Key Characteristics</strong>
             {valuationData?.data?.jewelry?.keyCharacteristicDetails?.map((detail: any) => (
               <div key={detail.id} className='flex mb-2 ml-10'>
                 <div className='w-1/4 font-medium'>{detail.keyCharacteristic.name}:</div>
@@ -262,7 +284,7 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
           </div>
           {valuationData?.data?.jewelry?.mainDiamonds?.length > 0 && (
             <div>
-              <span className='w-full block mb-4 font-bold'>Main Diamonds</span>
+              <span className='block w-full mb-4 font-bold'>Main Diamonds</span>
 
               {valuationData?.data?.jewelry?.mainDiamonds.map((diamond: any) => (
                 <div key={diamond.id} className='mb-4 ml-10'>
@@ -403,7 +425,7 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
           )}
           {valuationData?.data?.jewelry?.secondaryDiamonds?.length > 0 && (
             <div>
-              <span className='w-full block mb-4 font-bold'>Secondary Diamonds</span>
+              <span className='block w-full mb-4 font-bold'>Secondary Diamonds</span>
               {valuationData?.data?.jewelry?.secondaryDiamonds.map((diamond: any) => (
                 <div key={diamond.id} className='mb-4 ml-10'>
                   {diamond.name && (
@@ -536,7 +558,7 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
           {/* Main Sapphires */}
           {valuationData?.data?.jewelry?.mainShaphies?.length > 0 && (
             <div>
-              <span className='w-full block mb-4 font-bold'>Main Sapphires</span>
+              <span className='block w-full mb-4 font-bold'>Main Sapphires</span>
               {valuationData?.data?.jewelry?.mainShaphies.map((sapphire: any) => (
                 <div key={sapphire.id} className='mb-4 ml-10'>
                   {sapphire.name && (
@@ -627,7 +649,7 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
           {/* Secondary Sapphires */}
           {valuationData?.data?.jewelry?.secondaryShaphies?.length > 0 && (
             <div>
-              <span className='w-full block mb-4 font-bold'>Secondary Sapphires</span>
+              <span className='block w-full mb-4 font-bold'>Secondary Sapphires</span>
               {valuationData?.data?.jewelry?.secondaryShaphies.map((sapphire: any) => (
                 <div key={sapphire.id} className='mb-4 ml-10'>
                   {sapphire.name && (
@@ -716,9 +738,14 @@ const RequestFinalDetail: React.FC<RequestFinalDetailProps> = ({
             </div>
           )}
 
-          <div className='mt-4 flex'>
+          <div className='flex items-center gap-6 mt-4'>
             <strong className='w-1/3'>Status:</strong>
-            <span className='text-red-700 font-bold'>{valuationData?.data?.status || 'Unknown Status'}</span>
+            <span className='font-bold text-red-700'>{valuationData?.data?.status || 'Unknown Status'}</span>
+            {valuationData?.data?.status === 'Authorized' && (
+              <Button type='primary' icon={<EyeOutlined />} onClick={() => handleOpenDocument(linkAuthorized())}>
+                View Document
+              </Button>
+            )}
           </div>
         </div>
       </div>
