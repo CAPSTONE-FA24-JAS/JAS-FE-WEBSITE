@@ -1,9 +1,10 @@
 import { EyeOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Col, Input, Row, Space, Table, Tag } from 'antd'
-import { useState, useEffect } from 'react'
-import RequestFinalDetail from './RequestFinalDetail'
-import { useGetValuationsQuery } from '../../../../services/valuation.services'
+import { Button, Col, Input, Row, Space, Table, Tabs, Tag } from 'antd'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useGetValuationsQuery } from '../../../../services/valuation.services'
+import ManageValuationDetail from './ManageValuationDetail'
+import RequestFinalDetail from './RequestFinalDetail'
 
 interface Valuation {
   id: number
@@ -16,18 +17,31 @@ interface Valuation {
 }
 
 const { Search } = Input
+const { TabPane } = Tabs
 
 const RequestFinalValuation = () => {
   const [selectedFinalRecord, setSelectedFinalRecord] = useState<Valuation | null>(null)
+  const [selectedValuationRecord, setSelectedValuationRecord] = useState<Valuation | null>(null)
   const [searchText, setSearchText] = useState<string>('')
   const location = useLocation()
   const navigate = useNavigate()
-
-  const { data, error, isLoading, refetch } = useGetValuationsQuery()
+  const [modalVisible, setModalVisible] = useState<boolean>(false)
+  const { data, refetch } = useGetValuationsQuery()
 
   const finalValuationData: Valuation[] =
     data?.dataResponse?.filter((valuation: Valuation) =>
-      ['Evaluated', 'ManagerApproved', 'Authorized', 'Rejected'].includes(valuation.status)
+      [
+        'Requested',
+        'Assigned',
+        'RequestedPreliminary',
+        'Preliminary',
+        'ApprovedPreliminary',
+        'RecivedJewelry',
+        'Evaluated',
+        'ManagerApproved',
+        'Authorized',
+        'Rejected'
+      ].includes(valuation.status)
     ) || []
 
   useEffect(() => {
@@ -61,6 +75,11 @@ const RequestFinalValuation = () => {
       title: 'Valuation Name',
       dataIndex: 'nameJewelry',
       key: 'nameJewelry'
+    },
+    {
+      title: 'Consign Name',
+      dataIndex: 'name',
+      key: 'consignName'
     },
     {
       title: 'Customer Name',
@@ -98,6 +117,7 @@ const RequestFinalValuation = () => {
             type='primary'
             icon={<EyeOutlined />}
             onClick={() => {
+              setSelectedValuationRecord(record)
               setSelectedFinalRecord(record)
             }}
           />
@@ -106,9 +126,21 @@ const RequestFinalValuation = () => {
     }
   ]
 
+  const statusList = [
+    { key: 'Requested', label: 'Requested' },
+    { key: 'Assigned', label: 'Assigned' },
+    { key: 'RequestedPreliminary', label: 'Requested Preliminary' },
+    { key: 'Preliminary', label: 'Preliminary' },
+    { key: 'ApprovedPreliminary', label: 'Approved Preliminary' },
+    { key: 'RecivedJewelry', label: 'Received Jewelry' },
+    { key: 'Evaluated', label: 'Evaluated' },
+    { key: 'ManagerApproved', label: 'Manager Approved' },
+    { key: 'Authorized', label: 'Authorized' },
+    { key: 'Rejected', label: 'Rejected' }
+  ]
+
   return (
     <div className='p-4'>
-      {error && <p>Error fetching final valuations</p>}
       <Row justify='space-between' align='middle' className='mb-4'>
         <Col>
           <h2 className='text-2xl font-bold'>Request Final Valuation List</h2>
@@ -130,39 +162,60 @@ const RequestFinalValuation = () => {
         </Col>
       </Row>
 
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          {finalValuationData.length === 0 ? (
-            <p>No final valuations found.</p>
-          ) : (
+      <Tabs defaultActiveKey='Evaluated'>
+        {statusList.map((status) => (
+          <TabPane tab={status.label} key={status.key}>
             <Table<Valuation>
-              dataSource={finalValuationData.filter((item: Valuation) =>
-                item.name.toLowerCase().includes(searchText.toLowerCase())
+              dataSource={finalValuationData.filter(
+                (item) => item.status === status.key && item.name.toLowerCase().includes(searchText.toLowerCase())
               )}
               columns={finalColumns}
               rowKey='id'
               bordered
               pagination={{ pageSize: 6 }}
             />
-          )}
-        </>
-      )}
+          </TabPane>
+        ))}
+      </Tabs>
 
-      {selectedFinalRecord && (
-        <div className='mt-4'>
-          <RequestFinalDetail
-            recordId={selectedFinalRecord.id}
-            isVisible={true}
-            setStatus={(status) => {
-              console.log(status)
-            }}
-            refetch={refetch}
-            onClose={handleCloseModal}
-          />
-        </div>
-      )}
+      {selectedFinalRecord &&
+        ['Evaluated', 'ManagerApproved', 'Authorized', 'Rejected'].includes(selectedFinalRecord.status) && (
+          <div className='mt-4'>
+            <RequestFinalDetail
+              recordId={selectedFinalRecord.id}
+              isVisible={true}
+              setStatus={(status) => {
+                console.log(status)
+              }}
+              refetch={refetch}
+              onClose={handleCloseModal}
+            />
+          </div>
+        )}
+      {selectedValuationRecord &&
+        [
+          'Requested',
+          'Assigned',
+          'RequestedPreliminary',
+          'Preliminary',
+          'ApprovedPreliminary',
+          'RecivedJewelry'
+        ].includes(selectedValuationRecord.status) && (
+          <div className='mt-4'>
+            <ManageValuationDetail
+              recordId={selectedValuationRecord.id}
+              isVisible={true}
+              setStatus={(status) => {
+                console.log(status)
+              }}
+              refetch={refetch}
+              onCancel={() => {
+                setModalVisible(false)
+                setSelectedValuationRecord(null)
+              }}
+            />
+          </div>
+        )}
     </div>
   )
 }
