@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react'
 import SaleInfo from './SaleInfo'
-import { useGetTotalInvoiceQuery, useGetTotalRevenueQuery } from '../../../../../services/dashboard.services'
+import {
+  useGetTotalInvoiceQuery,
+  useGetTotalRevenueInvoiceQuery,
+  useGetTotalRevenueQuery
+} from '../../../../../services/dashboard.services'
 
 const SaleInfoCards = () => {
   const { data: totalInvoiceData } = useGetTotalInvoiceQuery(undefined)
   const { data: totalRevenueData } = useGetTotalRevenueQuery(undefined)
+  const { data: totalRevenueInvoiceData } = useGetTotalRevenueInvoiceQuery(undefined)
 
   const [saleInfoData, setSaleInfoData] = useState([
     {
@@ -13,7 +18,7 @@ const SaleInfoCards = () => {
         <img
           src='https://icons.veryicon.com/png/o/system/crm-android-app-icon/app-icon-invoice-requisition.png'
           alt='Invoice Icon'
-          className='w-10 h-14'
+          className='w-14 h-14'
         />
       ),
       title: 'Invoices',
@@ -34,9 +39,13 @@ const SaleInfoCards = () => {
     {
       id: 3,
       icon: (
-        <img src='https://cdn-icons-png.flaticon.com/512/3097/3097928.png' alt='Revenue Icon' className='w-14 h-14' />
+        <img
+          src='https://cdn4.iconfinder.com/data/icons/shopping-216/512/invoice-512.png'
+          alt='Invoice Revenue Icon'
+          className='w-14 h-14'
+        />
       ),
-      title: 'Revenue',
+      title: 'Invoice Revenue',
       sales: 0,
       increment: 0,
       backgroundClass: 'bg-gradient-to-r from-yellow-200 via-orange-300 to-yellow-400'
@@ -51,19 +60,23 @@ const SaleInfoCards = () => {
     }
     if (totalRevenueData && totalRevenueData.isSuccess) {
       setSaleInfoData((prevData) =>
-        prevData.map((item) =>
-          item.id === 2
-            ? { ...item, sales: totalRevenueData.data, increment: 0 } // `totalRevenueData.data` holds the revenue
-            : item
-        )
+        prevData.map((item) => (item.id === 2 ? { ...item, sales: totalRevenueData.data, increment: 0 } : item))
       )
     }
-  }, [totalInvoiceData, totalRevenueData])
+    if (totalRevenueInvoiceData && totalRevenueInvoiceData.isSuccess) {
+      setSaleInfoData((prevData) =>
+        prevData.map((item) => (item.id === 3 ? { ...item, sales: totalRevenueInvoiceData.data, increment: 0 } : item))
+      )
+    }
+  }, [totalInvoiceData, totalRevenueData, totalRevenueInvoiceData])
 
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2'>
+    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6 mt-10'>
       {saleInfoData.map((saleInfoDataItem) => (
-        <div key={saleInfoDataItem.id} className='p-4'>
+        <div
+          key={saleInfoDataItem.id}
+          className=' flex flex-col justify-between items-center shadow-lg rounded-3xl h-full'
+        >
           <SaleInfo
             title={saleInfoDataItem.title}
             icon={saleInfoDataItem.icon}
