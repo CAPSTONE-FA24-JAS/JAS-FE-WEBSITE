@@ -1,8 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { Data } from '../types/Account.type'
-import baseUrl from '../utils/http'
-import { Respone } from '../types/Respone.type'
 import { Floor } from '../types/Floor.type'
+import { Respone } from '../types/Respone.type'
+import baseUrl from '../utils/http'
 
 export const dashboardApi = createApi({
   reducerPath: 'dashboardApi',
@@ -41,6 +41,9 @@ export const dashboardApi = createApi({
     getTotalAccountActive: build.query<Respone<number>, void>({
       query: () => 'DashBoard/TotalAccountActive'
     }),
+    getTotalCustomer: build.query<Respone<number>, void>({
+      query: () => 'DashBoard/TotalCustomers'
+    }),
     getFloorFee: build.query<Respone<Floor[]>, void>({
       query: () => 'FloorFeePercents/GetFloorFees'
     }),
@@ -68,5 +71,6 @@ export const {
   useGetTotalAccountsQuery,
   useGetTotalAccountActiveQuery,
   useGetFloorFeeQuery,
-  useUpdateFloorFeesMutation
+  useUpdateFloorFeesMutation,
+  useGetTotalCustomerQuery
 } = dashboardApi

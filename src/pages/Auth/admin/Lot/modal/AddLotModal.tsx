@@ -378,7 +378,7 @@ const AddLotModal: React.FC<AddLotModalProps> = ({
 
               <Form.Item
                 name='finalPriceSold'
-                label='Buy now price (Optional) = 0 if not use'
+                label='Buy Now Price (Optional): Enter 0 when not in use.'
                 validateFirst={true}
                 rules={[
                   ({ getFieldValue }) => ({

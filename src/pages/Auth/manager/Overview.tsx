@@ -2,7 +2,11 @@ import { DeleteOutlined, FundProjectionScreenOutlined, UserOutlined } from '@ant
 import { Avatar, Button, notification, Space, Table, TableProps } from 'antd'
 import { useState } from 'react'
 import { useDeleteAccountMutation, useGetListUsersQuery } from '../../../services/account.services'
-import { useGetTotalAccountActiveQuery, useGetTotalAccountsQuery } from '../../../services/dashboard.services'
+import {
+  useGetTotalAccountActiveQuery,
+  useGetTotalAccountsQuery,
+  useGetTotalCustomerQuery
+} from '../../../services/dashboard.services'
 import { AccountData } from '../../../types/Account.type'
 import UserDetail from './ManageAccount/modal/UserDetail'
 
@@ -12,6 +16,7 @@ const Overview = () => {
   const [searchText, setSearchText] = useState<string>('')
   const { data: totalAccount } = useGetTotalAccountsQuery()
   const { data: activeCurrent } = useGetTotalAccountActiveQuery()
+  const { data: totalCustomer } = useGetTotalCustomerQuery()
 
   const { data, isLoading, refetch } = useGetListUsersQuery()
 
@@ -109,24 +114,34 @@ const Overview = () => {
 
   return (
     <>
-      <div className='grid grid-cols-2 gap-4 p-6 mb-6 rounded-lg bg-slate-50'>
+      <div className='grid grid-cols-3 gap-4 p-6 mb-6 rounded-lg bg-slate-50'>
         <div className='flex items-center space-x-4'>
           <div className='flex items-center justify-center w-12 h-12 bg-green-100 rounded-full'>
-            <UserOutlined size={24} color='green' />
+            <UserOutlined className='text-2xl text-green-600' />
           </div>
           <div>
-            <p className='text-sm text-gray-500'>Total Customers</p>
+            <p className='text-sm text-gray-500'>Total Account</p>
             <p className='text-2xl font-semibold'>{totalAccount?.data ? totalAccount.data : 0}</p>
           </div>
         </div>
 
         <div className='flex items-center space-x-4'>
           <div className='flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full'>
-            <FundProjectionScreenOutlined size={24} color='purple   ' />
+            <FundProjectionScreenOutlined className='text-2xl text-purple-600' />
           </div>
           <div>
             <p className='text-sm text-gray-500'>Recently Active Account</p>
             <p className='text-2xl font-semibold'>{activeCurrent?.data ? activeCurrent.data : 0}</p>
+          </div>
+        </div>
+
+        <div className='flex items-center space-x-4'>
+          <div className='flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full'>
+            <UserOutlined className='text-2xl text-purple-600' />
+          </div>
+          <div>
+            <p className='text-sm text-gray-500'>Total customer</p>
+            <p className='text-2xl font-semibold'>{totalCustomer?.data ? totalCustomer.data : 0}</p>
           </div>
         </div>
       </div>
