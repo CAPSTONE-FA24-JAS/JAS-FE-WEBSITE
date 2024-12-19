@@ -14,10 +14,6 @@ export default function Dashboard(): ReactElement {
         <RevenueChart />
       </Col>
 
-      {/* <Col span={24}>
-        <TopProducts />
-      </Col> */}
-
       {/* Optional Space */}
       <Col xs={24} lg={8}>
         <Space direction='vertical' style={{ width: '100%' }} size={16}></Space>

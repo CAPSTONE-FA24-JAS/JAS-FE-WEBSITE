@@ -21,17 +21,13 @@ const RevenueChart = () => {
   const availableYears = [2022, 2023, 2024, 2025] // Available years
 
   const { data: revenueData, isLoading: isLoadingRevenue } = useGetRevenueInYearQuery(year)
-  console.log('revenueData', revenueData)
   const { data: invoiceData, isLoading: isLoadingInvoice } = useGetInvoiceInYearQuery(year)
-  console.log('invoiceData', invoiceData)
   const monthlyRevenue = revenueData?.data.map((item: any) => item.revenue) || Array(12).fill(0)
-  console.log('monthlyRevenue', monthlyRevenue)
   const monthlyInvoices = Array(12).fill(0)
   invoiceData?.data.forEach((item: { month: string; revenue: number }) => {
     const monthIndex = new Date(Date.parse(item.month + ' 1, 2024')).getMonth()
     monthlyInvoices[monthIndex] = item.revenue
   })
-  console.log('monthlyInvoices', monthlyInvoices)
   const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setYear(parseInt(event.target.value))
   }

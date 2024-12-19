@@ -73,6 +73,7 @@ export default function BillInvoiceModal({
   const lotType = invoiceDetails.myBidDTO?.lotDTO?.lotType ?? 'N/A'
   const bidPrice = invoiceDetails.myBidDTO?.yourMaxBidPrice ?? 'N/A'
   const platformFee = invoiceDetails.free ?? 'N/A'
+  const deposit = invoiceDetails.myBidDTO?.lotDTO?.deposit ?? 'N/A'
   const shippingFee = invoiceDetails.feeShip ?? 'N/A'
   const linkBillTransaction = invoiceDetails.linkBillTransaction ?? 'N/A'
   const historyTimes = invoiceDetails.myBidDTO?.historyCustomerLots || []
@@ -184,6 +185,12 @@ export default function BillInvoiceModal({
             <strong>Platform Fee:</strong>
           </p>
           <p className='font-bold text-gray-600'>{platformFee.toLocaleString()}₫</p>
+        </div>
+        <div className='flex justify-between mb-2'>
+          <p>
+            <strong>Deposit:</strong>
+          </p>
+          <p className='font-bold text-gray-600'>-{deposit.toLocaleString()}₫</p>
         </div>
         <div className='flex justify-between mb-2'>
           <p>
