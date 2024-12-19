@@ -11,7 +11,10 @@ interface Artist {
   id: number
   name: string
 }
-
+interface KeyCharacteristics{
+  id: number
+  name: string
+}
 interface CategoriesResponse {
   code: number
   message: string
@@ -25,6 +28,13 @@ interface ArtistsResponse {
   message: string
   isSuccess: boolean
   data: Artist[] // Specify that 'data' is an array of Artist
+  errorMessages: string | null
+}
+interface KeyCharacteristicsResponse {
+  code: number
+  message: string
+  isSuccess: boolean
+  data: KeyCharacteristics[] // Specify that 'data' is an array of Artist
   errorMessages: string | null
 }
 
@@ -43,12 +53,22 @@ interface CreateArtistResponse {
   data: Artist // The created artist
   errorMessages: string | null
 }
+interface CreateKeyCharacteristicsResponse {
+  code: number
+  message: string
+  isSuccess: boolean
+  data: KeyCharacteristics // The created artist
+  errorMessages: string | null
+}
 
 interface CreateCategoryRequest {
   name: string // Define the structure of the request payload
 }
 
 interface CreateArtistRequest {
+  name: string // Define the structure of the request payload for creating an artist
+}
+interface CreateKeyCharacteristicsRequest {
   name: string // Define the structure of the request payload for creating an artist
 }
 
@@ -163,6 +183,16 @@ export const manageotherApi = createApi({
         body: newArtist
       })
     }),
+    viewKeyCharacteristic: build.query<KeyCharacteristicsResponse, void>({
+      query: () => 'KeyCharacteristics/ViewKeyCharacteristic'
+    }),
+    createKeyCharacteristic: build.mutation<CreateKeyCharacteristicsResponse, CreateKeyCharacteristicsRequest>({
+      query: (newArtist) => ({
+        url: 'KeyCharacteristics/CreateKeyCharacteristic',
+        method: 'POST',
+        body: newArtist
+      })
+    }),
     viewBlogs: build.query<BlogsResponse, void>({
       query: () => 'Blog/ViewListBlog'
     }),
@@ -209,6 +239,8 @@ export const {
   useCreateCategoryMutation,
   useViewArtistsQuery,
   useCreateArtistMutation,
+  useViewKeyCharacteristicQuery,
+  useCreateKeyCharacteristicMutation,
   useViewBlogsQuery,
   useViewBlogDetailQuery,
   useViewTopJewelryAuctionsQuery,
