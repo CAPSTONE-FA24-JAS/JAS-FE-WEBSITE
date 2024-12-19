@@ -19,7 +19,7 @@ import {
 import { RoleType } from '../../../../slice/authLoginAPISlice'
 import { RootState } from '../../../../store'
 import { CreateLot, ListLot } from '../../../../types/Lot.type'
-import { parsePriceVND } from '../../../../utils/convertTypeDayjs'
+import { parseDate, parsePriceVND } from '../../../../utils/convertTypeDayjs'
 import LotGridView from './LotGridView'
 import AddLotModal from './modal/AddLotModal'
 
@@ -189,11 +189,11 @@ const LotList = () => {
       }
     },
     {
-      title: 'Staff',
-      dataIndex: 'staff',
-      key: 'staff',
-      width: 100,
-      render: (staff) => staff?.name || '-'
+      title: 'Actual End',
+      width: 140,
+      render: (_value, record) => {
+        return <span> {parseDate(record.actualEndTime, 'dd/mm/yyyy hh:mm:ss')}</span>
+      }
     },
     {
       title: 'Financial Proof',
