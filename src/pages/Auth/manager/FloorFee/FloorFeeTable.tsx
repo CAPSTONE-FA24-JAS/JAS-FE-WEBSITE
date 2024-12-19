@@ -1,7 +1,7 @@
+import { Button, Form, InputNumber, message, Table } from 'antd'
 import { useState } from 'react'
-import { Table, Button, Form, InputNumber, message } from 'antd'
-import { Floor } from '../../../../types/Floor.type'
 import { useGetFloorFeeQuery, useUpdateFloorFeesMutation } from '../../../../services/dashboard.services'
+import { Floor } from '../../../../types/Floor.type'
 import { parsePriceVND } from '../../../../utils/convertTypeDayjs'
 
 const FloorFeeTable = () => {
@@ -21,7 +21,11 @@ const FloorFeeTable = () => {
   }
 
   const edit = (record: Floor) => {
-    form.setFieldsValue({ ...record })
+    // Convert the decimal to percentage when editing and round to 2 decimal places
+    form.setFieldsValue({
+      ...record,
+      percent: Math.round(record.percent * 100 * 100) / 100 // Convert and round to 2 decimal places
+    })
     setEditingKey(record.id)
   }
 
@@ -35,7 +39,6 @@ const FloorFeeTable = () => {
       const row = await form.validateFields()
       const currentRecord = sortedData.find((item) => item.id === id)
 
-      // Only validate to > from if it's not the highest range or if 'to' has a value
       if (!isHighestRange(currentRecord!) && row.to !== null && row.to <= row.from) {
         message.error('The "To" value must be greater than the "From" value')
         return
@@ -45,7 +48,7 @@ const FloorFeeTable = () => {
         id,
         from: row.from,
         to: row.to === null ? null : row.to,
-        percent: row.percent
+        percent: Number((row.percent / 100).toFixed(4)) // Convert to decimal and ensure precision
       }
 
       await updateFloorFee(updatedData).unwrap()
@@ -113,7 +116,6 @@ const FloorFeeTable = () => {
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   const fromValue = getFieldValue('from')
-                  // Skip validation if this is the highest range and value is null/empty
                   if (isHighest && (value === null || value === undefined)) {
                     return Promise.resolve()
                   }
@@ -153,10 +155,17 @@ const FloorFeeTable = () => {
               { type: 'number', min: 0, max: 100, message: 'Percent must be between 0 and 100' }
             ]}
           >
-            <InputNumber min={0} max={100} formatter={(value) => `${value}%`} className='w-full' />
+            <InputNumber
+              min={0}
+              max={100}
+              precision={2} // Set precision to 2 decimal places
+              formatter={(value) => `${value}%`}
+              className='w-full'
+            />
           </Form.Item>
         ) : (
-          `${record.percent * 100}%`
+          // Round to 2 decimal places when displaying
+          `${(record.percent * 100).toFixed(2)}%`
         )
       }
     },

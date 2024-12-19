@@ -50,7 +50,7 @@ export default function SiderAdmin({ onCollapse }: { onCollapse: (collapsed: boo
       ]),
       getItem('Manage Category', 'category', <AppstoreAddOutlined />),
       getItem('Manage Artist', 'artist', <SmileOutlined />),
-   
+      getItem('Manage KeyCharacteristic', 'keyCharacteristic', <SmileOutlined />),
       getItem('General', 'general', <FileTextOutlined />)
     ]
   }
@@ -62,6 +62,7 @@ export default function SiderAdmin({ onCollapse }: { onCollapse: (collapsed: boo
     .set('createAccount', '/admin/createAccount')
     .set('category', '/admin/category')
     .set('artist', '/admin/artist')
+    .set('keyCharacteristic', '/admin/keyCharacteristic')
     .set('general', '/admin/general')
 
   return (
